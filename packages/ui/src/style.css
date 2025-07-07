@@ -1,0 +1,81 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+h1 {
+  font-size: 10px;
+}
+
+span {
+  font-size: 10px;
+}
+
+.cwl-editor-preview {
+  display: flex;
+  flex-direction: row;
+  width: 600px;
+  height: 300px;
+  overflow: hidden;
+}
+
+.cwl-editor {
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.cwl-editor .cwl-editor-flow-editor {
+  width: 70%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.node-component {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: 10px;
+}
+
+.add-node {
+  position: absolute;
+  left: 0;
+  margin: 10px;
+  z-index: 99999999999999;
+}
+
+.node-component-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  opacity: 0.6;
+  cursor: pointer;
+  color: #303030;
+  font-size: 10px;
+}
+
+.input-list {
+  list-style-type: none;
+  padding-left: 0;
+  align-items: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+li {
+  font-size: 10px;
+}
+
+.input-item {
+  font-family: monospace;
+  font-size: 10px;
+}
