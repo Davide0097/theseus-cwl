@@ -1,9 +1,12 @@
+import { Step } from "@theseus-cwl/types";
 import { useState } from "react";
 
 /**
  *
  */
-export type StepNodeFormProps = any;
+export type StepNodeFormProps = {
+  step: Step;
+};
 
 /**
  *

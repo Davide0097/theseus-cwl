@@ -96,7 +96,7 @@ export const CwlEditor = (props: CwlEditorProps) => {
 
 type LegendEditorProps = {};
 
-export const CwkWorkflowLegendEditor = ({}: LegendEditorProps) => {
+export const CwkWorkflowLegendEditor = (props: LegendEditorProps) => {
   const { colors, setColorForType, resetColors } = useWorkflow();
 
   // Local state
