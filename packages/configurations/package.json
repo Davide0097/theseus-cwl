@@ -4,12 +4,15 @@
   "version": "1.0.0",
   "author": "davide giorgiutti",
   "license": "ISC",
+    "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts"
+,
   "scripts": {
-    "dev": "tsc --watch",
-    "build": "tsc"
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+     "build": "tsup src/index.ts --format cjs,esm --dts"
   },
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+ 
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -19,5 +22,8 @@
   "devDependencies": {
     "@theseus-cwl/typescript-config": "*",
     "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "tsup": "^8.5.0"
   }
 }
