@@ -1,32 +1,19 @@
-/**
- *
- */
+import { useWorkflow } from "../../hooks";
+
+import { Step } from "@theseus-cwl/types";
+
 export type StepNodeComponentProps = {
-  step?: {
-    id: string;
-    content: {
-      run: string;
-      in: Record<
-        string,
-        {
-          source: string;
-        }
-      >;
-      out: string;
-    };
-  };
-  onAddStepNode?: () => void;
+  step?: Step;
 };
 
-/**
- *
- */
 export const StepNodeComponent = (props: StepNodeComponentProps) => {
-  const { step, onAddStepNode } = props;
+  const { step } = props;
 
-  if (step && !onAddStepNode) {
+  const { addStep, colors } = useWorkflow();
+
+  if (step) {
     return (
-      <div className="node-component ">
+      <div className="node-component" style={{ backgroundColor: colors.steps }}>
         <h1 style={{ fontFamily: "monospace" }}> {step.id}</h1>
         <h1>Run: {step.content.run}</h1>
         <h1>In:</h1>
@@ -42,9 +29,9 @@ export const StepNodeComponent = (props: StepNodeComponentProps) => {
     );
   }
 
-  if (!step && onAddStepNode) {
+  if (!step) {
     return (
-      <div onClick={props.onAddStepNode} className="node-component-placeholder">
+      <div onClick={addStep} className="node-component-placeholder">
         <span>+ New step node</span>
       </div>
     );

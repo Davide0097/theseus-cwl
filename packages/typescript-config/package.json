@@ -1,9 +1,15 @@
 {
   "name": "@theseus-cwl/typescript-config",
-  "version": "0.0.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "Collection of internal typescript configurations.",
+  "author": "davide giorgiutti",
+  "private": false,
   "license": "MIT",
   "publishConfig": {
     "access": "public"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   }
 }

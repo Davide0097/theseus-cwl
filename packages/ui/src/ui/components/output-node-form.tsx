@@ -1,16 +1,15 @@
 import { useState } from "react";
 
-/**
- *
- */
-export type OutputNodeFormProps = any;
+import { Output } from "@theseus-cwl/types";
 
-/**
- *
- */
+export type OutputNodeFormProps = {
+  output?: Output;
+};
+
 export const OutputNodeForm = (props: OutputNodeFormProps) => {
-  const output = props.output;
-  const [type, setType] = useState(output?.content.type || "");
+  const { output } = props;
+
+  const [type, setType] = useState(output?.type || "");
 
   return (
     <div>

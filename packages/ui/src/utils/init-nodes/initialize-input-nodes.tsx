@@ -1,70 +1,61 @@
 import { Node as xyFlowNode } from "@xyflow/react";
+
 import {
   EDITOR_PADDING,
   NODE_HEIGHT,
   NODE_MARGIN,
   NODE_WIDTH,
 } from "@theseus-cwl/configurations";
-import { InputNodeComponent } from "../../ui/components/input-node";
-import { CWLObject, CWLWorkflow } from "../../ui";
+import { CWLObject } from "@theseus-cwl/types";
 
-import "@xyflow/react/dist/style.css";
+import { InputNodeComponent } from "../../ui";
 import { getWrapperNode } from "./get-wrapper-node";
 
-/**
- * Generate CWL input nodes for the flow
- *
- * @param {CWLWorkflow} cwlWorkflow
- 
- *
- * @returns {xyFlowNode[]}
- */
-export function initializeInputNodes(
-cwlObject: CWLObject,
+import "@xyflow/react/dist/style.css";
 
-  addInput?: () => void,
-  colors?: Record<string, any>,
-  wrappers?: boolean
-): xyFlowNode[] {
-  const inputNodes: xyFlowNode[] = Object.entries(
-    cwlObject.inputs
-  ).map(([key, input], index) => {
-    const nodeId = key;
+export type InitializeInputNodesProps = {
+  cwlObject: CWLObject;
+  readonly: boolean;
+  wrappers: boolean;
+};
 
-    return {
-      id: nodeId,
-      type: "input",
-      data: {
-        label: <InputNodeComponent input={{...input, key: key}}  nodeId={nodeId} />,
-      },
-      extent: "parent",
-      position: {
-        x: NODE_MARGIN + index * (NODE_WIDTH + NODE_MARGIN) + EDITOR_PADDING,
-        y: NODE_MARGIN + EDITOR_PADDING,
-      },
-      style: {
-        width: NODE_WIDTH,
-        height: NODE_HEIGHT,
-        backgroundColor: colors?.input,
-      },
-    };
-  });
+export const initializeInputNodes = (props: InitializeInputNodesProps) => {
+  const { cwlObject, readonly, wrappers } = props;
 
-  // Add placeholder node for creating a new input
+  const inputNodes: xyFlowNode[] = Object.entries(cwlObject.inputs).map(
+    ([key, input], index) => {
+      const nodeId = key;
+
+      return {
+        id: nodeId,
+        type: "input",
+        data: {
+          label: <InputNodeComponent input={{ ...input, key: key }} />,
+        },
+        extent: "parent",
+        position: {
+          x: NODE_MARGIN + index * (NODE_WIDTH + NODE_MARGIN) + EDITOR_PADDING,
+          y: NODE_MARGIN + EDITOR_PADDING,
+        },
+        style: {
+          width: NODE_WIDTH,
+          height: NODE_HEIGHT,
+        },
+      };
+    }
+  );
+
   const placeholderNode: xyFlowNode = {
     id: "__new_input_placeholder__",
     type: "input",
     data: {
-      label: (
-        <InputNodeComponent input={undefined} onAddInputNode={addInput} />
-      ),
+      label: <InputNodeComponent input={undefined} />,
     },
     extent: "parent",
     position: {
       x:
         NODE_MARGIN +
-        Object.entries(cwlObject.inputs).length *
-          (NODE_WIDTH + NODE_MARGIN) +
+        Object.entries(cwlObject.inputs).length * (NODE_WIDTH + NODE_MARGIN) +
         EDITOR_PADDING,
       y: NODE_MARGIN + EDITOR_PADDING,
     },
@@ -77,9 +68,11 @@ cwlObject: CWLObject,
     },
   };
 
-  let resultingNodes = [];
+  const resultingNodes = [...inputNodes];
 
-  resultingNodes = [...inputNodes, placeholderNode];
+  if (!readonly) {
+    resultingNodes.push(placeholderNode);
+  }
 
   if (wrappers) {
     const wrapperNode = getWrapperNode([...inputNodes, placeholderNode]);
@@ -87,4 +80,4 @@ cwlObject: CWLObject,
   }
 
   return resultingNodes;
-}
+};

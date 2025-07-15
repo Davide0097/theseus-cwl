@@ -1,5 +1,9 @@
 {
   "name": "@theseus-cwl/configurations",
+  "description": "Collection of internal static configurations.",
+  "version": "1.0.0",
+  "author": "davide giorgiutti",
+  "license": "ISC",
   "scripts": {
     "dev": "tsc --watch",
     "build": "tsc"
@@ -14,6 +18,6 @@
   },
   "devDependencies": {
     "@theseus-cwl/typescript-config": "*",
-    "typescript": "latest"
+    "typescript": "^5.8.2"
   }
 }

@@ -5,24 +5,22 @@ import { initializeEdges, initializeNodes } from "../utils";
 import { useWorkflow } from "./use-workflow-state";
 
 export type UseWorkflowNodesAndEdgesProps = {
-  colors: Record<string, string>;
+  readonly: boolean;
   wrappers: boolean;
 };
 
 export const useWorkflowNodesAndEdges = (
   props: UseWorkflowNodesAndEdgesProps
 ) => {
-  const { colors, wrappers } = props;
+  const { wrappers, readonly } = props;
+
   const { cwlObject, addInput, addOutput, addStep } = useWorkflow();
 
-  const initialNodes = initializeNodes(
+  const initialNodes = initializeNodes({
     cwlObject,
-    addInput,
-    addStep,
-    addOutput,
-    colors,
-    wrappers
-  );
+    readonly,
+    wrappers,
+  });
   const initialEdges = initializeEdges(cwlObject);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -30,11 +28,23 @@ export const useWorkflowNodesAndEdges = (
 
   useEffect(() => {
     setNodes(
-      initializeNodes(cwlObject, addInput, addStep, addOutput, colors, wrappers)
+      initializeNodes({
+        cwlObject,
+        readonly,
+        wrappers,
+      })
     );
     setEdges(initializeEdges(cwlObject));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cwlObject, colors, wrappers]);
+  }, [
+    cwlObject,
+    readonly,
+    wrappers,
+    setNodes,
+    addInput,
+    addStep,
+    addOutput,
+    setEdges,
+  ]);
 
   return { nodes, setNodes, onNodesChange, edges, setEdges, onEdgesChange };
 };

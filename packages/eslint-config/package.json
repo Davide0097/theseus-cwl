@@ -1,8 +1,15 @@
 {
   "name": "@theseus-cwl/eslint-config",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
-  "private": true,
+  "private": false,
+  "description": "Collection of internal eslint configurations.",
+  "main": "base.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "davide giorgiutti",
+  "license": "ISC",
   "exports": {
     "./base": "./base.js",
     "./next-js": "./next.js",

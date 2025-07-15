@@ -1,9 +1,9 @@
 import { Edge, MarkerType } from "@xyflow/react";
-import { useColorState } from "../../hooks";
-import { CWLObject, CWLWorkflow } from "../../ui";
+
+import { CWLObject } from "@theseus-cwl/types";
 
 export const initializeEdgesStepToStepEdges = (
-    cwlObject: CWLObject
+  cwlObject: CWLObject
 ): Edge[] => {
   const edges: Edge[] = [];
 
@@ -30,62 +30,4 @@ export const initializeEdgesStepToStepEdges = (
   });
 
   return edges;
-};
-export const CwkWorflowFileComponent = ({ cwlWorkflow }) => {
-  return (
-    <p
-      style={{
-        position: "absolute",
-        color: "black",
-        top: "0",
-        right: "200px",
-        maxWidth: "200px",
-      }}
-    >
-      {JSON.stringify(cwlWorkflow)}
-    </p>
-  );
-};
-
-export const CwkWorflowLegendEditor = ({ cwlWorkflow }) => {
-  const [colors, setColors, nodeColor] = useColorState();
-
-  return (
-    <div
-      style={{
-        position: "absolute",
-        color: "black",
-        bottom: "0",
-        right: "500px",
-        width: "200px",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <div>
-        <label>Input Node Color:</label>
-        <input
-          type="color"
-          value={colors.input}
-          onChange={(e) => setColors({ ...colors, input: e.target.value })}
-        />
-      </div>
-      <div>
-        <label>Output Node Color:</label>
-        <input
-          type="color"
-          value={colors.output}
-          onChange={(e) => setColors({ ...colors, output: e.target.value })}
-        />
-      </div>
-      <div>
-        <label>Default Node Color:</label>
-        <input
-          type="color"
-          value={colors.default}
-          onChange={(e) => setColors({ ...colors, default: e.target.value })}
-        />
-      </div>
-    </div>
-  );
 };

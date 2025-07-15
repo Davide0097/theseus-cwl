@@ -1,6 +1,6 @@
 {
   "name": "@theseus-cwl/ui",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "exports": {
     "./*": "./src/*.tsx"
@@ -11,10 +11,10 @@
     "check-types": "tsc --noEmit"
   },
   "devDependencies": {
+    "@theseus-cwl/types": "*",
     "@theseus-cwl/configurations": "*",
     "@theseus-cwl/eslint-config": "*",
     "@theseus-cwl/typescript-config": "*",
-    "@turbo/gen": "^2.4.4",
     "@types/node": "^22.13.10",
     "@types/react": "19.0.12",
     "@types/react-dom": "19.0.4",

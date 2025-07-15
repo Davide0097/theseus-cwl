@@ -6,11 +6,10 @@ import {
   NODE_MARGIN,
   NODE_WIDTH,
 } from "@theseus-cwl/configurations";
-
-import { Output, Outputs, Steps, CWLWorkflow, CWLObject } from "../../ui";
+import { Output, Steps, Outputs, CWLObject } from "@theseus-cwl/types";
 
 import { getWrapperNode } from "./get-wrapper-node";
-import { OutputNodeComponent } from "../../ui/components";
+import { OutputNodeComponent } from "../../ui";
 
 const getOutpuNodesPositon = (
   output: Output,
@@ -44,6 +43,7 @@ const getOutpuNodesPositon = (
   } else {
     // Output not connected to a step — stack it after other such outputs
     const outputIndex =
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       Object.entries(outputs).findIndex(([key, value]) => key === key) - 1;
     const x =
       NODE_MARGIN +
@@ -60,34 +60,34 @@ const getOutpuNodesPositon = (
   }
 };
 
+export type InitializeOutputNodesProps = {
+  cwlObject: CWLObject;
+  readonly: boolean;
+
+  inputNodes: xyFlowNode[];
+  wrappers: boolean;
+};
+
 export const initializeOutputNodes = (
- cwlObject: CWLObject,
-
-  addOutput?: () => void,
-  colors?: Record<string, string>,
-  inputNodes?: xyFlowNode[],
-  wrappers?: boolean
+  props: InitializeOutputNodesProps
 ): xyFlowNode[] => {
-  let resultingNodes = [];
+  const { cwlObject, readonly, inputNodes, wrappers } = props;
 
-  const nodes = Object.entries(cwlObject.outputs).map(
-    ([key, value]) => ({
-      id: key,
-      extent: "parent",
-      data: { label: <OutputNodeComponent output={value} outputId={key} /> },
-      position: getOutpuNodesPositon(
-        value,
-        key,
-        cwlObject.steps,
-        cwlObject.outputs
-      ),
-      style: {
-        width: NODE_WIDTH,
-        height: NODE_HEIGHT,
-        backgroundColor: colors?.output,
-      },
-    })
-  ) as xyFlowNode[];
+  const nodes = Object.entries(cwlObject.outputs).map(([key, value]) => ({
+    id: key,
+    extent: "parent",
+    data: { label: <OutputNodeComponent output={value} outputId={key} /> },
+    position: getOutpuNodesPositon(
+      value,
+      key,
+      cwlObject.steps,
+      cwlObject.outputs
+    ),
+    style: {
+      width: NODE_WIDTH,
+      height: NODE_HEIGHT,
+    },
+  })) as xyFlowNode[];
 
   const allNodes = [...nodes];
 
@@ -99,7 +99,7 @@ export const initializeOutputNodes = (
     id: "__new_output_placeholder__",
 
     data: {
-      label: <OutputNodeComponent onAddOutputNode={addOutput} />,
+      label: <OutputNodeComponent />,
     },
     extent: "parent",
     position: {
@@ -116,7 +116,11 @@ export const initializeOutputNodes = (
     },
   };
 
-  resultingNodes = [...nodes, placeholderNode];
+  const resultingNodes = [...nodes];
+
+  if (!readonly) {
+    resultingNodes.push(placeholderNode);
+  }
 
   if (wrappers) {
     const wrapperNode = getWrapperNode([

@@ -1,45 +1,39 @@
 import { Node as xyFlowNode } from "@xyflow/react";
 
-import { CWLObject, CWLWorkflow } from "../../ui";
+import { CWLObject } from "@theseus-cwl/types";
+
 import { initializeInputNodes } from "./initialize-input-nodes";
 import { initializeOutputNodes } from "./initialize-output-nodes";
 import { initializeStepNodes } from "./initialize-step-nodes";
 
-/**
- * Initialize all the nodes from the CWLWorkflow component
- *
- * @param {CWLWorkflow} cwlWorkflow
- *
- * @returns {xyFlowNode[]}
- */
-export const initializeNodes = (
-  cwlObject: CWLObject| undefined,
-  addInput: (() => void) | undefined,
-  addStep: (() => any) | undefined,
-  addOutput: (() => void) | undefined,
-  colors?: Record<string, string>,
-  wrappers?: boolean
-): xyFlowNode[] => {
-  const inputNodes = initializeInputNodes(
+export type InitializeNodesProps = {
+  cwlObject: CWLObject;
+  readonly: boolean;
+  wrappers: boolean;
+};
+
+export const initializeNodes = (props: InitializeNodesProps): xyFlowNode[] => {
+  const { cwlObject, readonly, wrappers } = props;
+
+  const inputNodes = initializeInputNodes({
     cwlObject,
-    addInput,
-    colors,
-    wrappers
-  );
-  const stepNodes = initializeStepNodes(
+    readonly,
+    wrappers,
+  });
+
+  const stepNodes = initializeStepNodes({
     cwlObject,
-    addStep,
-    colors,
+    readonly,
+    wrappers,
     inputNodes,
-    wrappers
-  );
-  const outputNodes = initializeOutputNodes(
+  });
+
+  const outputNodes = initializeOutputNodes({
     cwlObject,
-    addOutput,
-    colors,
+    readonly,
     inputNodes,
-    wrappers
-  );
+    wrappers,
+  });
 
   return [...inputNodes, ...stepNodes, ...outputNodes];
 };

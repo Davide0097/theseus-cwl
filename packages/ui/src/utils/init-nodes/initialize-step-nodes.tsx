@@ -1,25 +1,28 @@
 import { Node as xyflowNode } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
-import { StepNodeComponent } from "../../ui/components/step-node";
 import {
   EDITOR_PADDING,
   NODE_HEIGHT,
   NODE_MARGIN,
   NODE_WIDTH,
 } from "@theseus-cwl/configurations";
-import { CWLObject, CWLWorkflow } from "../../ui";
+import { CWLObject } from "@theseus-cwl/types";
+
+import { StepNodeComponent } from "../../ui";
 import { getWrapperNode } from "./get-wrapper-node";
 
-export const initializeStepNodes = (
- cwlObject: CWLObject,
+export type InitializeStepsProps = {
+  cwlObject: CWLObject;
+  readonly: boolean;
+  wrappers: boolean;
+  inputNodes: xyflowNode[];
+};
 
-  addStep: (() => any) | undefined,
-  colors?: Record<string, string>,
-  inputNodes?: xyflowNode[],
-  wrappers?: boolean
+export const initializeStepNodes = (
+  props: InitializeStepsProps
 ): xyflowNode[] => {
-  let resultingNodes = [];
+  const { cwlObject, readonly, wrappers } = props;
 
   const steps = cwlObject?.steps || [];
   const inputs = cwlObject?.inputs || [];
@@ -54,7 +57,6 @@ export const initializeStepNodes = (
     style: {
       width: NODE_WIDTH,
       height: NODE_HEIGHT,
-      backgroundColor: colors?.steps,
     },
   }));
 
@@ -66,7 +68,7 @@ export const initializeStepNodes = (
     id: "__new_step_placeholder__",
     type: "default",
     data: {
-      label: <StepNodeComponent onAddStepNode={addStep} />,
+      label: <StepNodeComponent />,
     },
     position: {
       x: maxXPosition + NODE_WIDTH + NODE_MARGIN,
@@ -81,14 +83,16 @@ export const initializeStepNodes = (
     },
   };
 
-  resultingNodes = [...nodes, placeholderNode];
+  const resultingNodes = [...nodes];
+
+  if (!readonly) {
+    resultingNodes.push(placeholderNode);
+  }
 
   if (wrappers) {
     const wrapperNode = getWrapperNode([...nodes, placeholderNode]);
     resultingNodes.push(wrapperNode);
   }
-
-  
 
   return resultingNodes;
 };

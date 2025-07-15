@@ -1,9 +1,8 @@
 import { Edge, MarkerType } from "@xyflow/react";
-import { CWLObject, CWLWorkflow } from "../../ui";
 
-export const initializeInputToStepEdges = (
-    cwlObject: CWLObject
-): Edge[] => {
+import { CWLObject } from "@theseus-cwl/types";
+
+export const initializeInputToStepEdges = (cwlObject: CWLObject): Edge[] => {
   const edges: Edge[] = [];
 
   cwlObject!.steps.forEach((step) => {

@@ -1,11 +1,10 @@
 import { SetStateAction, useEffect, useState } from "react";
-import {
-  ComplexType,
-  CWLWorkflow,
-  PrimitiveType,
-  SpecialType,
-} from "../cwl-editor";
+
+import { ComplexType, PrimitiveType, SpecialType } from "@theseus-cwl/types";
+
+import { useWorkflow } from "../../hooks";
 import { InputNodeComponentProps } from "./input-node";
+import { CWLWorkflow } from "../cwl-editor";
 
 export type InputNodeFormProps = InputNodeComponentProps & {
   cwlWorkflow: CWLWorkflow;
@@ -13,13 +12,15 @@ export type InputNodeFormProps = InputNodeComponentProps & {
 };
 
 export const InputNodeForm = (props: InputNodeFormProps) => {
+  const { updateInput } = useWorkflow();
+
   const [id, setId] = useState<string>("");
   const [type, setType] = useState<
     PrimitiveType | ComplexType | SpecialType | undefined
   >(undefined);
   const [defaultValue, setDefaultValue] = useState<string>("");
   const [initialValues, setInitialValues] = useState<{
-    key: "";
+    key: typeof id;
     type: typeof type;
     default: typeof defaultValue;
   }>({
@@ -29,13 +30,13 @@ export const InputNodeForm = (props: InputNodeFormProps) => {
   });
 
   useEffect(() => {
-    const key = props.input?.key;
+    const key = props.input?.key || "";
     const type = props.input?.type;
-    const defaultVal = props.input?.default || "";
+    const _default = props.input?.default || "";
     setId(key);
     setType(type);
-    setDefaultValue(defaultVal);
-    setInitialValues({ key, type, default: defaultVal });
+    setDefaultValue(_default);
+    setInitialValues({ key, type, default: _default });
   }, [props.input]);
 
   const hasChanged =
@@ -45,99 +46,46 @@ export const InputNodeForm = (props: InputNodeFormProps) => {
 
   const handleOnClick = () => {
     if (props.input) {
-      props.cwlWorkflow.editInput(
-        props.input.key,
-        {
-          id: id,
-          type: type,
-          default: defaultValue,
-        },
-        props.setCwlWorkflow
-      );
+      updateInput(props.input.key, {
+        id: id,
+        type: type,
+        default: defaultValue,
+      });
     }
   };
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.header}>Edit Input Node</h2>
-      <div style={styles.formGroup}>
-        <label style={styles.label}>ID:</label>
+    <div className="input-node-form">
+      <h2>Edit Input Node</h2>
+      <div className="input-node-form-form-field">
+        <label>ID:</label>
         <input
-          style={styles.input}
           type="text"
           value={id}
-          onChange={(e) => setId(e.target.value)}
+          onChange={(event) => setId(event.target.value)}
         />
       </div>
-      <div style={styles.formGroup}>
-        <label style={styles.label}>Type:</label>
+      <div className="input-node-form-form-field">
+        <label>Type:</label>
         <input
-          style={styles.input}
           type="text"
           value={type}
-          onChange={(e) => setType(e.target.value)}
+          onChange={(event) => setType(event.target.value)}
         />
       </div>
-      <div style={styles.formGroup}>
-        <label style={styles.label}>Default:</label>
+      <div className="input-node-form-form-field">
+        <label>Default:</label>
         <input
-          style={styles.input}
           type="text"
           value={defaultValue}
           onChange={(e) => setDefaultValue(e.target.value)}
         />
       </div>
       {hasChanged && (
-        <div style={styles.unsavedWarning}>
-          <button style={styles.saveButton} onClick={handleOnClick}>
-            Save Changes
-          </button>
+        <div className="input-node-form-save-button">
+          <button onClick={handleOnClick}>Save Changes</button>
         </div>
       )}
     </div>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: "400px",
-    margin: "0 auto",
-    padding: "20px",
-    backgroundColor: "#f9f9f9",
-    borderRadius: "8px",
-    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-    fontFamily: "Arial, sans-serif",
-  },
-  header: {
-    textAlign: "center",
-    color: "#333",
-  },
-  formGroup: {
-    display: "flex",
-    flexDirection: "column" as const,
-    marginBottom: "15px",
-  },
-  label: {
-    marginBottom: "5px",
-    fontWeight: "bold",
-    color: "#555",
-  },
-  input: {
-    padding: "8px",
-    fontSize: "14px",
-    borderRadius: "4px",
-    border: "1px solid #ccc",
-  },
-  unsavedWarning: {
-    marginTop: "20px",
-    textAlign: "center" as const,
-  },
-  saveButton: {
-    padding: "10px 15px",
-    backgroundColor: "#ff9800",
-    color: "#fff",
-    border: "none",
-    borderRadius: "4px",
-    cursor: "pointer",
-  },
 };

@@ -1,15 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import { CWLObject, Input } from "../../ui";
-import { WorkflowContext } from "../context";
+import { CWLObject, Input } from "@theseus-cwl/types";
+
+import { CwlObjectContext } from "../create";
+import { ColorState, useColorState } from "../../hooks";
 
 export type WorflowProviderProps = {
   children: React.ReactNode;
-  initialCwlObject: CWLObject | undefined;
+  initialCwlObject: CWLObject;
+  initialColorState?: ColorState;
 };
 
 export const WorkflowProvider = (props: WorflowProviderProps) => {
   const [cwlObject, setCwlObject] = useState(props.initialCwlObject);
+
+  useEffect(() => {
+    setCwlObject(props.initialCwlObject);
+  }, [props.initialCwlObject]);
 
   const updateInput = (
     id: string,
@@ -57,13 +64,18 @@ export const WorkflowProvider = (props: WorflowProviderProps) => {
       ],
     }));
   };
+
   const addInput = () => {
+    const randomId = `input_${Date.now()}`;
     setCwlObject((prev) => ({
       ...prev,
       inputs: {
         ...prev.inputs,
-        key: "string",
-        ["zip_fileww"]: { type: "string" },
+        [randomId]: {
+          key: randomId,
+          type: "string",
+          label: "New Input",
+        },
       },
     }));
   };
@@ -81,11 +93,35 @@ export const WorkflowProvider = (props: WorflowProviderProps) => {
     }));
   };
 
+  const {
+    colors,
+    setColors,
+    setColorForType,
+    resetColors,
+    onChange,
+    pendingDefaultColor,
+  } = useColorState({
+    initialColorState: props.initialColorState,
+  });
+
   return (
-    <WorkflowContext.Provider
-      value={{ cwlObject, setCwlObject, addInput, updateInput, addStep, addOutput }}
+    <CwlObjectContext.Provider
+      value={{
+        cwlObject,
+        setCwlObject,
+        addInput,
+        updateInput,
+        addStep,
+        addOutput,
+        onChange,
+        colors,
+        setColors,
+        setColorForType,
+        resetColors,
+        pendingDefaultColor,
+      }}
     >
       {props.children}
-    </WorkflowContext.Provider>
+    </CwlObjectContext.Provider>
   );
 };

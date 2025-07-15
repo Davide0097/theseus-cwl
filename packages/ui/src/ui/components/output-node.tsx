@@ -1,42 +1,27 @@
-import { Output } from "../cwl-editor";
+import { Output } from "@theseus-cwl/types";
 
- 
+import { useWorkflow } from "../../hooks";
 
-/**
- *
- */
 export type OutputNodeComponentProps = {
   output?: Output;
   outputId?: string;
-  onAddOutputNode?: () => void;
 };
 
-/**
- *
- */
 export const OutputNodeComponent = (props: OutputNodeComponentProps) => {
-  const { output, outputId, onAddOutputNode } = props;
+  const { output, outputId } = props;
+  const { addOutput, colors } = useWorkflow();
 
-  if (output && !onAddOutputNode) {
+  if (output) {
     return (
-      <div className="node-component ">
+      <div className="node-component" style={{ backgroundColor: colors.output }}>
         <h1 style={{ fontFamily: "monospace" }}> {outputId}</h1>
-        <h1
-          style={{
-            backgroundColor: "rgba(0,0,0,0.3)",
-            marginTop: "7px",
-            padding: "2px 6px",
-            borderRadius: "4px",
-          }}
-        >
-          {output.type}
-        </h1>
+        <h1>{output.type}</h1>
       </div>
     );
   }
-  if (!output && onAddOutputNode) {
+  if (!output) {
     return (
-      <div onClick={onAddOutputNode} className="node-component-placeholder">
+      <div onClick={addOutput} className="node-component-placeholder">
         <span>+ New output node</span>
       </div>
     );

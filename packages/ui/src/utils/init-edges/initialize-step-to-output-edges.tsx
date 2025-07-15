@@ -1,6 +1,6 @@
 import { Edge, MarkerType } from "@xyflow/react";
 
-import { CWLObject, CWLWorkflow } from "../../ui";
+import { CWLObject } from "@theseus-cwl/types";
 
 export const initializeEdgesStepToOutputEdges = (
   cwlObject: CWLObject

@@ -1,0 +1,21 @@
+{
+  "name": "@theseus-cwl/types",
+  "version": "1.0.0",
+  "types": "dist/index.d.ts",
+  "main": "index.js",
+  "author": "davide giorgiutti",
+  "license": "ISC",
+  "description": "Common CWL types",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@theseus-cwl/typescript-config": "*"
+  }
+}

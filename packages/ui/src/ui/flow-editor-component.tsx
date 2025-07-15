@@ -4,49 +4,30 @@ import {
   Controls,
   MiniMap,
   ReactFlow,
-  ReactFlowProvider,
   useReactFlow,
   Node as xyFlowNode,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { createContext, useContext, useState } from "react";
 
-import { useWorkflow, useWorkflowActions } from "../hooks";
-import { useWorkflowNodesAndEdges } from "../hooks/use-workflow-nodes-and-edges";
-import { CWLWorkflow } from "./cwl-editor";
+import { useWorkflowNodesAndEdges } from "../hooks";
 
-/**
- *
- */
 export type EditorComponentProps = {
-  colors: any;
   onChange: (value: object) => void;
   setSelectedNode: (node: xyFlowNode) => void;
-
-  readonly?: boolean;
-  wrappers?: boolean;
-  minimap?: boolean;
+  readonly: boolean;
+  wrappers: boolean;
+  minimap: boolean;
 };
 
-/**
- *
- */
 export const FlowEditorComponent = (props: EditorComponentProps) => {
-  const {
-    colors,
-    setSelectedNode,
-
-    readonly = true,
-    wrappers = true,
-    minimap = true,
-  } = props;
+  const { setSelectedNode, readonly, wrappers, minimap } = props;
 
   const { fitView } = useReactFlow();
 
   const { nodes, edges, onNodesChange, onEdgesChange } =
     useWorkflowNodesAndEdges({
-      colors,
       wrappers,
+      readonly,
     });
 
   return (
@@ -60,12 +41,12 @@ export const FlowEditorComponent = (props: EditorComponentProps) => {
       elementsSelectable={!readonly}
       onNodesChange={readonly ? undefined : onNodesChange}
       onEdgesChange={readonly ? undefined : onEdgesChange}
-      // onNodesDelete={readonly ? undefined : onDeleteNode}
       onNodeClick={(_event, node) => {
         setSelectedNode(node);
       }}
     >
       <Controls />
+
       {minimap && (
         <MiniMap
           zoomable

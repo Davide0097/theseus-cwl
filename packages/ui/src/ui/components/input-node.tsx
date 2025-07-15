@@ -1,28 +1,21 @@
+import { Input } from "@theseus-cwl/types";
+
 import { useWorkflow } from "../../hooks";
-import { Input } from "../cwl-editor";
 
 export type InputNodeComponentProps = {
-  input: Input | undefined;
+  input?: Input;
 };
 
 export const InputNodeComponent = (props: InputNodeComponentProps) => {
   const { input } = props;
-  const { addInput } = useWorkflow();
+
+  const { addInput, colors } = useWorkflow();
 
   if (input) {
     return (
-      <div className="node-component">
+      <div className="node-component" style={{ backgroundColor: colors.input }}>
         <h1 style={{ fontFamily: "monospace" }}>{input.key}</h1>
-        <h1
-          style={{
-            backgroundColor: "rgba(0,0,0,0.3)",
-            marginTop: "7px",
-            padding: "2px 6px",
-            borderRadius: "4px",
-          }}
-        >
-          {input.type}
-        </h1>
+        <h1>{input.type}</h1>
       </div>
     );
   }
