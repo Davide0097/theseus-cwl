@@ -3,20 +3,17 @@ import { Node as xyFlowNode } from "@xyflow/react";
 import {
   InputNodeComponentProps,
   StepNodeComponentProps,
-  OutputNodeComponentProps,
   OutputNodeForm,
   InputNodeForm,
   StepNodeForm,
+  OutputNodeFormProps,
 } from "./components";
-import { CWLWorkflow } from "./cwl-editor";
 
 /**
  *
  */
 export type SingleNodeEditorComponentProps = {
   node: xyFlowNode | null;
-  cwlWorkflow: CWLWorkflow;
-  setCwlWorkflow: React.Dispatch<React.SetStateAction<CWLWorkflow | null>>;
 };
 
 /**
@@ -29,24 +26,19 @@ export const SingleNodeEditorComponent = (
 
   if (!node) return null;
 
-  const nodeProps = node?.data?.label?.props!;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+  const nodeProps = (node?.data?.label as Record<string, never>)?.props!;
 
   if (!nodeProps) return null;
 
   const renderComponent = () => {
     if ("input" in nodeProps) {
-      return (
-        <InputNodeForm
-          setCwlWorkflow={props.setCwlWorkflow}
-          cwlWorkflow={props.cwlWorkflow}
-          {...(nodeProps as InputNodeComponentProps)}
-        />
-      );
+      return <InputNodeForm {...(nodeProps as InputNodeComponentProps)} />;
     } else if ("step" in nodeProps) {
-      return <StepNodeForm stepProps={nodeProps as StepNodeComponentProps} />;
+      return <StepNodeForm step={(nodeProps as StepNodeComponentProps).step} />;
     } else if ("output" in nodeProps) {
       return (
-        <OutputNodeForm outputProps={nodeProps as OutputNodeComponentProps} />
+        <OutputNodeForm output={(nodeProps as OutputNodeFormProps).output} />
       );
     } else {
       return <div>No editable data</div>;

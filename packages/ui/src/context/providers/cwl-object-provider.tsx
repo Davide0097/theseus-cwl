@@ -37,10 +37,10 @@ export const WorkflowProvider = (props: WorflowProviderProps) => {
           delete updated[id];
         }
 
-        updated[newId] = {
-          ...updated[newId],
-          ...updatedData,
-        };
+        //  updated[newId] = {
+        //   ...updated[newId],
+        //   ...updatedData,
+        // };
 
         return { ...prev, inputs: updated };
       }

@@ -2,12 +2,12 @@
   "name": "theseus-cwl",
   "private": true,
   "scripts": {
-    "build": "turbo run build",
+    "build": "turbo run build --filter=@theseus-cwl/configurations",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "publish-packages": "turbo run build lint test && changeset version && changeset publish"
+    "publish-packages": "turbo run build --filter=@theseus-cwl/configurations lint test && changeset version && changeset publish"
   },
   "devDependencies": {
     "prettier": "^3.5.3",

@@ -1,14 +1,13 @@
-import { SetStateAction, useEffect, useState } from "react";
+import {   useEffect, useState } from "react";
 
 import { ComplexType, PrimitiveType, SpecialType } from "@theseus-cwl/types";
 
 import { useWorkflow } from "../../hooks";
 import { InputNodeComponentProps } from "./input-node";
-import { CWLWorkflow } from "../cwl-editor";
+// import { CWLWorkflow } from "../cwl-editor";
 
 export type InputNodeFormProps = InputNodeComponentProps & {
-  cwlWorkflow: CWLWorkflow;
-  setCwlWorkflow: React.Dispatch<SetStateAction<CWLWorkflow | null>>;
+ 
 };
 
 export const InputNodeForm = (props: InputNodeFormProps) => {
@@ -70,7 +69,7 @@ export const InputNodeForm = (props: InputNodeFormProps) => {
         <input
           type="text"
           value={type}
-          onChange={(event) => setType(event.target.value)}
+          onChange={(event) => setType(event.target.value as PrimitiveType | ComplexType | SpecialType)}
         />
       </div>
       <div className="input-node-form-form-field">

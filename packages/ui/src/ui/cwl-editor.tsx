@@ -1,12 +1,12 @@
 import { Node as xyFlowNode } from "@xyflow/react";
 import { useEffect, useState } from "react";
 
-import type { CWLObject } from "@theseus-cwl/types";
 import { WorkflowProvider, XyflowContextProvider } from "../context";
 import { SingleNodeEditorComponent } from "./single-node-editor-component";
 import { useWorkflow } from "../hooks";
 
 import "../style.css";
+import { CWLObject } from "@theseus-cwl/types";
 
 export class CWLWorkflow {
   cwlObject: CWLObject;
@@ -94,9 +94,8 @@ export const CwlEditor = (props: CwlEditorProps) => {
   );
 };
 
-type LegendEditorProps = {};
-
-export const CwkWorkflowLegendEditor = (props: LegendEditorProps) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const CwkWorkflowLegendEditor = () => {
   const { colors, setColorForType, resetColors } = useWorkflow();
 
   // Local state

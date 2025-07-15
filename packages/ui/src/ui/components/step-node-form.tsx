@@ -5,7 +5,7 @@ import { useState } from "react";
  *
  */
 export type StepNodeFormProps = {
-  step: Step;
+  step?: Step;
 };
 
 /**

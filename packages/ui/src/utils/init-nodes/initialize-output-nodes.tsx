@@ -13,7 +13,7 @@ import { OutputNodeComponent } from "../../ui";
 
 const getOutpuNodesPositon = (
   output: Output,
-  key: string,
+
   steps: Steps,
   outputs: Outputs
 ): { x: number; y: number } => {
@@ -43,8 +43,8 @@ const getOutpuNodesPositon = (
   } else {
     // Output not connected to a step — stack it after other such outputs
     const outputIndex =
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      Object.entries(outputs).findIndex(([key, value]) => key === key) - 1;
+       
+      Object.entries(outputs).findIndex(([key]) => key === key) - 1;
     const x =
       NODE_MARGIN +
       (steps.length + outputIndex) * (NODE_WIDTH + NODE_MARGIN) +
@@ -79,7 +79,7 @@ export const initializeOutputNodes = (
     data: { label: <OutputNodeComponent output={value} outputId={key} /> },
     position: getOutpuNodesPositon(
       value,
-      key,
+
       cwlObject.steps,
       cwlObject.outputs
     ),

@@ -1,4 +1,6 @@
-import { CwlEditor, CWLObject } from "@theseus-cwl/ui/ui/cwl-editor";
+import { CWLObject } from "@theseus-cwl/types";
+import { CwlEditor } from "@theseus-cwl/ui/ui/cwl-editor";
+ 
 import { useState } from "react";
 
 const cwlObjects: (CWLObject | undefined)[] = [

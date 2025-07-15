@@ -1,10 +1,10 @@
 import {
-  Background,
-  BackgroundVariant,
-  Controls,
+  // Background,
+  // BackgroundVariant,
+  // Controls,
   MiniMap,
   ReactFlow,
-  useReactFlow,
+  // useReactFlow,
   Node as xyFlowNode,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -22,7 +22,7 @@ export type EditorComponentProps = {
 export const FlowEditorComponent = (props: EditorComponentProps) => {
   const { setSelectedNode, readonly, wrappers, minimap } = props;
 
-  const { fitView } = useReactFlow();
+  // const { fitView } = useReactFlow();
 
   const { nodes, edges, onNodesChange, onEdgesChange } =
     useWorkflowNodesAndEdges({
@@ -45,7 +45,7 @@ export const FlowEditorComponent = (props: EditorComponentProps) => {
         setSelectedNode(node);
       }}
     >
-      <Controls />
+      {/* <Controls /> */}
 
       {minimap && (
         <MiniMap
@@ -54,7 +54,7 @@ export const FlowEditorComponent = (props: EditorComponentProps) => {
           nodeColor={(node) => node.style?.backgroundColor as string}
         />
       )}
-      <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+      {/* <Background variant={BackgroundVariant.Dots} gap={12} size={1} /> */}
     </ReactFlow>
   );
 };
