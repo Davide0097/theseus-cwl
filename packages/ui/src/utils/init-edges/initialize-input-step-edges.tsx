@@ -12,7 +12,7 @@ export const initializeInputToStepEdges = (cwlObject: CWLObject): Edge[] => {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     Object.entries(stepInputs).forEach(([_key, _value]) => {
-      if (ids?.includes(_value.source)) {
+      if (_value.source && ids?.includes(_value.source)) {
         edges.push({
           markerEnd: {
             type: MarkerType.ArrowClosed,

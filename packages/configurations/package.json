@@ -1,29 +1,32 @@
 {
   "name": "@theseus-cwl/configurations",
   "description": "Collection of internal static configurations.",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "author": "davide giorgiutti",
   "license": "ISC",
-    "main": "./dist/index.js",
+  "main": "./dist/index.js",
   "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts"
-,
+  "types": "./dist/index.d.ts",
   "scripts": {
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
-     "build": "tsup src/index.ts --format cjs,esm --dts"
+    "build": "tsup src/index.ts --format cjs,esm --dts"
   },
- 
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
   "exports": {
     ".": {
-      "import": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
     }
   },
   "devDependencies": {
     "@theseus-cwl/typescript-config": "*",
-    "typescript": "^5.8.2"
-  },
-  "dependencies": {
+    "typescript": "^5.8.2",
     "tsup": "^8.5.0"
   }
 }

@@ -4,7 +4,6 @@ import {
   // Controls,
   MiniMap,
   ReactFlow,
-  // useReactFlow,
   Node as xyFlowNode,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -22,8 +21,6 @@ export type EditorComponentProps = {
 export const FlowEditorComponent = (props: EditorComponentProps) => {
   const { setSelectedNode, readonly, wrappers, minimap } = props;
 
-  // const { fitView } = useReactFlow();
-
   const { nodes, edges, onNodesChange, onEdgesChange } =
     useWorkflowNodesAndEdges({
       wrappers,
@@ -31,30 +28,42 @@ export const FlowEditorComponent = (props: EditorComponentProps) => {
     });
 
   return (
-    <ReactFlow
-      fitView
-      attributionPosition="top-right"
-      nodes={nodes}
-      edges={edges}
-      nodesDraggable={!readonly}
-      nodesConnectable={!readonly}
-      elementsSelectable={!readonly}
-      onNodesChange={readonly ? undefined : onNodesChange}
-      onEdgesChange={readonly ? undefined : onEdgesChange}
-      onNodeClick={(_event, node) => {
-        setSelectedNode(node);
-      }}
-    >
-      {/* <Controls /> */}
-
-      {minimap && (
-        <MiniMap
-          zoomable
-          pannable
-          nodeColor={(node) => node.style?.backgroundColor as string}
+    <div style={{ height: "100vh" }}>
+      <ReactFlow
+        fitView
+        attributionPosition="top-right"
+        nodes={nodes}
+        edges={edges}
+        nodesDraggable={!readonly}
+        nodesConnectable={!readonly}
+        elementsSelectable={!readonly}
+        onNodesChange={readonly ? undefined : onNodesChange}
+        onEdgesChange={readonly ? undefined : onEdgesChange}
+        onNodeClick={(_event, node) => {
+          setSelectedNode(node);
+        }}
+      >
+        {minimap && (
+          <MiniMap
+            zoomable
+            pannable
+            nodeColor={(node) => node.style?.backgroundColor as string}
+          />
+        )}
+        {/* <Controls /> */}
+        {/* <Background
+          id="1"
+          gap={10}
+          color="#f1f1f1"
+          variant={BackgroundVariant.Lines}
         />
-      )}
-      {/* <Background variant={BackgroundVariant.Dots} gap={12} size={1} /> */}
-    </ReactFlow>
+        <Background
+          id="2"
+          gap={100}
+          color="#ccc"
+          variant={BackgroundVariant.Lines}
+        /> */}
+      </ReactFlow>
+    </div>
   );
 };

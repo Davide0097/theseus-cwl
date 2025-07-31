@@ -1,6 +1,6 @@
 import { CWLObject } from "@theseus-cwl/types";
-import { CwlEditor } from "@theseus-cwl/ui/ui/cwl-editor";
- 
+import { CwlEditor } from "@theseus-cwl/ui";
+
 import { useState } from "react";
 
 const cwlObjects: (CWLObject | undefined)[] = [
@@ -9,7 +9,7 @@ const cwlObjects: (CWLObject | undefined)[] = [
     class: "Workflow",
     inputs: {
       zip_file: {
-        type: "file",
+        type: "File",
       },
       search_string: {
         type: "string",
@@ -72,7 +72,7 @@ const cwlObjects: (CWLObject | undefined)[] = [
     class: "Workflow",
     inputs: {
       pattern: {
-        type: "file",
+        type: "File",
       },
       search_string: {
         type: "string",
@@ -127,9 +127,9 @@ const cwlObjects: (CWLObject | undefined)[] = [
     cwlVersion: "v1.0",
     class: "Workflow",
     inputs: {
-      url_list: { type: "string[]" },
+      url_list: { type: "string" },
       search_pattern: { type: "string" },
-      summary_filename: { type: "string?", default: "summary.txt" },
+      summary_filename: { type: "string", default: "summary.txt" },
     },
     steps: [
       {
@@ -230,37 +230,9 @@ const cwlObjects: (CWLObject | undefined)[] = [
       },
     },
   },
-  {
-    cwlVersion: "v1.0",
-    class: "Workflow",
-    inputs: {
-      image_files: {
-        type: "File[]",
-      },
-    },
-    steps: [
-      {
-        id: "convert_images",
-        content: {
-          run: "../convert/convert-to-png.cwl",
-          in: {
-            input_file: { source: "image_files" },
-          },
-          out: "converted_file",
-          scatter: "input_file", // run in parallel over the list of images
-        },
-      },
-    ],
-    outputs: {
-      converted_images: {
-        type: "File[]",
-        outputSource: "convert_images/converted_file",
-      },
-    },
-  },
 ];
 
-export const ExampleComponent1 = () => {
+export const ExampleComponent = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [preview, setPreview] = useState(false);
   const [readonly, setReadonly] = useState(false);

@@ -2,14 +2,17 @@
   "name": "theseus-cwl",
   "private": true,
   "scripts": {
-    "build": "turbo run build --filter=@theseus-cwl/configurations",
+    "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "publish-packages": "turbo run build --filter=@theseus-cwl/configurations lint test && changeset version && changeset publish"
+    "clean": "turbo clean && rm -rf node_modules",
+    "version-packages": "changeset version",
+    "publish-packages": "turbo run build --filter=@theseus-cwl/configurations --filter=@theseus-cwl/eslint-config lint && changeset version && changeset publish"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.29.5",
     "prettier": "^3.5.3",
     "turbo": "^2.4.4",
     "typescript": "5.8.2"
@@ -21,8 +24,5 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ],
-  "dependencies": {
-    "@changesets/cli": "^2.29.5"
-  }
+  ]
 }

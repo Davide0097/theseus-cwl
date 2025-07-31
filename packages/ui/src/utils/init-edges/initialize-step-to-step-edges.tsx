@@ -21,7 +21,7 @@ export const initializeEdgesStepToStepEdges = (
             color: "#4c8bf5",
           },
           id: `edge-${sourceStepId}-to-${stepId}`,
-          source: sourceStepId,
+          source: sourceStepId || '',
           target: stepId,
           animated: true,
         });

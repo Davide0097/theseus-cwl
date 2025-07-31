@@ -1,20 +1,26 @@
 {
   "name": "@theseus-cwl/eslint-config",
-  "version": "1.0.0",
-  "type": "module",
-  "private": false,
   "description": "Collection of internal eslint configurations.",
-  "main": "base.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "version": "1.0.1",
   "author": "davide giorgiutti",
   "license": "ISC",
+  "main": "base.js",
+  "scripts": {
+    "build": "echo 'No build needed'",
+    "dev": "echo 'No dev needed'"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "*.js"
+  ],
   "exports": {
     "./base": "./base.js",
     "./next-js": "./next.js",
     "./react-internal": "./react-internal.js"
   },
+  "type": "module",
   "devDependencies": {
     "@eslint/js": "^9.23.0",
     "@next/eslint-plugin-next": "^15.2.1",

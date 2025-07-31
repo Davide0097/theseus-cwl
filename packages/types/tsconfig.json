@@ -1,5 +1,5 @@
 {
-  "extends": "@theseus-cwl/typescript-config/base.json",
+  "extends": "@theseus-cwl/typescript-config/base",
   "compilerOptions": {
     "outDir": "dist",
     "declaration": true,

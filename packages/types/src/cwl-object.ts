@@ -14,7 +14,7 @@ export type ComplexType = "array" | "record";
 export type SpecialType = "File" | "Directory" | "Any";
 
 export type HasKey = {
-  key: string;
+  __key?: string;
 };
 
 export type Input = {
@@ -41,8 +41,9 @@ export type Step = {
   id: string;
   content: {
     run: string;
-    in: Record<string, { source: string }>;
-    out: string;
+    in: Record<string | "extended", { source?: string; default?: boolean }>;
+    out: string | [string];
+    scatter?: string;
   };
 };
 

@@ -1,15 +1,22 @@
 {
   "name": "@theseus-cwl/typescript-config",
-  "version": "1.0.0",
   "description": "Collection of internal typescript configurations.",
+  "version": "1.0.1",
   "author": "davide giorgiutti",
-  "private": false,
-  "license": "MIT",
+  "license": "ISC",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'No build needed'",
+    "dev": "echo 'No dev needed'"
+  },
   "publishConfig": {
     "access": "public"
   },
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "files": [
+    "*.json"
+  ],
+  "exports": {
+    "./base": "./base.json",
+    "./react-library": "./react-library.json"
   }
 }

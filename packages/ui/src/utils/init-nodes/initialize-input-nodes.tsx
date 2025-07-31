@@ -30,7 +30,7 @@ export const initializeInputNodes = (props: InitializeInputNodesProps) => {
         id: nodeId,
         type: "input",
         data: {
-          label: <InputNodeComponent input={{ ...input, key: key }} />,
+          label: <InputNodeComponent input={{ ...input, __key: key }} />,
         },
         extent: "parent",
         position: {

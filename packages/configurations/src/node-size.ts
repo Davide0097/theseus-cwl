@@ -1,3 +1,5 @@
+const GOLDEN_RATIO = 1.618;
+
 /**
  * The CWL node default height
  */
@@ -6,7 +8,7 @@ export const NODE_HEIGHT = 75;
 /**
  * The CWL node default width
  */
-export const NODE_WIDTH = 150;
+export const NODE_WIDTH = Math.round(NODE_HEIGHT * GOLDEN_RATIO);
 
 /**
  * The CWL node default margin

@@ -1,7 +1,7 @@
-import { ExampleComponent1 } from "./examples/example1";
+import { ExampleComponent } from "./examples/example1";
 
 function App() {
-  return <ExampleComponent1 />;
+  return <ExampleComponent />;
 }
 
 export default App;

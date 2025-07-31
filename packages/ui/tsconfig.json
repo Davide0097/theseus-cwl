@@ -1,5 +1,5 @@
 {
-  "extends": "@theseus-cwl/typescript-config/react-library.json",
+  "extends": "@theseus-cwl/typescript-config/react-library",
   "compilerOptions": {
     "outDir": "dist"
   },

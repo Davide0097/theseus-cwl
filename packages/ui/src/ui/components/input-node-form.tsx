@@ -4,7 +4,6 @@ import { ComplexType, PrimitiveType, SpecialType } from "@theseus-cwl/types";
 
 import { useWorkflow } from "../../hooks";
 import { InputNodeComponentProps } from "./input-node";
-// import { CWLWorkflow } from "../cwl-editor";
 
 export type InputNodeFormProps = InputNodeComponentProps & {
  
@@ -29,7 +28,7 @@ export const InputNodeForm = (props: InputNodeFormProps) => {
   });
 
   useEffect(() => {
-    const key = props.input?.key || "";
+    const key = props.input?.__key || "";
     const type = props.input?.type;
     const _default = props.input?.default || "";
     setId(key);
@@ -45,7 +44,7 @@ export const InputNodeForm = (props: InputNodeFormProps) => {
 
   const handleOnClick = () => {
     if (props.input) {
-      updateInput(props.input.key, {
+      updateInput(props.input.__key!, {
         id: id,
         type: type,
         default: defaultValue,
