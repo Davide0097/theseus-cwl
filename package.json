@@ -8,6 +8,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
     "clean": "turbo clean && rm -rf node_modules",
+    "changeset": "changeset",
     "version-packages": "changeset version",
     "publish-packages": "turbo run build --filter=@theseus-cwl/configurations --filter=@theseus-cwl/eslint-config lint && changeset version && changeset publish"
   },
