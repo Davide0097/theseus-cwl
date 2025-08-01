@@ -1,14 +1,17 @@
 import {
-  // Background,
-  // BackgroundVariant,
-  // Controls,
+  Background,
+   BackgroundVariant,
+  Controls,
   MiniMap,
   ReactFlow,
   Node as xyFlowNode,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
-import { useWorkflowNodesAndEdges } from "../hooks";
+import { useWorkflow, useWorkflowNodesAndEdges } from "../hooks";
+import { memo, useEffect } from "react";
+
+ 
 
 export type EditorComponentProps = {
   onChange: (value: object) => void;
@@ -17,15 +20,19 @@ export type EditorComponentProps = {
   wrappers: boolean;
   minimap: boolean;
 };
-
+ 
 export const FlowEditorComponent = (props: EditorComponentProps) => {
   const { setSelectedNode, readonly, wrappers, minimap } = props;
-
+  const { cwlObject } = useWorkflow();
   const { nodes, edges, onNodesChange, onEdgesChange } =
     useWorkflowNodesAndEdges({
       wrappers,
       readonly,
     });
+
+  useEffect(() => {
+    props.onChange(cwlObject);
+  }, [cwlObject, props]);
 
   return (
     <div style={{ height: "100vh" }}>
@@ -50,7 +57,7 @@ export const FlowEditorComponent = (props: EditorComponentProps) => {
             nodeColor={(node) => node.style?.backgroundColor as string}
           />
         )}
-        {/* <Controls /> */}
+         {/* <Controls />   */}
         {/* <Background
           id="1"
           gap={10}

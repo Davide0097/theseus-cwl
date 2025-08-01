@@ -1,3 +1,8 @@
+import {
+  INPUT_NODE_COLOR,
+  OUTPUT_NODE_COLOR,
+  STEP_NODE_COLOR,
+} from "@theseus-cwl/configurations";
 import { CWLObject } from "@theseus-cwl/types";
 import { CwlEditor } from "@theseus-cwl/ui";
 
@@ -233,34 +238,34 @@ const cwlObjects: (CWLObject | undefined)[] = [
 ];
 
 export const ExampleComponent = () => {
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [preview, setPreview] = useState(false);
-  const [readonly, setReadonly] = useState(false);
-  const [minimap, setMinimap] = useState(true);
-  const [wrappers, setWrappers] = useState(true);
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const [preview, setPreview] = useState<boolean>(false);
+  const [readonly, setReadonly] = useState<boolean>(false);
+  const [minimap, setMinimap] = useState<boolean>(false);
+  const [wrappers, setWrappers] = useState<boolean>(false);
+  const [colorSelector, setColorSelector] = useState<boolean>(false);
+  const [initialColors, setInitialColors] = useState<{
+    input: string;
+    output: string;
+    step: string;
+  }>({
+    input: INPUT_NODE_COLOR,
+    step: STEP_NODE_COLOR,
+    output: OUTPUT_NODE_COLOR,
+  });
 
   const handleOnChange = (value: object) => {
     console.log(value);
   };
 
   return (
-    <div>
-      <div
-        style={{
-          marginBottom: "1rem",
-          position: "absolute",
-          zIndex: "9999999999",
-        }}
-      >
-        <button onClick={() => setPreview(!preview)} style={{ marginLeft: 8 }}>
-          Toggle Preview (Currently {preview ? "ON" : "OFF"})
-        </button>
-        <label style={{ marginRight: 8 }}>
-          Choose CWL Object:
+    <div className="example-1">
+      <div className="example-1-actions">
+        <label>
+          Input:
           <select
             value={selectedIndex}
             onChange={(e) => setSelectedIndex(parseInt(e.target.value))}
-            style={{ marginLeft: 8 }}
           >
             {cwlObjects.map((_, index) => (
               <option key={index} value={index}>
@@ -269,18 +274,79 @@ export const ExampleComponent = () => {
             ))}
           </select>
         </label>
-        <button onClick={() => setReadonly(!readonly)}>
-          Toggle Readonly (Currently {readonly ? "ON" : "OFF"})
-        </button>
-        <button onClick={() => setMinimap(!minimap)} style={{ marginLeft: 8 }}>
-          Toggle Minimap (Currently {minimap ? "ON" : "OFF"})
-        </button>
-        <button
-          onClick={() => setWrappers(!wrappers)}
-          style={{ marginLeft: 8 }}
-        >
-          Toggle Wrappers (Currently {wrappers ? "ON" : "OFF"})
-        </button>
+        <label>
+          <input
+            type="checkbox"
+            checked={preview}
+            onChange={() => setPreview(!preview)}
+          />
+          Preview
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={readonly}
+            onChange={() => setReadonly(!readonly)}
+          />
+          Readonly
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={minimap}
+            onChange={() => setMinimap(!minimap)}
+          />
+          Minimap
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={wrappers}
+            onChange={() => setWrappers(!wrappers)}
+          />
+          Wrappers
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={colorSelector}
+            onChange={() => setColorSelector(!colorSelector)}
+          />
+          Color selector
+        </label>
+        <label>
+          Input color:
+          <input
+            className="text-input"
+            type="color"
+            value={initialColors.input}
+            onChange={(event) =>
+              setInitialColors({ ...initialColors, input: event.target.value })
+            }
+          />
+        </label>
+        <label>
+          Step color:
+          <input
+            className="text-input"
+            type="color"
+            value={initialColors.step}
+            onChange={(event) =>
+              setInitialColors({ ...initialColors, step: event.target.value })
+            }
+          />
+        </label>
+        <label>
+          Output color:
+          <input
+            className="text-input"
+            type="color"
+            value={initialColors.output}
+            onChange={(event) =>
+              setInitialColors({ ...initialColors, output: event.target.value })
+            }
+          />
+        </label>
       </div>
 
       <CwlEditor
@@ -290,6 +356,8 @@ export const ExampleComponent = () => {
         wrappers={wrappers}
         minimap={minimap}
         preview={preview}
+        colorSelector={colorSelector}
+        nodeColors={initialColors}
       />
     </div>
   );

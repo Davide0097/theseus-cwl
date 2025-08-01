@@ -52,10 +52,19 @@ export type CwlEditorProps = {
   wrappers: boolean;
   minimap: boolean;
   preview: boolean;
+  colorSelector: boolean;
 };
 
 export const CwlEditor = (props: CwlEditorProps) => {
-  const { input, onChange, readonly, wrappers, minimap, preview } = props;
+  const {
+    input = undefined,
+    onChange = (changes) => console.log(changes),
+    readonly = false,
+    wrappers = false,
+    minimap = false,
+    preview = false,
+    colorSelector = false,
+  } = props;
   const [selectedNode, setSelectedNode] = useState<xyFlowNode | null>(null);
 
   // Initialize CWLWorkflow when `input` changes
@@ -85,7 +94,7 @@ export const CwlEditor = (props: CwlEditorProps) => {
                 wrappers={wrappers}
               />
             </div>
-            <CwkWorkflowLegendEditor />
+            {colorSelector && <CwkWorkflowLegendEditor />}
             <SingleNodeEditorComponent node={selectedNode} />
           </div>
         )}
@@ -94,14 +103,11 @@ export const CwlEditor = (props: CwlEditorProps) => {
   );
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const CwkWorkflowLegendEditor = () => {
   const { colors, setColorForType, resetColors } = useWorkflow();
 
-  // Local state
   const [localColors, setLocalColors] = useState(colors);
 
-  // Sync local state when global colors change
   useEffect(() => {
     setLocalColors(colors);
   }, [colors]);
@@ -120,8 +126,8 @@ export const CwkWorkflowLegendEditor = () => {
   };
 
   const handleReset = () => {
-    resetColors(); // Reset global
-    setLocalColors(colors); // Reset local (will also sync via useEffect)
+    resetColors();
+    setLocalColors(colors);
   };
 
   return (
