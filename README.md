@@ -28,18 +28,6 @@ Built on top of [React Flow](https://reactflow.dev/), Theseus brings a modern, i
 
 ---
 
-## 📦 Installation
-
-```bash
-npm install theseus-cwl
-# or
-yarn add theseus-cwl
-# or
-pnpm add theseus-cwl
-```
-
----
-
 ## 📦 Monorepo Structure
 
 This Turborepo includes:
