@@ -1,35 +1,59 @@
-import { useWorkflow } from "../../hooks";
-
 import { Step } from "@theseus-cwl/types";
 
-export type StepNodeComponentProps = {
-  step?: Step;
-};
+import { useWorkflowState } from "../../hooks";
+
+export type StepNodeComponentProps =
+  | { mode: "placeholder"; color: string }
+  | { mode: "step"; step: Step & { __key: string }; color: string };
 
 export const StepNodeComponent = (props: StepNodeComponentProps) => {
-  const { step } = props;
+  const { mode, color } = props;
+  const { addStep } = useWorkflowState();
 
-  const { addStep, colors } = useWorkflow();
+  if (mode === "step") {
+    const { step } = props;
 
-  if (step) {
     return (
-      <div className="node-component" style={{ backgroundColor: colors.steps }}>
-        <h1 style={{ fontFamily: "monospace" }}> {step.id}</h1>
-        <h1>Run: {step.content.run}</h1>
-        <h1>In:</h1>
-        <div className="input-list">
-          {Object.entries(step.content.in).map(([key, value]) => (
-            <div key={key} className="input-item">
-              <strong>{key}:</strong> <span>{value.source}</span>
-            </div>
-          ))}
+      <div className="step-node-card">
+        <div className="step-node-card-header">
+          <svg
+            style={{ backgroundColor: color }}
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+          >
+            <path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"></path>
+            <path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"></path>
+            <path d="M12 2v2"></path>
+            <path d="M12 22v-2"></path>
+            <path d="m17 20.66-1-1.73"></path>
+            <path d="M11 10.27 7 3.34"></path>
+            <path d="m20.66 17-1.73-1"></path>
+            <path d="m3.34 7 1.73 1"></path>
+            <path d="M14 12h8"></path>
+            <path d="M2 12h2"></path>
+            <path d="m20.66 7-1.73 1"></path>
+            <path d="m3.34 17 1.73-1"></path>
+            <path d="m17 3.34-1 1.73"></path>
+            <path d="m11 13.73-4 6.93"></path>
+          </svg>
+          <h1>{step.__key}</h1>
         </div>
-        <h1>Out: {step.content.out}</h1>
+        <div
+          className="step-node-card-badge"
+          style={{ backgroundColor: color }}
+        >
+          step
+        </div>
+        <div className="step-node-card-info">Run: {step.run}</div>
       </div>
     );
   }
 
-  if (!step) {
+  if (mode === "placeholder") {
     return (
       <div onClick={addStep} className="node-component-placeholder">
         <span>+ New step node</span>

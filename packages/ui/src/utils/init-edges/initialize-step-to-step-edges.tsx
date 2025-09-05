@@ -1,29 +1,37 @@
-import { Edge, MarkerType } from "@xyflow/react";
+import { Edge } from "@xyflow/react";
 
 import { CWLObject } from "@theseus-cwl/types";
 
-export const initializeEdgesStepToStepEdges = (
-  cwlObject: CWLObject
+import { getEdge } from "../general";
+
+export const initializeStepToStepEdges = (
+  cwlObject: CWLObject,
+  labels: boolean
 ): Edge[] => {
   const edges: Edge[] = [];
 
-  cwlObject!.steps.forEach((step) => {
-    const stepId = step.id;
-    const stepInputs = step.content.in;
+  Object.entries(cwlObject.steps).forEach(([stepKey, step]) => {
+    Object.values(step.in).forEach((stepIn) => {
+      if (!stepIn) {
+        return;
+      }
 
-    Object.entries(stepInputs).forEach(([, inputValue]) => {
-      if (inputValue.source) {
-        const sourceStepId = inputValue.source.split("/")[0];
+      if (typeof stepIn === "string") {
+        const sourcePrefix = stepIn?.split("/")[0];
+        if (sourcePrefix) {
+          edges.push(getEdge(sourcePrefix, stepKey, "step_to_step", labels));
+        }
+      } else {
+        const sources: string[] = Array.isArray(stepIn.source)
+          ? stepIn.source
+          : [stepIn.source];
 
-        edges.push({
-          markerEnd: {
-            type: MarkerType.ArrowClosed,
-            color: "#4c8bf5",
-          },
-          id: `edge-${sourceStepId}-to-${stepId}`,
-          source: sourceStepId || '',
-          target: stepId,
-          animated: true,
+        sources.forEach((src) => {
+          const sourcePrefix = src?.split("/")[0];
+
+          if (sourcePrefix) {
+            edges.push(getEdge(sourcePrefix, stepKey, "step_to_step", labels));
+          }
         });
       }
     });

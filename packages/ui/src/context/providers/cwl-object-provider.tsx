@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
-import { CWLObject, Input } from "@theseus-cwl/types";
+import { CWLObject, HasKey, Input, Output, Step } from "@theseus-cwl/types";
 
-import { CwlObjectContext } from "../create";
 import { ColorState, useColorState } from "../../hooks";
+import { CwlObjectContext } from "../create";
 
 export type WorflowProviderProps = {
   children: React.ReactNode;
@@ -12,113 +12,224 @@ export type WorflowProviderProps = {
 };
 
 export const WorkflowProvider = (props: WorflowProviderProps) => {
-  const [cwlObject, setCwlObject] = useState(props.initialCwlObject);
+  const [cwlObject, setCwlObject] = useState<CWLObject>(props.initialCwlObject);
+  const { colors, setColors, resetColors } = useColorState({
+    initialColorState: props.initialColorState,
+  });
 
   useEffect(() => {
     setCwlObject(props.initialCwlObject);
   }, [props.initialCwlObject]);
 
-  const updateInput = (
-    id: string,
-    updatedData: Partial<Input> & { id: string }
-  ) => {
-    setCwlObject((prev) => {
-      const updated = { ...prev.inputs };
+  /**
+   * NOTE: This package is intended to be a 'viewer' and not an 'editor'.
+   * Editing behaviors are used internally as a possible evolution of the project.
+   * They must not be considered part of the public API.
+   */
+  const updateInput = (id: string, updatedData: Partial<Input & HasKey>) => {
+    try {
+      setCwlObject((prev) => {
+        const inputs = { ...prev.inputs };
 
-      if (updated[id]) {
-        const newId = updatedData.id;
-        if (newId !== id && updated[newId]) {
-          console.warn(`Input "${newId}" already exists.`);
-          return prev;
+        if (inputs[id]) {
+          const newId = updatedData.__key!;
+          if (newId !== id && inputs[newId]) {
+            /** The user is trying to assign an already existent id to an input */
+            console.log(`Input "${newId}" already exists.`);
+            return prev;
+          }
+
+          if (newId !== id) {
+            inputs[newId] = { ...inputs[id] };
+            delete inputs[id];
+          }
+
+          inputs[newId] = {
+            ...inputs[newId]!,
+            ...updatedData,
+          };
+
+          return { ...prev, input: inputs };
         }
-
-        if (newId !== id) {
-          updated[newId] = { ...updated[id] };
-          delete updated[id];
-        }
-
-        //  updated[newId] = {
-        //   ...updated[newId],
-        //   ...updatedData,
-        // };
-
-        return { ...prev, inputs: updated };
-      }
-      return prev;
-    });
+        return prev;
+      });
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
   };
 
+  /**
+   * NOTE: This package is intended to be a 'viewer' and not an 'editor'.
+   * Editing behaviors are used internally as a possible evolution of the project.
+   * They must not be considered part of the public API.
+   */
+  const updateStep = (id: string, updatedData: Partial<Step & HasKey>) => {
+    try {
+      setCwlObject((prev) => {
+        const steps = { ...prev.steps };
+
+        if (steps[id]) {
+          const newId = updatedData.__key!;
+          if (newId !== id && steps[newId]) {
+            /** The user is trying to assign an already existent id to a step */
+            console.log(`Step "${newId}" already exists.`);
+            return prev;
+          }
+
+          if (newId !== id) {
+            steps[newId] = { ...steps[id] };
+            delete steps[id];
+          }
+
+          steps[newId] = {
+            ...steps[newId]!,
+            ...updatedData,
+          };
+
+          return { ...prev, steps: steps };
+        }
+        return prev;
+      });
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  };
+
+  /**
+   * NOTE: This package is intended to be a 'viewer' and not an 'editor'.
+   * Editing behaviors are used internally as a possible evolution of the project.
+   * They must not be considered part of the public API.
+   */
+  const updateOutput = (id: string, updatedData: Partial<Output & HasKey>) => {
+    try {
+      setCwlObject((prev) => {
+        const outputs = { ...prev.outputs };
+
+        if (outputs[id]) {
+          const newId = updatedData.__key!;
+          if (newId !== id && outputs[newId]) {
+            /** The user is trying to assign an already existent id to an output */
+            console.log(`Output "${newId}" already exists.`);
+            return prev;
+          }
+
+          if (newId !== id) {
+            outputs[newId] = { ...outputs[id] };
+            delete outputs[id];
+          }
+
+          outputs[newId] = {
+            ...outputs[newId]!,
+            ...updatedData,
+          };
+
+          return { ...prev, outputs: outputs };
+        }
+        return prev;
+      });
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  };
+
+  /**
+   * NOTE: This package is intended to be a 'viewer' and not an 'editor'.
+   * Editing behaviors are used internally as a possible evolution of the project.
+   * They must not be considered part of the public API.
+   */
+  const addInput = () => {
+    try {
+      const randomId = `input_${Date.now()}`;
+      setCwlObject((prev) => ({
+        ...prev,
+        inputs: {
+          ...prev.inputs,
+          [randomId]: {
+            __key: randomId,
+            type: "string",
+            label: "New Input",
+          },
+        },
+      }));
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  };
+
+  /**
+   * NOTE: This package is intended to be a 'viewer' and not an 'editor'.
+   * Editing behaviors are used internally as a possible evolution of the project.
+   * They must not be considered part of the public API.
+   */
   const addStep = () => {
-    setCwlObject((prev) => ({
-      ...prev,
-      steps: [
-        ...prev.steps,
-        {
-          id: "step_" + Date.now(),
-          content: {
+    try {
+      const randomId = `step_${Date.now()}`;
+      setCwlObject((prev) => ({
+        ...prev,
+        steps: {
+          ...prev.steps,
+          [randomId]: {
+            __key: randomId,
             run: "./tool.cwl",
             in: {},
             out: "output",
           },
         },
-      ],
-    }));
+      }));
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
   };
 
-  const addInput = () => {
-    const randomId = `input_${Date.now()}`;
-    setCwlObject((prev) => ({
-      ...prev,
-      inputs: {
-        ...prev.inputs,
-        [randomId]: {
-          key: randomId,
-          type: "string",
-          label: "New Input",
-        },
-      },
-    }));
-  };
-
+  /**
+   * NOTE: This package is intended to be a 'viewer' and not an 'editor'.
+   * Editing behaviors are used internally as a possible evolution of the project.
+   * They must not be considered part of the public API.
+   */
   const addOutput = () => {
-    setCwlObject((prev) => ({
-      ...prev,
-      outputs: {
-        ...prev.outputs,
-        ["output_" + Date.now()]: {
-          type: "string",
-          outputSource: "step_id",
+    try {
+      const randomId = `output_${Date.now()}`;
+      setCwlObject((prev) => ({
+        ...prev,
+        outputs: {
+          ...prev.outputs,
+          [randomId]: {
+            type: "string",
+            __key: randomId,
+          },
         },
-      },
-    }));
+      }));
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
   };
-
-  const {
-    colors,
-    setColors,
-    setColorForType,
-    resetColors,
-    onChange,
-    pendingDefaultColor,
-  } = useColorState({
-    initialColorState: props.initialColorState,
-  });
 
   return (
     <CwlObjectContext.Provider
       value={{
         cwlObject,
         setCwlObject,
-        addInput,
         updateInput,
+        updateStep,
+        updateOutput,
+        addInput,
         addStep,
         addOutput,
-        onChange,
         colors,
         setColors,
-        setColorForType,
         resetColors,
-        pendingDefaultColor,
       }}
     >
       {props.children}

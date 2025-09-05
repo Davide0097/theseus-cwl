@@ -1,52 +1,130 @@
-* {
+.cwl-viewer * {
   margin: 0px;
   padding: 0px;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
-h1 {
-  font-size: 10px;
-}
-
-span {
-  font-size: 10px;
-}
-
-.cwl-editor-preview {
+.cwl-viewer {
   display: flex;
   flex-direction: row;
-  width: 600px;
-  height: 300px;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
 }
 
-.cwl-editor {
-  display: flex;
-  flex-direction: row;
-  width: 100vw;
-  overflow: hidden;
-}
-
-.cwl-editor .cwl-editor-flow-editor {
-  width: 70%;
+.cwl-viewer .cwl-viewer-workfow {
+  width: 100%;
   height: 100%;
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
-.node-component {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  font-size: 10px;
+.cwl-viewer .cwl-viewer-node-inspector {
+  width: 40%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.01);
+  box-shadow: -3px 0 8px rgba(0, 0, 0, 0.08);
 }
 
-.add-node {
+.cwl-viewer .cwl-viewer-color-editor {
   position: absolute;
+  bottom: 0;
   left: 0;
-  margin: 10px;
-  z-index: 99999999999999;
+  padding: 6px;
+  display: flex;
+  gap: 5px;
+  align-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.cwl-viewer .cwl-viewer-color-editor input {
+  height: 32px;
+  width: 32px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 0px;
+}
+
+.cwl-viewer .cwl-viewer-color-editor .cwl-viewer-color-editor-buttons {
+  display: flex;
+  gap: 8px;
+  margin-left: 12px;
+}
+
+.cwl-viewer .cwl-viewer-color-editor .cwl-viewer-color-editor-buttons button {
+  height: 32px;
+  padding: 6px 10px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #f9f9f9;
+  font-size: 12px;
+}
+
+.input-node-card,
+.step-node-card,
+.output-node-card {
+  font-family: "Inter", sans-serif;
+  display: flex;
+  padding: 9px;
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: 9px;
+}
+
+.input-node-card-header,
+.step-node-card-header,
+.output-node-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.input-node-card-header svg,
+.step-node-card-header svg,
+.output-node-card-header svg {
+  width: 23px;
+  height: 23px;
+  color: #000000;
+  background: rgba(255, 255, 255, 0.356);
+  border-radius: 6px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.input-node-card-header h1,
+.step-node-card-header h1,
+.output-node-card-header h1 {
+  font-weight: 600;
+  font-size: 15px;
+  color: #111827;
+}
+
+.input-node-card-badge,
+.step-node-card-badge,
+.output-node-card-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.356);
+  color: black;
+  font-family: monospace;
+  padding: 2px 8px;
+  font-weight: bolder;
+  border-radius: 12px;
+  font-size: 11px;
+  border: 1px solid rgba(0, 0, 0, 0.062);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.input-node-card-info,
+.step-node-card-info,
+.output-node-card-info {
+  margin-top: 8px;
+  color: #6b7280;
+  font-size: 12px;
 }
 
 .node-component-placeholder {
@@ -55,67 +133,79 @@ span {
   align-items: center;
   height: 100%;
   width: 100%;
-  opacity: 0.6;
   cursor: pointer;
-  color: #303030;
-  font-size: 10px;
+  color: #000000;
+  font-size: 12px;
 }
 
-.input-list {
-  list-style-type: none;
-  padding-left: 0;
-  align-items: left;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-li {
-  font-size: 10px;
-}
-
-.input-item {
-  font-family: monospace;
-  font-size: 10px;
-}
-
-.input-node-form {
+.input-node-form,
+.step-node-form,
+.output-node-form {
   max-width: 400px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 20px 4px;
+  width: 100%;
 }
 
-.input-node-form h2 {
-  text-align: center;
+.input-node-form .input-node-form-header,
+.step-node-form .step-node-form-header,
+.output-node-form .output-node-form-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #6b7280;
+  font-weight: bolder;
+  font-family: monospace;
+  margin-bottom: 20px;
 }
 
-.input-node-form .input-node-form-form-field {
+.input-node-form .input-node-form-header svg,
+.step-node-form .step-node-form-header svg,
+.output-node-form .output-node-form-header svg {
+  width: 30px;
+  height: 30px;
+  color: #6b7280;
+  background: rgba(255, 255, 255, 0.356);
+  border-radius: 4px;
+}
+
+.input-node-form .input-node-form-form-field,
+.step-node-form .step-node-form-form-field,
+.output-node-form .output-node-form-form-field {
   display: flex;
   flex-direction: column;
   margin-bottom: 15px;
 }
 
-.input-node-form .input-node-form-form-field label {
+.input-node-form .input-node-form-form-field label,
+.step-node-form .step-node-form-form-field label,
+.output-node-form .output-node-form-form-field label {
   margin-bottom: 5px;
-  font-weight: bold;
-  color: #555;
+  font-weight: bolder;
+  font-size: 15px;
+  color: #6b7280;
 }
 
-.input-node-form .input-node-form-form-field input {
-  padding: 8px;
+.input-node-form .input-node-form-form-field input,
+.step-node-form .step-node-form-form-field input,
+.output-node-form .output-node-form-form-field input {
+  padding: 3px 6px;
   font-size: 14px;
-  border-radius: 4px;
+  border-radius: 3px;
   border: 1px solid #ccc;
 }
 
-.input-node-form .input-node-form-save-button {
-  margin-top: 20px;
+.input-node-form .input-node-form-save-button,
+.step-node-form .step-node-form-save-button,
+.output-node-form .output-node-form-save-button {
+  margin-top: 35px;
   text-align: center;
 }
 
-.input-node-form button {
+.input-node-form button,
+.step-node-form button,
+.output-node-form button {
   padding: 10px 15px;
-  background-color: #85FFC7;
   border: 1px solid black;
   border-radius: 4px;
   cursor: pointer;

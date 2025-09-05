@@ -1,0 +1,81 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+.example {
+    height: 100vh;
+    width: 100vw;
+    color: #806c93;
+    font-weight: 500;
+    display: flex;
+    flex-direction: column;
+}
+
+.example .example-actions select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding: 8px 32px 8px 12px;
+    border-radius: 6px;
+    background-size: 12px 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    color: #806c93;
+    font-weight: 500;
+}
+
+.example .example-actions select:focus {
+    outline: none;
+}
+
+.example .example-actions {
+    margin-bottom: 1rem;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    background-color: rgba(255, 191, 131, 0.253);
+}
+
+.example .example-actions label {
+    border-radius: 5px;
+    padding: 4px 12px;
+    margin: 2px;
+    cursor: pointer;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+}
+
+.example .example-actions label:hover {
+    background-color: rgba(255, 191, 131, 0.253);
+}
+
+.example .example-actions select {
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0);
+    padding: 4px 12px;
+    margin: 2px;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.example .example-actions input {
+    width: 16px;
+    height: 16px;
+    margin-right: 5px;
+}
+
+.example .example-actions input.text-input {
+    min-width: 30px;
+    min-height: 30px;
+    border: 0px solid transparent;
+    background-color: transparent;
+    cursor: pointer;
+    margin: 0px 5px;
+}

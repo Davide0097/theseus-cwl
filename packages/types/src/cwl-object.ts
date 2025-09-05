@@ -1,4 +1,4 @@
-export type CWLFileVersion = "v1.2" | "v1.0";
+export type CWLFileVersion = "v1.2";
 
 export type PrimitiveType =
   | "string"
@@ -13,50 +13,57 @@ export type ComplexType = "array" | "record";
 
 export type SpecialType = "File" | "Directory" | "Any";
 
+export type ArrayType<T extends string> = `${T}[]`;
+
 export type HasKey = {
   __key?: string;
 };
 
-export type Input = {
-  type: PrimitiveType | ComplexType | SpecialType;
+export type Type =
+  | PrimitiveType
+  | ComplexType
+  | SpecialType
+  | ArrayType<PrimitiveType | ComplexType | SpecialType>;
 
-  /**
-   * A default value that can be overridden, e.g. --message "Hola mundo"
-   */
-  default?: string;
+export type Input =
+  | string
+  | ({
+      type: Type | Type[];
 
-  /**
-   * Bind this message value as an argument to "echo".
-   */
-  inputBinding?: {
-    position: number;
-  };
-} & HasKey;
+      /**
+       * A default value that can be overridden, e.g. --message "Hola mundo"
+       */
+      default?: string;
+
+      /**
+       * Bind this message value as an argument to "echo".
+       */
+      inputBinding?: {
+        position: number;
+      };
+    } & HasKey);
 
 /** The CWL file inputs */
 export type Inputs = Record<string, Input>;
 
 /** The CWL file step */
 export type Step = {
-  id: string;
-  content: {
-    run: string;
-    in: Record<string | "extended", { source?: string; default?: boolean }>;
-    out: string | [string];
-    scatter?: string;
-  };
-};
+  run: string;
+  in:
+    | Record<string, string>
+    | Record<string, { source: string | string[]; default?: boolean }>;
+  out: string | [string];
+  scatter?: string;
+} & HasKey;
 
 /** The CWL file steps */
-export type Steps = Array<Step>;
+export type Steps = Record<string, Step>;
 
-/**
- *
- */
+/** The CWL file output */
 export type Output = {
   type: PrimitiveType | ComplexType | SpecialType;
-  outputSource: string;
-};
+  outputSource?: string;
+} & HasKey;
 
 /** The CWL file outputs */
 export type Outputs = Record<string, Output>;

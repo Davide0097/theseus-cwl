@@ -1,0 +1,195 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Theseus Purple Theme - Mystical and modern */
+    --background: 270 15% 97%;
+    --foreground: 270 20% 15%;
+
+    --card: 270 10% 98%;
+    --card-foreground: 270 20% 15%;
+
+    --popover: 270 10% 98%;
+    --popover-foreground: 270 20% 15%;
+
+    /* Deep Purple - Primary brand color */
+    --primary: 270 80% 35%;
+    --primary-foreground: 0 0% 98%;
+    --primary-glow: 270 80% 55%;
+
+    /* Golden Thread - Secondary color inspired by Ariadne's thread */
+    --secondary: 45 90% 88%;
+    --secondary-foreground: 220 20% 15%;
+    --golden: 42 95% 55%;
+    --golden-foreground: 220 20% 15%;
+
+    /* Lavender Stone - Muted colors */
+    --muted: 270 14% 95%;
+    --muted-foreground: 270 15% 50%;
+
+    /* Violet Accent */
+    --accent: 285 85% 65%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 270 13% 91%;
+    --input: 270 13% 91%;
+    --ring: 270 80% 35%;
+
+    --radius: 0.75rem;
+
+    /* Custom gradients and effects */
+    --gradient-primary: linear-gradient(135deg,
+        hsl(var(--primary)),
+        hsl(var(--primary-glow)));
+    --gradient-golden: linear-gradient(135deg,
+        hsl(var(--golden)),
+        hsl(42 95% 65%));
+    --gradient-marble: linear-gradient(180deg,
+        hsl(var(--background)),
+        hsl(270 20% 95%));
+    --gradient-glass: linear-gradient(135deg,
+        hsl(270 80% 35% / 0.1),
+        hsl(285 85% 65% / 0.1));
+
+    /* Glassmorphism shadows */
+    --shadow-labyrinth: 0 20px 40px -12px hsl(var(--primary) / 0.25);
+    --shadow-thread: 0 8px 25px -5px hsl(var(--golden) / 0.3);
+    --shadow-marble: 0 4px 15px -3px hsl(270 20% 15% / 0.1);
+    --shadow-glass: 0 8px 32px hsl(270 80% 35% / 0.12);
+
+    /* Animations */
+    --transition-mythical: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-thread: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Dark Purple Mystical Theme */
+    --background: 270 25% 8%;
+    --foreground: 270 14% 95%;
+
+    --card: 270 20% 12%;
+    --card-foreground: 270 14% 95%;
+
+    --popover: 270 20% 12%;
+    --popover-foreground: 270 14% 95%;
+
+    --primary: 270 80% 65%;
+    --primary-foreground: 270 25% 8%;
+    --primary-glow: 270 80% 75%;
+
+    --secondary: 270 15% 20%;
+    --secondary-foreground: 270 14% 95%;
+    --golden: 42 95% 65%;
+    --golden-foreground: 270 25% 8%;
+
+    --muted: 270 15% 15%;
+    --muted-foreground: 270 10% 65%;
+
+    --accent: 285 85% 65%;
+    --accent-foreground: 270 25% 8%;
+
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 270 14% 95%;
+
+    --border: 270 15% 20%;
+    --input: 270 15% 20%;
+    --ring: 270 80% 65%;
+
+    --gradient-primary: linear-gradient(135deg,
+        hsl(var(--primary)),
+        hsl(var(--primary-glow)));
+    --gradient-golden: linear-gradient(135deg,
+        hsl(var(--golden)),
+        hsl(42 95% 75%));
+    --gradient-marble: linear-gradient(180deg,
+        hsl(var(--background)),
+        hsl(270 20% 12%));
+    --gradient-glass: linear-gradient(135deg,
+        hsl(270 80% 65% / 0.15),
+        hsl(285 85% 65% / 0.15));
+
+    --shadow-labyrinth: 0 20px 40px -12px hsl(var(--primary) / 0.4);
+    --shadow-thread: 0 8px 25px -5px hsl(var(--golden) / 0.4);
+    --shadow-marble: 0 4px 15px -3px hsl(270 20% 5% / 0.3);
+    --shadow-glass: 0 8px 32px hsl(270 80% 65% / 0.15);
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    background: var(--gradient-marble);
+  }
+
+  /* Custom animations */
+  @keyframes thread-pulse {
+
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    50% {
+      opacity: 0.8;
+      transform: scale(1.05);
+    }
+  }
+
+  @keyframes labyrinth-glow {
+
+    0%,
+    100% {
+      box-shadow: var(--shadow-marble);
+    }
+
+    50% {
+      box-shadow: var(--shadow-labyrinth);
+    }
+  }
+
+  .animate-thread-pulse {
+    animation: thread-pulse 2s ease-in-out infinite;
+  }
+
+  .animate-labyrinth-glow {
+    animation: labyrinth-glow 3s ease-in-out infinite;
+  }
+}

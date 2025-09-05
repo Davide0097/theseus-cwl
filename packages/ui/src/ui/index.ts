@@ -1,5 +1,4 @@
 export * from "./components";
-export * from "./cwl-editor";
- 
-export * from "./flow-editor-component";
-export * from "./single-node-editor-component";
+export * from "./cwl-viewer";
+export * from "./cwl-viewer-node-inspector";
+export * from "./cwl-viewer-workflow";

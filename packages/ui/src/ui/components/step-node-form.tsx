@@ -1,59 +1,89 @@
-import { Step } from "@theseus-cwl/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-/**
- *
- */
+import { Step } from "@theseus-cwl/types";
+
+import { useRenderField, useWorkflowState } from "../../hooks";
+import { hexToRgba } from "../../utils";
+
 export type StepNodeFormProps = {
-  step?: Step;
+  step: Step & { __key: string };
+  readOnly: boolean;
 };
 
-/**
- *
- */
 export const StepNodeForm = (props: StepNodeFormProps) => {
-  const step = props.step;
-  const [run, setRun] = useState(step?.content.run || "");
-  const [outputs, setOutputs] = useState(step?.content.out || "");
-  const [inputs, setInputs] = useState(step?.content.in || {});
+  const { step, readOnly } = props;
+
+  const { colors, updateStep } = useWorkflowState();
+
+  const [formState, setFormState] = useState<Step>({} as Step);
+  const [initialValues, setInitialValues] = useState<Step>({} as Step);
+
+  useEffect(() => {
+    setFormState(step);
+    setInitialValues(step);
+  }, [step]);
+
+  const { renderField } = useRenderField((field, value) => {
+    setFormState((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  }, readOnly);
+
+  const hasChanged =
+    JSON.stringify(formState) !== JSON.stringify(initialValues);
+
+  const handleOnClick = () => {
+    updateStep(step.__key, { ...formState, __key: step.__key });
+  };
 
   return (
-    <div>
-      <h2>Step Node</h2>
-      <label>
-        Run:
-        <input
-          type="text"
-          value={run}
-          onChange={(e) => setRun(e.target.value)}
-        />
-      </label>
-      <br />
-      <h3>Inputs:</h3>
-      {Object.entries(inputs).map(([key, value]) => (
-        <div key={key}>
-          <strong>{key}:</strong>
-          <input
-            type="text"
-            value={value.source}
-            onChange={(e) => {
-              setInputs({
-                ...inputs,
-                [key]: { source: e.target.value },
-              });
-            }}
-          />
+    <div className="step-node-form">
+      <div className="step-node-form-header">
+        <svg
+          style={{ background: hexToRgba(colors.steps, 0.4) }}
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+        >
+          <path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"></path>
+          <path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"></path>
+          <path d="M12 2v2"></path>
+          <path d="M12 22v-2"></path>
+          <path d="m17 20.66-1-1.73"></path>
+          <path d="M11 10.27 7 3.34"></path>
+          <path d="m20.66 17-1.73-1"></path>
+          <path d="m3.34 7 1.73 1"></path>
+          <path d="M14 12h8"></path>
+          <path d="M2 12h2"></path>
+          <path d="m20.66 7-1.73 1"></path>
+          <path d="m3.34 17 1.73-1"></path>
+          <path d="m17 3.34-1 1.73"></path>
+          <path d="m11 13.73-4 6.93"></path>
+        </svg>
+        <h2>
+          {!readOnly ? "Edit" : ""} {step.__key}
+        </h2>
+      </div>
+      {Object.entries(formState).map(([key, value]) => (
+        <div key={key} className="step-node-form-form-field">
+          <label>{key}:</label>
+          {renderField(key as keyof Step, value)}
         </div>
       ))}
-      <br />
-      <label>
-        Outputs:
-        <input
-          type="text"
-          value={outputs}
-          onChange={(e) => setOutputs(e.target.value)}
-        />
-      </label>
+      {hasChanged && !readOnly && (
+        <div className="step-node-form-save-button">
+          <button
+            onClick={handleOnClick}
+            style={{ backgroundColor: hexToRgba(colors.steps, 0.4) }}
+          >
+            Save Changes
+          </button>
+        </div>
+      )}
     </div>
   );
 };

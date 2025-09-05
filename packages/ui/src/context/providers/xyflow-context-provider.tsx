@@ -1,9 +1,9 @@
 import { ReactFlowProvider } from "@xyflow/react";
 
-import { EditorComponentProps, FlowEditorComponent } from "../../ui";
+import { CwlViewerWorkflow, CwlViewerWorkflowProps } from "../../ui";
 
-export const XyflowContextProvider = (props: EditorComponentProps) => (
+export const XyflowContextProvider = (props: CwlViewerWorkflowProps) => (
   <ReactFlowProvider>
-    <FlowEditorComponent {...props} />
+    <CwlViewerWorkflow {...props} />
   </ReactFlowProvider>
 );

@@ -1,27 +1,21 @@
-import { Edge, MarkerType } from "@xyflow/react";
+import { Edge } from "@xyflow/react";
 
 import { CWLObject } from "@theseus-cwl/types";
 
-export const initializeEdgesStepToOutputEdges = (
-  cwlObject: CWLObject
+import { getEdge } from "../general";
+
+export const initializeStepToOutputEdges = (
+  cwlObject: CWLObject,
+  labels: boolean
 ): Edge[] => {
   const edges: Edge[] = [];
 
-  Object.entries(cwlObject!.outputs).forEach(([key, output]) => {
-    const source = output.outputSource.split("/")[0];
+  Object.entries(cwlObject.outputs).forEach(([outputKey, output]) => {
+    const source = output.outputSource?.split("/")[0];
 
-    cwlObject?.steps.forEach((step) => {
-      if (step.id === source) {
-        edges.push({
-          markerEnd: {
-            type: MarkerType.ArrowClosed,
-            color: "#4c8bf5",
-          },
-          id: `edge-${"sourceStepId"}-to-${source}`,
-          source: step.id,
-          target: key,
-          animated: true,
-        });
+    Object.keys(cwlObject.steps).forEach((stepKey) => {
+      if (stepKey === source) {
+        edges.push(getEdge(stepKey, outputKey, "step_to_output", labels));
       }
     });
   });

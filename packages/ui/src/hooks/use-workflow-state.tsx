@@ -2,9 +2,9 @@ import { useContext } from "react";
 
 import { CwlObjectContext } from "../context";
 
-export const useWorkflow = () => {
+export const useWorkflowState = () => {
   const context = useContext(CwlObjectContext);
   if (!context)
-    throw new Error("useWorkflow must be used within a WorkflowProvider");
+    throw new Error("useWorkflowState must be used within a WorkflowProvider");
   return context;
 };

@@ -1,87 +1,79 @@
-import {   useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-import { ComplexType, PrimitiveType, SpecialType } from "@theseus-cwl/types";
+import { Input } from "@theseus-cwl/types";
 
-import { useWorkflow } from "../../hooks";
-import { InputNodeComponentProps } from "./input-node";
+import { useRenderField, useWorkflowState } from "../../hooks";
+import { hexToRgba } from "../../utils";
 
-export type InputNodeFormProps = InputNodeComponentProps & {
- 
+export type InputNodeFormProps = {
+  input: Input & { __key: string };
+  readOnly: boolean;
 };
 
 export const InputNodeForm = (props: InputNodeFormProps) => {
-  const { updateInput } = useWorkflow();
+  const { input, readOnly } = props;
 
-  const [id, setId] = useState<string>("");
-  const [type, setType] = useState<
-    PrimitiveType | ComplexType | SpecialType | undefined
-  >(undefined);
-  const [defaultValue, setDefaultValue] = useState<string>("");
-  const [initialValues, setInitialValues] = useState<{
-    key: typeof id;
-    type: typeof type;
-    default: typeof defaultValue;
-  }>({
-    key: "",
-    type: undefined,
-    default: "",
-  });
+  const { colors, updateInput } = useWorkflowState();
+
+  const [formState, setFormState] = useState<Input>({} as Input);
+  const [initialValues, setInitialValues] = useState<Input>({} as Input);
 
   useEffect(() => {
-    const key = props.input?.__key || "";
-    const type = props.input?.type;
-    const _default = props.input?.default || "";
-    setId(key);
-    setType(type);
-    setDefaultValue(_default);
-    setInitialValues({ key, type, default: _default });
-  }, [props.input]);
+    setFormState(input);
+    setInitialValues(input);
+  }, [input]);
+
+  const { renderField } = useRenderField((field, value) => {
+    setFormState((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  }, readOnly);
 
   const hasChanged =
-    id !== initialValues.key ||
-    type !== initialValues.type ||
-    defaultValue !== initialValues.default;
+    JSON.stringify(formState) !== JSON.stringify(initialValues);
 
   const handleOnClick = () => {
-    if (props.input) {
-      updateInput(props.input.__key!, {
-        id: id,
-        type: type,
-        default: defaultValue,
-      });
-    }
+    updateInput(input.__key, { ...formState, __key: input.__key });
   };
 
   return (
     <div className="input-node-form">
-      <h2>Edit Input Node</h2>
-      <div className="input-node-form-form-field">
-        <label>ID:</label>
-        <input
-          type="text"
-          value={id}
-          onChange={(event) => setId(event.target.value)}
-        />
+      <div className="input-node-form-header">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          style={{ backgroundColor: hexToRgba(colors.input, 0.4) }}
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M5 12h14"></path>
+          <path d="m12 5 7 7-7 7"></path>
+        </svg>
+
+        <h2>
+          {!readOnly ? "Edit" : ""} {input.__key}
+        </h2>
       </div>
-      <div className="input-node-form-form-field">
-        <label>Type:</label>
-        <input
-          type="text"
-          value={type}
-          onChange={(event) => setType(event.target.value as PrimitiveType | ComplexType | SpecialType)}
-        />
-      </div>
-      <div className="input-node-form-form-field">
-        <label>Default:</label>
-        <input
-          type="text"
-          value={defaultValue}
-          onChange={(e) => setDefaultValue(e.target.value)}
-        />
-      </div>
-      {hasChanged && (
+      {Object.entries(formState).map(([key, value]) => (
+        <div key={key} className="input-node-form-form-field">
+          <label>{key}:</label>
+          {renderField(key as keyof Input, value)}
+        </div>
+      ))}
+      {hasChanged && !readOnly && (
         <div className="input-node-form-save-button">
-          <button onClick={handleOnClick}>Save Changes</button>
+          <button
+            onClick={handleOnClick}
+            style={{ backgroundColor: hexToRgba(colors.input, 0.4) }}
+          >
+            Save Changes
+          </button>
         </div>
       )}
     </div>

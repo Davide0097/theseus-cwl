@@ -1,6 +1,6 @@
 {
   "name": "@theseus-cwl/ui",
-  "description": "A UI component library for rendering and editing Common Workflow Language (CWL) workflows through a visual interface.",
+  "description": "A React toolkit for displaying Common Workflow Language (CWL) workflows as interactive graphs",
   "version": "1.0.20",
   "author": "davide giorgiutti",
   "license": "ISC",
@@ -11,7 +11,6 @@
     "dev": "tsup --watch",
     "build": "tsup",
     "lint": "eslint . --max-warnings 0",
-    "generate:component": "turbo gen react-component",
     "check-types": "tsc --noEmit"
   },
   "publishConfig": {

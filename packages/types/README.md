@@ -17,7 +17,7 @@ yarn add @theseus-cwl/types
 
 ```ts
 import { CWLObject } from '@theseus-cwl/types';
-import { CwlEditor } from '@theseus-cwl/ui';
+import { CwlViewer } from '@theseus-cwl/ui';
 
 const cwlObject: CWLObject = {
   cwlVersion: "v1.0",
@@ -61,7 +61,7 @@ const cwlObject: CWLObject = {
 
 export const Example = () => {
   return (
-    <CwlEditor
+    <CwlViewer
       input={cwlObject}
       // other props here
     />
@@ -69,7 +69,7 @@ export const Example = () => {
 }
 ```
 
-The example above shows how this package can be used in a JSX component, as the internal UI package is based on React. However, the types provided by this package can also be used in plain TypeScript projects without React.
+The example above shows how this package can be used in a JSX component, as the internal UI package is based on React. However, the types provided by this package can also be used in plain TypeScript projects.
 
 ## When to Use
 

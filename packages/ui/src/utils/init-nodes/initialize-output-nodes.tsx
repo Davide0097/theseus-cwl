@@ -1,135 +1,111 @@
 import { Node as xyFlowNode } from "@xyflow/react";
 
 import {
-  EDITOR_PADDING,
   NODE_HEIGHT,
   NODE_MARGIN,
   NODE_WIDTH,
 } from "@theseus-cwl/configurations";
-import { Output, Steps, Outputs, CWLObject } from "@theseus-cwl/types";
+import { Outputs, Step } from "@theseus-cwl/types";
 
-import { getWrapperNode } from "./get-wrapper-node";
 import { OutputNodeComponent } from "../../ui";
+import { getMaxBottom, getMaxRight, hexToRgba } from "../general";
+import { BaseInitializeNodeProps } from "./initialize-input-nodes";
 
-const getOutpuNodesPositon = (
-  output: Output,
-
-  steps: Steps,
-  outputs: Outputs
-): { x: number; y: number } => {
-  const source = output.outputSource?.split("/")[0];
-
-  let relatedStepIndex = -1;
-  steps.forEach((step, index) => {
-    if (step.id === source) {
-      relatedStepIndex = index;
-    }
-  });
-
-  if (relatedStepIndex !== -1) {
-    const x =
-      NODE_MARGIN +
-      relatedStepIndex * (NODE_WIDTH + NODE_MARGIN) +
-      EDITOR_PADDING;
-
-    const lastStepIndex = steps.length;
-    const y =
-      EDITOR_PADDING +
-      NODE_MARGIN +
-      NODE_HEIGHT +
-      lastStepIndex * (NODE_HEIGHT + NODE_MARGIN);
-
-    return { x, y };
-  } else {
-    // Output not connected to a step — stack it after other such outputs
-    const outputIndex =
-       
-      Object.entries(outputs).findIndex(([key]) => key === key) - 1;
-    const x =
-      NODE_MARGIN +
-      (steps.length + outputIndex) * (NODE_WIDTH + NODE_MARGIN) +
-      EDITOR_PADDING;
-
-    const y =
-      EDITOR_PADDING +
-      NODE_MARGIN +
-      NODE_HEIGHT +
-      steps.length * (NODE_HEIGHT + NODE_MARGIN);
-
-    return { x, y };
-  }
+/**
+ * Props for {@link initializeOutputNodes}.
+ */
+export type InitializeOutputNodesProps = BaseInitializeNodeProps<Outputs> & {
+  stepNodes: xyFlowNode[];
 };
 
-export type InitializeOutputNodesProps = {
-  cwlObject: CWLObject;
-  readonly: boolean;
-
-  inputNodes: xyFlowNode[];
-  wrappers: boolean;
-};
-
+/**
+ * Initializes output nodes.
+ *
+ * Takes CWL output information as {@link Outputs} and the already initialized {@link xyFlowNode[]} representing the steps.
+ * Returns an array of {@link xyFlowNode} objects that xyFlow uses to render the output nodes.
+ */
 export const initializeOutputNodes = (
   props: InitializeOutputNodesProps
 ): xyFlowNode[] => {
-  const { cwlObject, readonly, inputNodes, wrappers } = props;
+  const { nodesInfo, color, stepNodes, readOnly } = props;
 
-  const nodes = Object.entries(cwlObject.outputs).map(([key, value]) => ({
-    id: key,
-    extent: "parent",
-    data: { label: <OutputNodeComponent output={value} outputId={key} /> },
-    position: getOutpuNodesPositon(
-      value,
+  const outputNodes: xyFlowNode[] = [];
 
-      cwlObject.steps,
-      cwlObject.outputs
-    ),
-    style: {
-      width: NODE_WIDTH,
-      height: NODE_HEIGHT,
-    },
-  })) as xyFlowNode[];
+  Object.entries(nodesInfo).forEach(([key, output]) => {
+    let matchedStepNode: xyFlowNode | undefined;
 
-  const allNodes = [...nodes];
+    for (const stepNode of stepNodes) {
+      const step: Step | undefined = (
+        stepNode?.data?.label as { props?: { step?: Step } }
+      )?.props?.step;
 
-  const maxXPosition = allNodes.reduce((max, node) => {
-    return node.position.x > max ? node.position.x : max;
-  }, 0);
+      if (output.outputSource?.split("/")[0] === step?.__key) {
+        matchedStepNode = stepNode;
+        break;
+      }
+    }
 
-  const placeholderNode: xyFlowNode = {
-    id: "__new_output_placeholder__",
+    const position = matchedStepNode
+      ? {
+          x: matchedStepNode.position.x,
+          y: getMaxBottom(stepNodes) + NODE_MARGIN + NODE_MARGIN,
+        }
+      : {
+          x: getMaxRight(stepNodes) + NODE_MARGIN,
+          y: getMaxBottom(stepNodes) + NODE_MARGIN + NODE_MARGIN,
+        };
 
-    data: {
-      label: <OutputNodeComponent />,
-    },
-    extent: "parent",
-    position: {
-      x: maxXPosition + NODE_WIDTH + NODE_MARGIN,
-      y: Math.max(...nodes.map((n) => n.position.y)),
-    },
+    outputNodes.push({
+      id: key,
+      extent: "parent",
+      data: {
+        label: (
+          <OutputNodeComponent
+            output={{ ...output, __key: key }}
+            mode="output"
+            color={color}
+          />
+        ),
+      },
+      draggable: !readOnly,
+      position,
+      style: {
+        width: NODE_WIDTH,
+        height: NODE_HEIGHT,
+        margin: "0px",
+        borderRadius: "6px",
+        padding: "0px",
+        border: "1px solid rgba(0, 0, 0, 0.60)",
+        boxShadow: "4px 4px 16px rgba(0, 0, 0, 0.05)",
+        background: hexToRgba(color, 0.3),
+      },
+    });
+  });
 
-    style: {
-      width: NODE_WIDTH,
-      height: NODE_HEIGHT,
-      opacity: 0.5,
-      borderStyle: "dashed",
-      cursor: "pointer",
-    },
-  };
+  if (!readOnly) {
+    const placeholderNode: xyFlowNode = {
+      id: "__new_output_placeholder__",
+      data: {
+        label: <OutputNodeComponent mode="placeholder" color={color} />,
+      },
+      extent: "parent",
+      position: {
+        x: getMaxRight(outputNodes) + NODE_MARGIN,
+        y: getMaxBottom(outputNodes) - NODE_HEIGHT,
+      },
+      style: {
+        width: NODE_WIDTH,
+        height: NODE_HEIGHT,
+        backgroundColor: hexToRgba(color, 0.2),
+        borderStyle: "dashed",
+        cursor: "pointer",
+        margin: "0px",
+        padding: "0px",
+      },
+    };
 
-  const resultingNodes = [...nodes];
-
-  if (!readonly) {
-    resultingNodes.push(placeholderNode);
+    outputNodes.push(placeholderNode);
   }
 
-  if (wrappers) {
-    const wrapperNode = getWrapperNode([
-      ...nodes,
-      placeholderNode,
-      ...inputNodes,
-    ]);
-    resultingNodes.push(wrapperNode);
-  }
-
-  return resultingNodes;
+  return outputNodes;
 };

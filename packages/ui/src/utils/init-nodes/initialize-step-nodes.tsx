@@ -1,5 +1,4 @@
 import { Node as xyflowNode } from "@xyflow/react";
-import "@xyflow/react/dist/style.css";
 
 import {
   EDITOR_PADDING,
@@ -7,92 +6,182 @@ import {
   NODE_MARGIN,
   NODE_WIDTH,
 } from "@theseus-cwl/configurations";
-import { CWLObject } from "@theseus-cwl/types";
+import { Step, Steps } from "@theseus-cwl/types";
 
 import { StepNodeComponent } from "../../ui";
-import { getWrapperNode } from "./get-wrapper-node";
+import { getMaxBottom, getMaxRight, hexToRgba } from "../general";
+import { BaseInitializeNodeProps } from "./initialize-input-nodes";
 
-export type InitializeStepsProps = {
-  cwlObject: CWLObject;
-  readonly: boolean;
-  wrappers: boolean;
-  inputNodes: xyflowNode[];
+export type TropologicalSortStepsConfig = {
+  steps: Steps;
 };
 
+/**
+ * Performs a topological sort on a CWL workflow step graph.
+ *
+ * Given a set of steps and their declared inputs (dependencies),
+ * this function produces:
+ *  - A sorted list of steps (respecting dependency order).
+ *  - A mapping of step keys to generated IDs..
+ *
+ * The algorithm is based on Kahn's algorithm for topological sorting.
+ */
+export const topologicalSortSteps = (config: TropologicalSortStepsConfig) => {
+  const { steps } = config;
+
+  /** Dependency graph: stepKey -> set of steps that depend on it. */
+  const graph: Record<string, Set<string>> = {};
+
+  /** In-degree: number of incoming edges (dependencies) for each step. */
+  const inDegree: Record<string, number> = {};
+
+  const stepKeys = Object.keys(steps);
+
+  /** Initialize graph and in-degree counts. */
+  for (const key of stepKeys) {
+    graph[key] = new Set();
+    inDegree[key] = 0;
+  }
+
+  /** Build the graph based on declared inputs for each step. */
+  for (const [stepKey, step] of Object.entries(steps)) {
+    const inputDefs = Object.values(step.in || {});
+
+    // Normalize sources into a flat array of strings
+    const sources = inputDefs
+      .flatMap((input) =>
+        Array.isArray(input.source)
+          ? input.source
+          : input.source
+            ? [input.source]
+            : []
+      )
+      /** take step before "/" if present */
+      .map((src) => src.split("/")[0])
+      .filter((src): src is string => Boolean(src && steps[src]));
+
+    for (const source of sources) {
+      graph[source]!.add(stepKey);
+      inDegree[stepKey]!++;
+    }
+  }
+
+  const sortedSteps: Step[] = [];
+  const idMap: Record<string, string> = {};
+
+  /** Start with all steps that have no dependencies. */
+  const queue = stepKeys.filter((key) => inDegree[key] === 0);
+
+  /** Kahn’s algorithm: repeatedly remove nodes with in-degree 0. */
+  while (queue.length) {
+    const current = queue.shift()!;
+    const step = steps[current];
+
+    /** Generate a stable ID (currently just the key). */
+    const generatedId = current;
+    idMap[current] = generatedId;
+    sortedSteps.push(step!);
+
+    if (graph[current]) {
+      /** Decrease in-degree of neighbors; enqueue if they become ready. */
+      for (const neighbor of graph[current]) {
+        if (inDegree[neighbor]) {
+          inDegree[neighbor]--;
+        }
+
+        if (inDegree[neighbor] === 0) queue.push(neighbor);
+      }
+    }
+  }
+
+  return { sortedSteps, idMap };
+};
+
+/**
+ * Props for {@link initializeStepNodes}
+ */
+export type InitializeStepsProps = BaseInitializeNodeProps<Steps>;
+
+/**
+ * Initializes step nodes.
+ *
+ * Takes CWL output information as {@link Steps} and
+ * reuturns an array of {@link xyFlowNode} objects that xyFlow uses to render the step nodes.
+ */
 export const initializeStepNodes = (
   props: InitializeStepsProps
 ): xyflowNode[] => {
-  const { cwlObject, readonly, wrappers } = props;
+  const { nodesInfo, color, readOnly } = props;
 
-  const steps = cwlObject?.steps || [];
-  const inputs = cwlObject?.inputs || [];
+  const { sortedSteps, idMap } = topologicalSortSteps({ steps: nodesInfo });
 
-  const sortedSteps = [...steps].sort((stepA, stepB) => {
-    const getInputOrder = (step: typeof stepA) => {
-      const inputIds = Object.values(step.content.in || {})
-        .map((input) => input.source || "")
-        .map((source) => source.split("/")[0]);
-      const firstInputIndex = inputIds
-        .map((id) => Object.keys(inputs).findIndex((input) => input === id))
-        .filter((i) => i >= 0)
-        .sort((a, b) => a - b)[0];
-      return firstInputIndex ?? Number.MAX_SAFE_INTEGER;
+  const stepNodes: xyflowNode[] = sortedSteps.map((step, index) => {
+    const stepKey = Object.keys(nodesInfo).find(
+      (key) => nodesInfo[key] === step
+    )!;
+    const nodeId = idMap[stepKey];
+
+    return {
+      id: nodeId!,
+      type: "default",
+      data: {
+        label: (
+          <StepNodeComponent
+            mode="step"
+            step={{ ...step, __key: stepKey }}
+            color={color}
+          />
+        ),
+      },
+      position: {
+        x: EDITOR_PADDING + NODE_MARGIN + index * (NODE_WIDTH + NODE_MARGIN),
+        y:
+          /** Top padding and margin */
+          EDITOR_PADDING +
+          /** The input row */
+          (NODE_HEIGHT + NODE_MARGIN + NODE_MARGIN) +
+          /** Previous steps */
+          index * (NODE_HEIGHT + NODE_MARGIN) +
+          NODE_MARGIN,
+      },
+      draggable: !readOnly,
+      style: {
+        width: NODE_WIDTH,
+        height: NODE_HEIGHT,
+        margin: "0px",
+        padding: "0px",
+        borderRadius: "6px",
+        border: "1px solid rgba(0, 0, 0, 0.60)",
+        boxShadow: "4px 4px 16px rgba(0, 0, 0, 0.05)",
+        background: hexToRgba(color, 0.3),
+      },
     };
-
-    return getInputOrder(stepA) - getInputOrder(stepB);
   });
 
-  const nodes: xyflowNode[] = sortedSteps.map((step, index) => ({
-    id: step.id,
-    type: "default",
-    data: { label: <StepNodeComponent step={step} /> },
-    position: {
-      x: EDITOR_PADDING + NODE_MARGIN + index * (NODE_WIDTH + NODE_MARGIN),
-      y:
-        NODE_HEIGHT +
-        NODE_MARGIN * 2 +
-        index * (NODE_HEIGHT + EDITOR_PADDING) +
-        EDITOR_PADDING,
-    },
-    style: {
-      width: NODE_WIDTH,
-      height: NODE_HEIGHT,
-    },
-  }));
+  if (!readOnly) {
+    const placeholderNode = {
+      id: "__new_step_placeholder__",
+      type: "default",
+      data: {
+        label: <StepNodeComponent mode="placeholder" color={color} />,
+      },
+      position: {
+        x: getMaxRight(stepNodes) + NODE_MARGIN,
+        y: getMaxBottom(stepNodes) - NODE_HEIGHT,
+      },
+      style: {
+        width: NODE_WIDTH,
+        height: NODE_HEIGHT,
+        backgroundColor: hexToRgba(color, 0.2),
+        borderStyle: "dashed",
+        cursor: "pointer",
+        margin: "0px",
+        padding: "0px",
+      },
+    };
 
-  const maxXPosition = nodes.reduce((max, node) => {
-    return node.position.x > max ? node.position.x : max;
-  }, 0);
-
-  const placeholderNode = {
-    id: "__new_step_placeholder__",
-    type: "default",
-    data: {
-      label: <StepNodeComponent />,
-    },
-    position: {
-      x: maxXPosition + NODE_WIDTH + NODE_MARGIN,
-      y: Math.max(...nodes.map((n) => n.position.y)),
-    },
-    style: {
-      width: NODE_WIDTH,
-      height: NODE_HEIGHT,
-      opacity: 0.5,
-      borderStyle: "dashed",
-      cursor: "pointer",
-    },
-  };
-
-  const resultingNodes = [...nodes];
-
-  if (!readonly) {
-    resultingNodes.push(placeholderNode);
+    stepNodes.push(placeholderNode);
   }
 
-  if (wrappers) {
-    const wrapperNode = getWrapperNode([...nodes, placeholderNode]);
-    resultingNodes.push(wrapperNode);
-  }
-
-  return resultingNodes;
+  return stepNodes;
 };
