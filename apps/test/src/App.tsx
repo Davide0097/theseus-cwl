@@ -38,9 +38,9 @@ const cwlObjects: CWLObject[] = [
   {
     cwlVersion: "v1.2",
     class: "Workflow",
-    requirements: {
-      InlineJavascriptRequirement: {},
-    },
+    // requirements: {
+    //   InlineJavascriptRequirement: {},
+    // },
     inputs: {
       message: "string",
     },
@@ -222,7 +222,7 @@ const cwlObjects: CWLObject[] = [
         __key: "grep",
         run: "../grep/grep.cwl",
         in: {
-          extended: { default: true },
+          // extended: { default: true },
           search_file: { source: "untar/uncompress_file" },
           search_string: { source: "search_string" },
         },
@@ -279,7 +279,7 @@ const cwlObjects: CWLObject[] = [
       grep2: {
         run: "../grep/grep.cwl",
         in: {
-          extended: { default: true },
+          // extended: { default: true },
           search_file: { source: "untar/uncompress_file" },
           search_string: { source: "search_string" },
         },

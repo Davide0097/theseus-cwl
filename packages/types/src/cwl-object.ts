@@ -25,23 +25,23 @@ export type Type =
   | SpecialType
   | ArrayType<PrimitiveType | ComplexType | SpecialType>;
 
-export type Input =
-  | string
-  | ({
-      type: Type | Type[];
+export type DefaultInput = {
+  type: Type | Type[];
 
-      /**
-       * A default value that can be overridden, e.g. --message "Hola mundo"
-       */
-      default?: string;
+  /**
+   * A default value that can be overridden, e.g. --message "Hola mundo"
+   */
+  default?: string;
 
-      /**
-       * Bind this message value as an argument to "echo".
-       */
-      inputBinding?: {
-        position: number;
-      };
-    } & HasKey);
+  /**
+   * Bind this message value as an argument to "echo".
+   */
+  inputBinding?: {
+    position: number;
+  };
+} & HasKey;
+
+export type Input = DefaultInput | string;
 
 /** The CWL file inputs */
 export type Inputs = Record<string, Input>;

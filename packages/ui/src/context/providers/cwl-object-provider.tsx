@@ -27,37 +27,38 @@ export const WorkflowProvider = (props: WorflowProviderProps) => {
    * They must not be considered part of the public API.
    */
   const updateInput = (id: string, updatedData: Partial<Input & HasKey>) => {
-    try {
-      setCwlObject((prev) => {
-        const inputs = { ...prev.inputs };
+    // try {
+    //   setCwlObject((prev) => {
+    //     const inputs = { ...prev.inputs };
 
-        if (inputs[id]) {
-          const newId = updatedData.__key!;
-          if (newId !== id && inputs[newId]) {
-            /** The user is trying to assign an already existent id to an input */
-            console.log(`Input "${newId}" already exists.`);
-            return prev;
-          }
+    //     if (inputs[id]) {
+    //       const newId = updatedData.__key!;
+    //       if (newId !== id && inputs[newId]) {
+    //         /** The user is trying to assign an already existent id to an input */
+    //         console.log(`Input "${newId}" already exists.`);
+    //         return prev;
+    //       }
 
-          if (newId !== id) {
-            inputs[newId] = { ...inputs[id] };
-            delete inputs[id];
-          }
+    //       if (newId !== id) {
+    //         inputs[newId] = { ...inputs[id] };
+    //         delete inputs[id];
+    //       }
 
-          inputs[newId] = {
-            ...inputs[newId]!,
-            ...updatedData,
-          };
+    //       inputs[newId] = {
+    //         ...inputs[newId]!,
+    //         ...updatedData,
+    //       };
 
-          return { ...prev, input: inputs };
-        }
-        return prev;
-      });
-      return true;
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
+    //       return { ...prev, input: inputs };
+    //     }
+    //     return prev;
+    //   });
+    //   return true;
+    // } catch (error) {
+    //   console.log(error);
+    //   return false;
+    // }
+    return true
   };
 
   /**

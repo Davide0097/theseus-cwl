@@ -206,7 +206,7 @@ export const LandingPage = () => {
                   <div className="h-[600px] border-border/50 bg-white ">
                     <CwlViewer
                       input={{
-                        cwlVersion: "v1.0",
+                        cwlVersion: "v1.2",
                         class: "Workflow",
                         inputs: {
                           input_a: { type: "string" },

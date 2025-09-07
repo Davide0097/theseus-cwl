@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
-import { Input } from "@theseus-cwl/types";
+import { DefaultInput, Input } from "@theseus-cwl/types";
 
 import { useRenderField, useWorkflowState } from "../../hooks";
-import { hexToRgba } from "../../utils";
+import { hexToRgba, normalizeInput } from "../../utils";
 
 export type InputNodeFormProps = {
   input: Input & { __key: string };
@@ -15,12 +15,14 @@ export const InputNodeForm = (props: InputNodeFormProps) => {
 
   const { colors, updateInput } = useWorkflowState();
 
-  const [formState, setFormState] = useState<Input>({} as Input);
-  const [initialValues, setInitialValues] = useState<Input>({} as Input);
+  const [formState, setFormState] = useState<DefaultInput>({} as DefaultInput);
+  const [initialValues, setInitialValues] = useState<DefaultInput>(
+    {} as DefaultInput
+  );
 
   useEffect(() => {
-    setFormState(input);
-    setInitialValues(input);
+    setFormState(normalizeInput(input));
+    setInitialValues(normalizeInput(input));
   }, [input]);
 
   const { renderField } = useRenderField((field, value) => {

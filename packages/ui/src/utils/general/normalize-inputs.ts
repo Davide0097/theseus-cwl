@@ -1,14 +1,8 @@
-import { Input, Type } from "@theseus-cwl/types";
+import { DefaultInput, Input, Type } from "@theseus-cwl/types";
 
 export const normalizeInput = (
   input: Input
-): {
-  type: Type | Type[];
-  default?: string;
-  inputBinding?: {
-    position: number;
-  };
-} => {
+): DefaultInput => {
   let normalized;
 
   if (typeof input === "string") {

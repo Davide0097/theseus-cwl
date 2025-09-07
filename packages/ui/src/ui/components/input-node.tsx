@@ -1,6 +1,7 @@
 import { Input } from "@theseus-cwl/types";
 
 import { useWorkflowState } from "../../hooks";
+import { normalizeInput } from "../../utils";
 
 export type InputNodeComponentProps =
   | { mode: "placeholder"; color: string }
@@ -14,7 +15,7 @@ export const InputNodeComponent = (props: InputNodeComponentProps) => {
   if (mode === "input") {
     const { input } = props;
     const refeerToFile =
-      input && (input.type === "File" || input.type === "Directory");
+      input && (normalizeInput(input).type === "File" || normalizeInput(input).type === "Directory");
 
     return (
       <div className="input-node-card">
@@ -40,9 +41,9 @@ export const InputNodeComponent = (props: InputNodeComponentProps) => {
           className="input-node-card-badge"
           style={{ backgroundColor: color }}
         >
-          {typeof input.type === "object"
-            ? JSON.stringify(input.type)
-            : input.type}
+          {typeof normalizeInput(input).type === "object"
+            ? JSON.stringify(normalizeInput(input).type)
+            : normalizeInput(input).type}
         </div>
         <div className="input-node-card-info">Input Parameter</div>
         {refeerToFile && <div className="handle"></div>}

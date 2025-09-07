@@ -22,9 +22,9 @@ export class CWLWorkflow {
     this.from = from;
   }
 
-  static fromYAMLFile(file: File): CWLWorkflow {
-    return new CWLWorkflow(file, "YAML");
-  }
+  // static fromYAMLFile(file: File): CWLWorkflow {
+  //   return new CWLWorkflow(file, "YAML");
+  // }
 
   static fromObject(cwlObject: CWLObject): CWLWorkflow {
     return new CWLWorkflow(cwlObject, "JSON");
@@ -98,9 +98,11 @@ export const CwlViewer = (props: CwlViewerProps) => {
     }
     if (typeof input === "string") {
       setCwlWorkflow(CWLWorkflow.fromString(input));
-    } else if (input instanceof File) {
-      setCwlWorkflow(CWLWorkflow.fromYAMLFile(input));
-    } else {
+    } 
+    else if (input instanceof File) {
+      // setCwlWorkflow(CWLWorkflow.fromYAMLFile(input));
+    } 
+    else {
       setCwlWorkflow(CWLWorkflow.fromObject(input));
     }
   }, [input]);
