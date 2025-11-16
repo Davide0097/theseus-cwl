@@ -5,7 +5,7 @@ import {
 } from "@xyflow/react";
 import { useEffect, useState } from "react";
 
-import { CWLObject } from "@theseus-cwl/types";
+import { CWLPackedDocument, Workflow } from "@theseus-cwl/types";
 
 import { WorkflowProvider, XyflowContextProvider } from "../context";
 import { ColorState } from "../hooks";
@@ -14,10 +14,13 @@ import { CwlViewerNodeInspector } from "./cwl-viewer-node-inspector";
 import "../style.css";
 
 export class CWLWorkflow {
-  cwlObject: CWLObject;
+  cwlObject: Workflow | CWLPackedDocument;
   from: "YAML" | "JSON" | "STRING";
 
-  constructor(cwlObject: CWLObject, from: "YAML" | "JSON" | "STRING") {
+  constructor(
+    cwlObject: Workflow | CWLPackedDocument,
+    from: "YAML" | "JSON" | "STRING"
+  ) {
     this.cwlObject = cwlObject;
     this.from = from;
   }
@@ -26,12 +29,16 @@ export class CWLWorkflow {
   //   return new CWLWorkflow(file, "YAML");
   // }
 
-  static fromObject(cwlObject: CWLObject): CWLWorkflow {
+  static fromObject(cwlObject: Workflow): CWLWorkflow {
     return new CWLWorkflow(cwlObject, "JSON");
   }
 
   static fromString(cwlObject: string): CWLWorkflow {
     return new CWLWorkflow(JSON.parse(cwlObject), "STRING");
+  }
+
+  static fromPackedDocument(cwlObject: CWLPackedDocument): CWLWorkflow {
+    return new CWLWorkflow(cwlObject, "JSON");
   }
 }
 
@@ -40,7 +47,7 @@ export class CWLWorkflow {
  */
 export type CwlViewerProps = {
   /** CWL object or File to be loaded into the viewer */
-  input: string | CWLObject | File | undefined;
+  input: string | Workflow | CWLPackedDocument | File | undefined;
 
   /** Callback triggered when the cwl workflow changes, default is a function that logs in the console the changes */
   onChange?: (value: object) => void;
@@ -98,12 +105,14 @@ export const CwlViewer = (props: CwlViewerProps) => {
     }
     if (typeof input === "string") {
       setCwlWorkflow(CWLWorkflow.fromString(input));
-    } 
-    else if (input instanceof File) {
+    } else if (input instanceof File) {
       // setCwlWorkflow(CWLWorkflow.fromYAMLFile(input));
-    } 
-    else {
-      setCwlWorkflow(CWLWorkflow.fromObject(input));
+    } else if ((input as CWLPackedDocument).$graph) {
+      setCwlWorkflow(
+        CWLWorkflow.fromPackedDocument(input as CWLPackedDocument)
+      );
+    } else {
+      setCwlWorkflow(CWLWorkflow.fromObject(input as Workflow));
     }
   }, [input]);
 

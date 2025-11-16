@@ -1,4 +1,4 @@
 /**
  * The CWL editor default padding
  */
-export const EDITOR_PADDING = 30;
+export const EDITOR_PADDING = 20;

@@ -1,11 +1,12 @@
 import { Node as xyFlowNode } from "@xyflow/react";
+import { ReactNode } from "react";
 
 import {
   NODE_HEIGHT,
   NODE_MARGIN,
   NODE_WIDTH,
 } from "@theseus-cwl/configurations";
-import { Outputs, Step } from "@theseus-cwl/types";
+import { WorkflowOutput, WorkflowStep } from "@theseus-cwl/types";
 
 import { OutputNodeComponent } from "../../ui";
 import { getMaxBottom, getMaxRight, hexToRgba } from "../general";
@@ -14,8 +15,11 @@ import { BaseInitializeNodeProps } from "./initialize-input-nodes";
 /**
  * Props for {@link initializeOutputNodes}.
  */
-export type InitializeOutputNodesProps = BaseInitializeNodeProps<Outputs> & {
-  stepNodes: xyFlowNode[];
+export type InitializeOutputNodesProps = BaseInitializeNodeProps<
+  Record<string, WorkflowOutput>
+> & {
+  stepNodes: xyFlowNode<{ label: ReactNode; step?: WorkflowStep }>[];
+  isSubWorkflow: boolean;
 };
 
 /**
@@ -26,20 +30,27 @@ export type InitializeOutputNodesProps = BaseInitializeNodeProps<Outputs> & {
  */
 export const initializeOutputNodes = (
   props: InitializeOutputNodesProps
-): xyFlowNode[] => {
-  const { nodesInfo, color, stepNodes, readOnly } = props;
+): xyFlowNode<{ label: ReactNode; output?: WorkflowOutput }>[] => {
+  const { nodesInfo, color, stepNodes, readOnly, isSubWorkflow } = props;
 
-  const outputNodes: xyFlowNode[] = [];
+  const outputNodes: xyFlowNode<{
+    label: ReactNode;
+    output?: WorkflowOutput;
+  }>[] = [];
 
   Object.entries(nodesInfo).forEach(([key, output]) => {
-    let matchedStepNode: xyFlowNode | undefined;
+    let matchedStepNode:
+      | xyFlowNode<{ label: ReactNode; output?: WorkflowOutput }>
+      | undefined;
 
     for (const stepNode of stepNodes) {
-      const step: Step | undefined = (
-        stepNode?.data?.label as { props?: { step?: Step } }
-      )?.props?.step;
+      const step: WorkflowStep | undefined = stepNode.data.step;
 
-      if (output.outputSource?.split("/")[0] === step?.__key) {
+      if (!step) {
+        return;
+      }
+
+      if (output.outputSource?.split("/")[0] === step.__key) {
         matchedStepNode = stepNode;
         break;
       }
@@ -59,8 +70,10 @@ export const initializeOutputNodes = (
       id: key,
       extent: "parent",
       data: {
+        output: output,
         label: (
           <OutputNodeComponent
+            isSubWorkflow={isSubWorkflow}
             output={{ ...output, __key: key }}
             mode="output"
             color={color}
@@ -83,10 +96,19 @@ export const initializeOutputNodes = (
   });
 
   if (!readOnly) {
-    const placeholderNode: xyFlowNode = {
+    const placeholderNode: xyFlowNode<{
+      label: ReactNode;
+      output?: WorkflowOutput;
+    }> = {
       id: "__new_output_placeholder__",
       data: {
-        label: <OutputNodeComponent mode="placeholder" color={color} />,
+        label: (
+          <OutputNodeComponent
+            mode="placeholder"
+            color={color}
+            isSubWorkflow={isSubWorkflow}
+          />
+        ),
       },
       extent: "parent",
       position: {
@@ -105,6 +127,23 @@ export const initializeOutputNodes = (
     };
 
     outputNodes.push(placeholderNode);
+  }
+
+  if (isSubWorkflow) {
+    const scale = 0.6;
+
+    outputNodes.forEach((node) => {
+      node.style = {
+        ...node.style,
+        width: NODE_WIDTH * scale,
+        height: NODE_HEIGHT * scale,
+      };
+
+      node.position = {
+        x: node.position.x,
+        y: node.position.y * scale + NODE_HEIGHT,
+      };
+    });
   }
 
   return outputNodes;

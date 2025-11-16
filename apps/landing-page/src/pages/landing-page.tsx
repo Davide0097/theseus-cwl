@@ -6,7 +6,7 @@ import {
   OUTPUT_NODE_COLOR,
   STEP_NODE_COLOR,
 } from "@theseus-cwl/configurations";
-import { CWLObject } from "@theseus-cwl/types";
+import { Workflow } from "@theseus-cwl/types";
 import { CwlViewer } from "@theseus-cwl/ui";
 
 export type ToggleButtonProps = {
@@ -63,7 +63,7 @@ export const LandingPage = () => {
             outputSource: "step1/out1",
           },
         },
-      } as CWLObject,
+      } as Workflow,
       null,
       2
     )

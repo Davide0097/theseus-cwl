@@ -36,7 +36,7 @@ export const InputNodeForm = (props: InputNodeFormProps) => {
     JSON.stringify(formState) !== JSON.stringify(initialValues);
 
   const handleOnClick = () => {
-    updateInput(input.__key, { ...formState, __key: input.__key });
+    // updateInput(input.__key, { ...formState, __key: input.__key });
   };
 
   return (

@@ -1,161 +1,169 @@
-import { CWLObject } from "@theseus-cwl/types";
+import { CWLPackedDocument, Workflow } from "@theseus-cwl/types";
 import { CwlViewer } from "@theseus-cwl/ui";
 
 import { useState } from "react";
 
-const cwlObjects: CWLObject[] = [
+const cwlObjects: (Workflow | CWLPackedDocument)[] = [
   {
-    cwlVersion: "v1.2",
+    cwlVersion: "v1.0",
     class: "Workflow",
-    inputs: {
-      tarball: "File",
-      name_of_file_to_extract: "string",
-    },
-    outputs: {
-      compiled_class: {
-        type: "File",
-        outputSource: "compile/classfile",
-      },
-    },
-    steps: {
-      untar: {
-        run: "tar-param.cwl",
-        in: {
-          tarfile: "tarball",
-          extractfile: "name_of_file_to_extract",
-        },
-        out: ["extracted_file"],
-      },
-      compile: {
-        run: "arguments.cwl",
-        in: {
-          src: "untar/extracted_file",
-        },
-        out: ["classfile"],
-      },
-    },
-  },
-  {
-    cwlVersion: "v1.2",
-    class: "Workflow",
-    // requirements: {
-    //   InlineJavascriptRequirement: {},
-    // },
-    inputs: {
-      message: "string",
-    },
-    outputs: {
-      out: {
-        type: "string",
-        outputSource: "uppercase/uppercase_message",
-      },
-    },
-    steps: {
-      echo: {
-        run: "echo.cwl",
-        in: {
-          message: "message",
-        },
-        out: ["out"],
-      },
-      uppercase: {
-        run: "uppercase.cwl",
-        in: {
-          message: {
-            source: "echo/out",
+    $graph: [
+      {
+        id: "main",
+        class: "Workflow",
+        label:
+          "Mosaics two or more Landsat-8 acquisitions (includes pan-sharpening)",
+        doc: "Mosaics two or more Landsat-8 acquisitions (includes pan-sharpening)",
+
+        requirements: [
+          { class: "ScatterFeatureRequirement" },
+          { class: "SubworkflowFeatureRequirement" },
+        ],
+
+        inputs: {
+          stac_items: {
+            doc: "Landsat-8 item",
+            type: "string[]",
           },
         },
-        out: ["uppercase_message"],
+
+        outputs: {
+          mosaic: {
+            type: "File",
+            outputSource: "node_mosaic/mosaic",
+          },
+        },
+
+        steps: {
+          node_ps: {
+            run: "pan-sharpening.cwl",
+            in: {
+              stac_item: "stac_items",
+            },
+            out: ["ps_tif"],
+            scatter: "stac_item",
+            scatterMethod: "dotproduct",
+          },
+
+          node_mosaic: {
+            run: "aggregate.cwl",
+            in: {
+              tifs: { source: ["node_ps/ps_tif"] },
+            },
+            out: ["mosaic"],
+          },
+        },
       },
-    },
+    ],
   },
+
   {
     cwlVersion: "v1.2",
     class: "Workflow",
-    inputs: {
-      input_a: { type: "string" },
-      input_b: { type: "string" },
-      input_c: { type: "string" },
-      input_list: { type: "string[]" },
-      condition_flag: { type: "boolean" },
-    },
-    steps: {
-      step1: {
-        run: "tools/step1.cwl",
-        in: {
-          param_a: { source: "input_a" },
+    $graph: [
+      {
+        id: "#main",
+        class: "Workflow",
+        label: "Main Workflow",
+        doc: "Combines text transformation and computation results, then finalizes them into a report file.",
+        inputs: {
+          text_input: { type: "string" },
+          numeric_input: { type: "string" },
+          list_input: { type: "string[]" },
         },
-        out: ["out1"],
-      },
-      step2: {
-        run: "tools/step2.cwl",
-        scatter: "param_b",
-        in: {
-          param_b: { source: "input_list" },
-          dependency: { source: "step1/out1" },
+        outputs: {
+          final_report: {
+            type: "File",
+            outputSource: "finalize/report",
+          },
         },
-        out: ["out2"],
-      },
-      step3: {
-        run: "tools/step3.cwl",
-        in: {
-          param_c: { source: "input_c" },
-          dependency: { source: "step2/out2" },
+        steps: {
+          text_process: {
+            run: "#TextTransformWorkflow",
+            in: {
+              message: "text_input",
+            },
+            out: ["out_text"],
+          },
+          compute_data: {
+            run: "#ComputationWorkflow",
+            in: {
+              param_a: "numeric_input",
+              param_list: "list_input",
+            },
+            out: ["out_file"],
+          },
+          finalize: {
+            run: "#FinalizeTool",
+            in: {
+              text: "text_process/out_text",
+              data: "compute_data/out_file",
+            },
+            out: ["report"],
+          },
         },
-        out: ["out3"],
       },
-      final: {
-        run: "tools/finalize.cwl",
-        in: {
-          input: { source: "step3/out3" },
+      {
+        id: "#TextTransformWorkflow",
+        class: "Workflow",
+        label: "Text Transformation Workflow",
+        doc: "Applies text transformations such as trimming and uppercasing to an input message.",
+        inputs: {
+          message: { type: "string" },
         },
-        out: ["final_output"],
+        outputs: {
+          out_text: {
+            type: "string",
+            outputSource: "transform/output_text",
+          },
+        },
+        steps: {
+          transform: {
+            run: "#TextTransformTool",
+            in: { input_message: "message" },
+            out: ["output_text"],
+          },
+        },
       },
-    },
-    outputs: {
-      result: {
-        type: "File",
-        outputSource: "final/final_output",
+      {
+        id: "#ComputationWorkflow",
+        class: "Workflow",
+        label: "Computation Workflow",
+        doc: "Performs mock computations on input parameters and produces a combined data file.",
+        inputs: {
+          param_a: { type: "string" },
+          param_list: { type: "string[]" },
+        },
+        outputs: {
+          out_file: {
+            type: "File",
+            outputSource: "combine/result",
+          },
+        },
+        steps: {
+          analyze: {
+            run: "#AnalyzeTool",
+            in: { input_value: "param_a" },
+            out: ["report"],
+          },
+          aggregate: {
+            run: "#AggregateTool",
+            in: { inputs: "param_list" },
+            out: ["summary"],
+          },
+          combine: {
+            run: "#CombineTool",
+            in: {
+              analysis: "analyze/report",
+              summary: "aggregate/summary",
+            },
+            out: ["result"],
+          },
+        },
       },
-    },
+    ],
   },
-  {
-    cwlVersion: "v1.2",
-    class: "Workflow",
-    inputs: {
-      input_files: {
-        type: "File[]",
-      },
-      merge_strategy: {
-        type: "string",
-        default: "concat",
-      },
-    },
-    steps: {
-      preprocess: {
-        run: "tools/preprocess.cwl",
-        in: {
-          file: { source: "input_files" },
-        },
-        out: ["processed_file"],
-        scatter: "file",
-      },
-      merge: {
-        run: "tools/merge.cwl",
-        in: {
-          files: { source: "preprocess/processed_file" },
-          strategy: { source: "merge_strategy" },
-        },
-        out: ["merged_output"],
-      },
-    },
-    outputs: {
-      final_output: {
-        type: "File",
-        outputSource: "merge/merged_output",
-      },
-    },
-  },
+
   {
     cwlVersion: "v1.2",
     class: "Workflow",
@@ -203,6 +211,119 @@ const cwlObjects: CWLObject[] = [
       },
     },
   },
+
+  {
+    cwlVersion: "v1.2",
+    class: "Workflow",
+    $graph: [
+      {
+        id: "#main",
+        class: "Workflow",
+        label: "Main Image Processing Workflow",
+        doc: "Coordinates preprocessing, segmentation, and final report generation from an input image.",
+        inputs: {
+          input_image: { type: "File" },
+          filter_strength: { type: "int" },
+          model_type: { type: "string" },
+        },
+        outputs: {
+          report: {
+            type: "File",
+            outputSource: "report_generation/report_file",
+          },
+        },
+        steps: {
+          preprocessing: {
+            run: "#ImagePreprocessWorkflow",
+            in: {
+              raw_image: "input_image",
+              strength: "filter_strength",
+            },
+            out: ["clean_image"],
+          },
+          segmentation: {
+            run: "#SegmentationWorkflow",
+            in: {
+              image: "preprocessing/clean_image",
+              model: "model_type",
+            },
+            out: ["mask_image"],
+          },
+          report_generation: {
+            run: "#ReportTool",
+            in: {
+              original: "input_image",
+              cleaned: "preprocessing/clean_image",
+              mask: "segmentation/mask_image",
+            },
+            out: ["report_file"],
+          },
+        },
+      },
+      {
+        id: "#ImagePreprocessWorkflow",
+        class: "Workflow",
+        label: "Image Preprocessing Workflow",
+        doc: "Cleans and filters an image before analysis.",
+        inputs: {
+          raw_image: { type: "File" },
+          strength: { type: "int" },
+        },
+        outputs: {
+          clean_image: {
+            type: "File",
+            outputSource: "enhance/enhanced_image",
+          },
+        },
+        steps: {
+          denoise: {
+            run: "#DenoiseTool",
+            in: { image: "raw_image" },
+            out: ["denoised_image"],
+          },
+          enhance: {
+            run: "#EnhanceTool",
+            in: {
+              image: "denoise/denoised_image",
+              level: "strength",
+            },
+            out: ["enhanced_image"],
+          },
+        },
+      },
+      {
+        id: "#SegmentationWorkflow",
+        class: "Workflow",
+        label: "Segmentation Workflow",
+        doc: "Applies deep learning models to segment key regions in the input image.",
+        inputs: {
+          image: { type: "File" },
+          model: { type: "string" },
+        },
+        outputs: {
+          mask_image: {
+            type: "File",
+            outputSource: "apply_model/mask",
+          },
+        },
+        steps: {
+          normalize: {
+            run: "#NormalizeTool",
+            in: { image: "image" },
+            out: ["normalized_image"],
+          },
+          apply_model: {
+            run: "#SegmentationTool",
+            in: {
+              image: "normalize/normalized_image",
+              model_name: "model",
+            },
+            out: ["mask"],
+          },
+        },
+      },
+    ],
+  },
   {
     cwlVersion: "v1.2",
     class: "Workflow",
@@ -236,7 +357,6 @@ const cwlObjects: CWLObject[] = [
         },
         out: "uncompress_file",
       },
-
       wc: {
         __key: "wc",
         run: "../wc/wc.cwl",
@@ -298,6 +418,56 @@ const cwlObjects: CWLObject[] = [
       occurrences: {
         type: "File",
         outputSource: "wc/count",
+      },
+    },
+  },
+  {
+    cwlVersion: "v1.2",
+    class: "Workflow",
+    inputs: {
+      url_list: { type: "string" },
+      search_pattern: { type: "string" },
+      summary_filename: { type: "string", default: "summary.txt" },
+    },
+    steps: {
+      download_files: {
+        run: "../utils/download.cwl",
+        in: {
+          url: { source: "url_list" },
+        },
+        out: "downloaded_file",
+        scatter: "url",
+      },
+      extract_archives: {
+        run: "../utils/extract-tar-gz.cwl",
+        in: {
+          archive_file: { source: "download_files/downloaded_file" },
+        },
+        out: "extracted_folder",
+        scatter: "archive_file",
+      },
+      search_each_folder: {
+        run: "../utils/recursive-grep.cwl",
+        in: {
+          folder: { source: "extract_archives/extracted_folder" },
+          pattern: { source: "search_pattern" },
+        },
+        out: "grep_results",
+        scatter: "folder",
+      },
+      merge_results: {
+        run: "../utils/combine-text-files.cwl",
+        in: {
+          input_files: { source: "search_each_folder/grep_results" },
+          output_filename: { source: "summary_filename" },
+        },
+        out: "combined_output",
+      },
+    },
+    outputs: {
+      summary_report: {
+        type: "File",
+        outputSource: "merge_results/combined_output",
       },
     },
   },

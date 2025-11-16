@@ -1,13 +1,14 @@
-import { Step } from "@theseus-cwl/types";
+import { WorkflowStep } from "@theseus-cwl/types";
+import { Handle, Position } from "@xyflow/react";
 
 import { useWorkflowState } from "../../hooks";
 
 export type StepNodeComponentProps =
-  | { mode: "placeholder"; color: string }
-  | { mode: "step"; step: Step & { __key: string }; color: string };
+  | { mode: "placeholder"; color: string , isSubWorkflow: boolean }
+  | { mode: "step"; step: WorkflowStep & { __key: string }; color: string ,isSubWorkflow: boolean};
 
 export const StepNodeComponent = (props: StepNodeComponentProps) => {
-  const { mode, color } = props;
+  const { mode, color,isSubWorkflow } = props;
   const { addStep } = useWorkflowState();
 
   if (mode === "step") {
@@ -40,15 +41,32 @@ export const StepNodeComponent = (props: StepNodeComponentProps) => {
             <path d="m17 3.34-1 1.73"></path>
             <path d="m11 13.73-4 6.93"></path>
           </svg>
-          <h1>{step.__key}</h1>
+        {!isSubWorkflow &&   <h1>{step.__key}</h1>}
         </div>
-        <div
+     {!isSubWorkflow &&   <div
           className="step-node-card-badge"
           style={{ backgroundColor: color }}
         >
           step
-        </div>
-        <div className="step-node-card-info">Run: {step.run}</div>
+        </div>}
+        {!isSubWorkflow&&<div className="step-node-card-info">
+          Run: {typeof step.run === "string" ? step.run : step.run.id || ""}
+        </div>}   {/* RIGHT handle = subworkflow link */}
+
+ 
+ <Handle
+  type="source"
+  id="bottom"
+  position={Position.Bottom}
+  style={{ background: "#333" }}
+/>
+
+<Handle
+  type="source"
+  id="right"
+  position={Position.Right}
+  style={{ background: "#333" }}
+/>
       </div>
     );
   }

@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 
-import { Input, Output, Step } from "@theseus-cwl/types";
+import { Input, Output, WorkflowStep } from "@theseus-cwl/types";
 
-type FieldType = keyof Input | keyof Step | keyof Output;
+type FieldType = keyof Input | keyof WorkflowStep | keyof Output;
 
 export const useRenderField = (
   handleChange: (

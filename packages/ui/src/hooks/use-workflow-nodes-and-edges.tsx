@@ -67,10 +67,12 @@ export const useWorkflowNodesAndEdges = (
   } = useWorkflowState();
 
   const initialNodes = initializeNodes({
-    cwlObject,
+           cwlFile:cwlObject,
+
     wrappers,
     colors,
     readOnly,
+    labels,
   });
   const initialEdges = initializeEdges(cwlObject, labels);
 
@@ -80,13 +82,16 @@ export const useWorkflowNodesAndEdges = (
   useEffect(() => {
     setNodes(
       initializeNodes({
-        cwlObject,
+        cwlFile:cwlObject,
         wrappers,
         colors,
         readOnly,
+        labels,
       })
     );
     setEdges(initializeEdges(cwlObject, labels));
+
+    console.log(nodes, edges)
   }, [
     wrappers,
     labels,

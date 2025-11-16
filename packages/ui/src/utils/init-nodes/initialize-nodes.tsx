@@ -1,64 +1,161 @@
 import { Node as xyFlowNode } from "@xyflow/react";
 
-import { CWLObject } from "@theseus-cwl/types";
+import { NODE_MARGIN } from "@theseus-cwl/configurations";
+import { CWLPackedDocument, Workflow } from "@theseus-cwl/types";
 
 import { ColorState } from "../../hooks";
 import { getMaxRight, getWrapperNode } from "../general";
+import {
+  applyOffset,
+  applyoffsetBasedOnLinkedNode,
+} from "../general/apply-offset";
+
+import { getMainWorkflow } from "../general/get-main-worflow";
+import { isPackedWorkflow } from "../general/is-packed-worflow";
 import { initializeInputNodes } from "./initialize-input-nodes";
 import { initializeOutputNodes } from "./initialize-output-nodes";
 import { initializeStepNodes } from "./initialize-step-nodes";
 
 /**
- * The config for {@link initializeNodes}.
+ * Initializes the nodes for a single workflow, it can be only worflow in the file or a subworflow when is packed document.
  */
-export type InitializeNodesConfig = {
-  cwlObject: CWLObject;
-  wrappers: boolean;
-  colors: ColorState;
-  readOnly: boolean;
-};
+const initializeSingleWorkflowNodes = (
+  props: InitializeNodesConfig
+): xyFlowNode[] => {
+  const {
+    cwlFile: workflow,
+    colors,
+    wrappers,
+    readOnly,
+    labels,
+    isSubWorkflow,
 
-/**
- * Initializes the nodes. Receives CWL object information
- * and returns the corresponding array of {@link xyFlowNode} representing the visual map.
- */
-export const initializeNodes = (props: InitializeNodesConfig): xyFlowNode[] => {
-  const { cwlObject, wrappers, colors, readOnly } = props;
 
-  const commonProps = { wrappers, readOnly };
+  } = props;
 
-  /** Steps will be initialized first because they determine the position of the other nodes */
+  let nodes = [];
+
   const stepNodes = initializeStepNodes({
-    nodesInfo: cwlObject.steps,
+    nodesInfo: workflow.steps || {},
     color: colors.steps,
-    ...commonProps,
+    isSubWorkflow,
+    readOnly,
   });
 
   const inputNodes = initializeInputNodes({
-    nodesInfo: cwlObject.inputs,
+    nodesInfo: workflow.inputs!,
     color: colors.input,
     stepNodes,
-    ...commonProps,
+    isSubWorkflow,
+    readOnly,
   });
 
   const outputNodes = initializeOutputNodes({
-    nodesInfo: cwlObject.outputs,
+    nodesInfo: workflow.outputs!,
     color: colors.output,
     stepNodes,
-    ...commonProps,
+    isSubWorkflow,
+    readOnly,
   });
 
-  const nodes = [...inputNodes, ...stepNodes, ...outputNodes];
+  nodes = [...inputNodes, ...stepNodes, ...outputNodes];
 
-  if (wrappers) {
+  if (wrappers && !isSubWorkflow) {
     const maxRight = getMaxRight(nodes);
     const wrapperNodes: xyFlowNode[] = [
-      getWrapperNode(inputNodes, maxRight),
-      getWrapperNode(stepNodes, maxRight),
-      getWrapperNode(outputNodes, maxRight),
+      getWrapperNode(
+        inputNodes,
+        maxRight,
+        labels && workflow.id ? workflow.id : undefined,
+        isSubWorkflow
+      ),
+      getWrapperNode(stepNodes, maxRight, undefined, isSubWorkflow),
+      getWrapperNode(outputNodes, maxRight, undefined, isSubWorkflow),
     ];
     nodes.push(...wrapperNodes);
   }
 
   return nodes;
+};
+
+/**
+ * The config for {@link initializeNodes}.
+ */
+export type InitializeNodesConfig = {
+  cwlFile: Workflow | CWLPackedDocument;
+  wrappers: boolean;
+  colors: ColorState;
+  readOnly: boolean;
+  labels: boolean;
+  isSubWorkflow: boolean;
+  mainWorkflowNode?: xyFlowNode;
+};
+
+/**
+ * Initializes the nodes.
+ *
+ * @param {Omit<InitializeNodesConfig, 'isSubWorkflow'| 'mainWorkflow'>} props
+ *
+ * @returns {xyFlowNode[]} returns the corresponding array of {@link xyFlowNode} representing the visual map.
+ */
+export const initializeNodes = (
+  props: Omit<InitializeNodesConfig, "isSubWorkflow" | "mainWorkflow">
+): xyFlowNode[] => {
+  const { cwlFile } = props;
+
+  if (!isPackedWorkflow(cwlFile)) {
+    return initializeSingleWorkflowNodes({
+      ...props,
+      isSubWorkflow: false,
+      mainWorkflowNode: undefined,
+    });
+  } else {
+    const mainWorkflow = getMainWorkflow(cwlFile);
+
+    if (!mainWorkflow) {
+      return [];
+    }
+
+    const workflows = [
+      mainWorkflow,
+      ...cwlFile.$graph.filter((w) => w !== mainWorkflow),
+    ] as Workflow[];
+
+    const allNodes: xyFlowNode[] = [];
+
+    // Initialize main workflow first
+    const mainWorkflowNodes = initializeSingleWorkflowNodes({
+      ...props,
+      cwlFile: mainWorkflow,
+      isSubWorkflow: false,
+      mainWorkflowNode: undefined,
+    });
+    allNodes.push(...mainWorkflowNodes);
+
+    let currentOffsetX = getMaxRight(mainWorkflowNodes) + NODE_MARGIN;
+
+    // Initialize subworkflows and apply an x offset based on the previous worflow width
+    workflows.slice(1).forEach((workflow) => {
+      const mainWorkflowNode = mainWorkflowNodes.find(
+        (n) => n.data?.label?.props?.step?.run === workflow.id
+      );
+
+      const nodes = initializeSingleWorkflowNodes({
+        ...props,
+        cwlFile: workflow,
+        isSubWorkflow: true,
+        mainWorkflowNode: mainWorkflowNode,
+      });
+
+      let shiftedNodes = applyOffset(nodes, currentOffsetX, 0);
+      shiftedNodes = applyoffsetBasedOnLinkedNode(
+        shiftedNodes,
+        mainWorkflowNode
+      );
+      allNodes.push(...shiftedNodes);
+      currentOffsetX = getMaxRight(shiftedNodes);
+    });
+
+    return allNodes;
+  }
 };

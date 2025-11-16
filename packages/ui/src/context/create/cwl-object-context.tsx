@@ -1,15 +1,23 @@
 import { createContext } from "react";
 
-import { CWLObject, HasKey, Input, Output, Step } from "@theseus-cwl/types";
+import {
+  CWLPackedDocument,
+  Input,
+  Output,
+  Workflow,
+  WorkflowStep,
+} from "@theseus-cwl/types";
 
 import { ColorState } from "../../hooks";
 
 export type CwlObjectContextType = {
   /** The main CWL workflow state */
-  cwlObject: CWLObject;
+  cwlObject: Workflow | CWLPackedDocument;
 
   /** Updates the main CWL workflow state */
-  setCwlObject: React.Dispatch<React.SetStateAction<CWLObject>>;
+  setCwlObject: React.Dispatch<
+    React.SetStateAction<Workflow | CWLPackedDocument>
+  >;
 
   /**
    * Updates an existing input, returns true when successfull
@@ -17,9 +25,9 @@ export type CwlObjectContextType = {
    * Editing behaviors are used internally as a possible evolution of the project.
    * They must not be considered part of the public API.
    * */
-  updateInput: (
+  updateInput?: (
     id: string,
-    updatedData: Partial<Input & HasKey>
+    updatedData: Partial<Input & { __key: string }>
   ) => boolean | Promise<boolean>;
 
   /**
@@ -28,9 +36,9 @@ export type CwlObjectContextType = {
    * Editing behaviors are used internally as a possible evolution of the project.
    * They must not be considered part of the public API.
    * */
-  updateStep: (
+  updateStep?: (
     id: string,
-    updatedData: Partial<Step & HasKey>
+    updatedData: Partial<WorkflowStep & { __key: string }>
   ) => boolean | Promise<boolean>;
 
   /**
@@ -39,9 +47,9 @@ export type CwlObjectContextType = {
    * Editing behaviors are used internally as a possible evolution of the project.
    * They must not be considered part of the public API.
    * */
-  updateOutput: (
+  updateOutput?: (
     id: string,
-    updatedData: Partial<Output & HasKey>
+    updatedData: Partial<Output & { __key: string }>
   ) => boolean | Promise<boolean>;
 
   /**
@@ -50,7 +58,7 @@ export type CwlObjectContextType = {
    * Editing behaviors are used internally as a possible evolution of the project.
    * They must not be considered part of the public API.
    * */
-  addInput: () => boolean | Promise<boolean>;
+  addInput?: () => boolean | Promise<boolean>;
 
   /**
    * Adds a new step, returns true when successfull
@@ -58,7 +66,7 @@ export type CwlObjectContextType = {
    * Editing behaviors are used internally as a possible evolution of the project.
    * They must not be considered part of the public API.
    * */
-  addStep: () => boolean | Promise<boolean>;
+  addStep?: () => boolean | Promise<boolean>;
 
   /**
    * Adds a new output, returns true when successfull
@@ -66,7 +74,7 @@ export type CwlObjectContextType = {
    * Editing behaviors are used internally as a possible evolution of the project.
    * They must not be considered part of the public API.
    * */
-  addOutput: () => boolean | Promise<boolean>;
+  addOutput?: () => boolean | Promise<boolean>;
 
   /** The main node color state */
   colors: ColorState;

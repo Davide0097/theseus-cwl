@@ -41,8 +41,8 @@
 }
 
 .cwl-viewer .cwl-viewer-color-editor input {
-  height: 32px;
-  width: 32px;
+  height: 20px;
+  width: 20px;
   border: 1px solid transparent;
   border-radius: 6px;
   cursor: pointer;
@@ -52,17 +52,17 @@
 .cwl-viewer .cwl-viewer-color-editor .cwl-viewer-color-editor-buttons {
   display: flex;
   gap: 8px;
-  margin-left: 12px;
+  margin-left: 8px;
 }
 
 .cwl-viewer .cwl-viewer-color-editor .cwl-viewer-color-editor-buttons button {
-  height: 32px;
-  padding: 6px 10px;
+  height: 22px;
+  padding: 4px 8px;
   border: 1px solid transparent;
   border-radius: 6px;
   cursor: pointer;
   background-color: #f9f9f9;
-  font-size: 12px;
+  font-size: 8px;
 }
 
 .input-node-card,
@@ -70,10 +70,10 @@
 .output-node-card {
   font-family: "Inter", sans-serif;
   display: flex;
-  padding: 9px;
+  padding: 4px;
   flex-direction: column;
   align-items: flex-start;
-  font-size: 9px;
+  font-size: 5px;
 }
 
 .input-node-card-header,
@@ -81,15 +81,15 @@
 .output-node-card-header {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.8rem;
+  gap: 0.3rem;
+  margin-bottom: 0.4rem;
 }
 
 .input-node-card-header svg,
 .step-node-card-header svg,
 .output-node-card-header svg {
-  width: 23px;
-  height: 23px;
+  width: 16px;
+  height:   16px;
   color: #000000;
   background: rgba(255, 255, 255, 0.356);
   border-radius: 6px;
@@ -100,7 +100,7 @@
 .step-node-card-header h1,
 .output-node-card-header h1 {
   font-weight: 600;
-  font-size: 15px;
+  font-size: 9px;
   color: #111827;
 }
 
@@ -111,10 +111,10 @@
   background: rgba(255, 255, 255, 0.356);
   color: black;
   font-family: monospace;
-  padding: 2px 8px;
+  padding: 2px 7px;
   font-weight: bolder;
   border-radius: 12px;
-  font-size: 11px;
+  font-size: 9px;
   border: 1px solid rgba(0, 0, 0, 0.062);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
@@ -122,9 +122,9 @@
 .input-node-card-info,
 .step-node-card-info,
 .output-node-card-info {
-  margin-top: 8px;
+  margin-top: 6px;
   color: #6b7280;
-  font-size: 12px;
+  font-size: 8px;
 }
 
 .node-component-placeholder {
@@ -135,7 +135,7 @@
   width: 100%;
   cursor: pointer;
   color: #000000;
-  font-size: 12px;
+  font-size: 8px;
 }
 
 .input-node-form,
@@ -209,4 +209,10 @@
   border: 1px solid black;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.wrapper-label{
+  margin-top: -20px;
+  font-size: 10px;
+
 }

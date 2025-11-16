@@ -3,6 +3,7 @@ import {
   BackgroundProps,
   MiniMap,
   ReactFlow,
+  useReactFlow,
   Node as xyFlowNode,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -48,11 +49,20 @@ export const CwlViewerWorkflow = (props: CwlViewerWorkflowProps) => {
       labels,
     });
 
+  const { fitView } = useReactFlow();
+
+  // Reset view when workflow changes
   useEffect(() => {
     if (onChange) {
       onChange(cwlObject);
     }
-  }, [cwlObject, onChange, props]);
+
+    const timer = setTimeout(() => {
+      fitView({ padding: 0.2, duration: 700, interpolate: "linear" });
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [cwlObject, fitView]);
 
   return (
     <div className="cwl-viewer-workfow">
@@ -68,6 +78,12 @@ export const CwlViewerWorkflow = (props: CwlViewerWorkflowProps) => {
         onEdgesChange={onEdgesChange}
         onNodeClick={(_event, node) => {
           setSelectedNode(node);
+          fitView({
+            nodes: [node],
+            padding: 0.002, // how tight to zoom
+            duration: 700, // smooth animation
+            // optional zoom limit
+          });
         }}
       >
         {minimap && (

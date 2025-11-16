@@ -2,13 +2,14 @@ import { Input } from "@theseus-cwl/types";
 
 import { useWorkflowState } from "../../hooks";
 import { normalizeInput } from "../../utils";
+import { Handle, Position } from "@xyflow/react";
 
 export type InputNodeComponentProps =
-  | { mode: "placeholder"; color: string }
-  | { mode: "input"; input: Input & { __key: string }; color: string };
+  | { mode: "placeholder"; color: string,isSubWorkflow?:boolean }
+  | { mode: "input"; input: Input & { __key: string }; color: string,isSubWorkflow?: boolean };
 
 export const InputNodeComponent = (props: InputNodeComponentProps) => {
-  const { mode, color } = props;
+  const { mode, color, isSubWorkflow } = props;
 
   const { addInput } = useWorkflowState();
 
@@ -35,18 +36,24 @@ export const InputNodeComponent = (props: InputNodeComponentProps) => {
             <path d="M5 12h14"></path>
             <path d="m12 5 7 7-7 7"></path>
           </svg>
-          <h1>{input.__key}</h1>
+          {!isSubWorkflow && <h1>{input.__key}</h1>}
         </div>
-        <div
+       {!isSubWorkflow && <div
           className="input-node-card-badge"
           style={{ backgroundColor: color }}
         >
           {typeof normalizeInput(input).type === "object"
             ? JSON.stringify(normalizeInput(input).type)
             : normalizeInput(input).type}
-        </div>
-        <div className="input-node-card-info">Input Parameter</div>
+        </div> }
+        {!isSubWorkflow &&<div className="input-node-card-info">Input Parameter</div>}
         {refeerToFile && <div className="handle"></div>}
+        <Handle
+  type="source"
+  id="bottom"
+  position={Position.Bottom}
+  style={{ background: "#333" }}
+/>
       </div>
     );
   }

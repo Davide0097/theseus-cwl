@@ -36,11 +36,11 @@ The CwlViewer component accepts CWL data in three forms:
 - String (raw JSON or YAML text)
 
 ```tsx
-import { CWLObject } from "@theseus-cwl/types";
+import { Workflow } from "@theseus-cwl/types";
 import { CwlViewer } from "@theseus-cwl/components";
 
 export const Example = () => {
-  const cwlObject: CWLObject = {
+  const workflow: Workflow = {
     cwlVersion: "v1.0",
     class: "Workflow",
     inputs: [
@@ -83,7 +83,7 @@ export const Example = () => {
     ],
   };
 
-  return <CwlViewer input={cwlObject} />;
+  return <CwlViewer input={workflow} />;
 };
 ```
 

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 
-import { Step } from "@theseus-cwl/types";
+import { WorkflowStep } from "@theseus-cwl/types";
 
 import { useRenderField, useWorkflowState } from "../../hooks";
 import { hexToRgba } from "../../utils";
 
 export type StepNodeFormProps = {
-  step: Step & { __key: string };
+  step: WorkflowStep & { __key: string };
   readOnly: boolean;
 };
 
@@ -15,8 +15,8 @@ export const StepNodeForm = (props: StepNodeFormProps) => {
 
   const { colors, updateStep } = useWorkflowState();
 
-  const [formState, setFormState] = useState<Step>({} as Step);
-  const [initialValues, setInitialValues] = useState<Step>({} as Step);
+  const [formState, setFormState] = useState<WorkflowStep>({} as WorkflowStep);
+  const [initialValues, setInitialValues] = useState<WorkflowStep>({} as WorkflowStep);
 
   useEffect(() => {
     setFormState(step);
@@ -34,7 +34,7 @@ export const StepNodeForm = (props: StepNodeFormProps) => {
     JSON.stringify(formState) !== JSON.stringify(initialValues);
 
   const handleOnClick = () => {
-    updateStep(step.__key, { ...formState, __key: step.__key });
+    // updateStep(step.__key, { ...formState, __key: step.__key });
   };
 
   return (
@@ -71,7 +71,7 @@ export const StepNodeForm = (props: StepNodeFormProps) => {
       {Object.entries(formState).map(([key, value]) => (
         <div key={key} className="step-node-form-form-field">
           <label>{key}:</label>
-          {renderField(key as keyof Step, value)}
+          {renderField(key as keyof WorkflowStep, value)}
         </div>
       ))}
       {hasChanged && !readOnly && (

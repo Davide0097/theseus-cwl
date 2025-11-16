@@ -3,6 +3,8 @@
 A collection of **common TypeScript types** shared across the `@theseus-cwl` ecosystem.  
 This package provides reusable type definitions that can be imported by both **internal monorepo packages** and **external projects**.
 
+This is not intended to be a complete CWL standard TypeScript mapping. The type definition is not identical to the one provided by the standard. For example, outputs and inputs are treated as records rather than arrays.
+
 ## Installation
 
 ```bash
@@ -16,10 +18,10 @@ yarn add @theseus-cwl/types
 ## Usage
 
 ```ts
-import { CWLObject } from '@theseus-cwl/types';
+import { Workflow } from '@theseus-cwl/types';
 import { CwlViewer } from '@theseus-cwl/ui';
 
-const cwlObject: CWLObject = {
+const cwlObject: Workflow = {
   cwlVersion: "v1.0",
   class: "Workflow",
   inputs: {

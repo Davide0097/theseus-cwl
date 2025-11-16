@@ -1,1 +1,1 @@
-export * from './cwl-object'
+export * from "./v1.2";

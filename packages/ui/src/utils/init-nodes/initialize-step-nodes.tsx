@@ -6,14 +6,14 @@ import {
   NODE_MARGIN,
   NODE_WIDTH,
 } from "@theseus-cwl/configurations";
-import { Step, Steps } from "@theseus-cwl/types";
+import { WorkflowStep } from "@theseus-cwl/types";
 
 import { StepNodeComponent } from "../../ui";
 import { getMaxBottom, getMaxRight, hexToRgba } from "../general";
 import { BaseInitializeNodeProps } from "./initialize-input-nodes";
 
 export type TropologicalSortStepsConfig = {
-  steps: Steps;
+  steps: Record<string, WorkflowStep>;
 };
 
 /**
@@ -50,14 +50,14 @@ export const topologicalSortSteps = (config: TropologicalSortStepsConfig) => {
     // Normalize sources into a flat array of strings
     const sources = inputDefs
       .flatMap((input) =>
-        Array.isArray(input.source)
+        typeof input !== "string" && Array.isArray(input.source)
           ? input.source
-          : input.source
+          : typeof input !== "string" && !Array.isArray(input.source)
             ? [input.source]
-            : []
+            : (input as string)
       )
       /** take step before "/" if present */
-      .map((src) => src.split("/")[0])
+      .map((src) => src?.split("/")[0])
       .filter((src): src is string => Boolean(src && steps[src]));
 
     for (const source of sources) {
@@ -66,7 +66,7 @@ export const topologicalSortSteps = (config: TropologicalSortStepsConfig) => {
     }
   }
 
-  const sortedSteps: Step[] = [];
+  const sortedSteps: WorkflowStep[] = [];
   const idMap: Record<string, string> = {};
 
   /** Start with all steps that have no dependencies. */
@@ -100,7 +100,9 @@ export const topologicalSortSteps = (config: TropologicalSortStepsConfig) => {
 /**
  * Props for {@link initializeStepNodes}
  */
-export type InitializeStepsProps = BaseInitializeNodeProps<Steps>;
+export type InitializeStepsProps = BaseInitializeNodeProps<
+  Record<string, WorkflowStep>
+> & { isSubWorkflow: boolean };
 
 /**
  * Initializes step nodes.
@@ -110,8 +112,8 @@ export type InitializeStepsProps = BaseInitializeNodeProps<Steps>;
  */
 export const initializeStepNodes = (
   props: InitializeStepsProps
-): xyflowNode[] => {
-  const { nodesInfo, color, readOnly } = props;
+): xyflowNode<{step: WorkflowStep}>[] => {
+  const { nodesInfo, color, readOnly, isSubWorkflow } = props;
 
   const { sortedSteps, idMap } = topologicalSortSteps({ steps: nodesInfo });
 
@@ -125,8 +127,10 @@ export const initializeStepNodes = (
       id: nodeId!,
       type: "default",
       data: {
+        step: { ...step, __key: stepKey },
         label: (
           <StepNodeComponent
+          isSubWorkflow={isSubWorkflow}
             mode="step"
             step={{ ...step, __key: stepKey }}
             color={color}
@@ -155,7 +159,7 @@ export const initializeStepNodes = (
         boxShadow: "4px 4px 16px rgba(0, 0, 0, 0.05)",
         background: hexToRgba(color, 0.3),
       },
-    };
+    } as xyflowNode<{step: WorkflowStep}>;
   });
 
   if (!readOnly) {
@@ -163,7 +167,7 @@ export const initializeStepNodes = (
       id: "__new_step_placeholder__",
       type: "default",
       data: {
-        label: <StepNodeComponent mode="placeholder" color={color} />,
+        label: <StepNodeComponent mode="placeholder" color={color} isSubWorkflow={isSubWorkflow}/>,
       },
       position: {
         x: getMaxRight(stepNodes) + NODE_MARGIN,
@@ -181,6 +185,23 @@ export const initializeStepNodes = (
     };
 
     stepNodes.push(placeholderNode);
+  }
+
+  if (isSubWorkflow) {
+    const scale = 0.6;
+
+    stepNodes.forEach((node) => {
+      node.style = {
+        ...node.style,
+        width: NODE_WIDTH * scale,
+        height: NODE_HEIGHT * scale,
+      };
+
+      node.position = {
+        x: node.position.x * scale,
+        y: node.position.y * scale,
+      };
+    });
   }
 
   return stepNodes;

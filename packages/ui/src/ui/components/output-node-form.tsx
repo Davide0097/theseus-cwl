@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { Output, Step } from "@theseus-cwl/types";
+import { Output, WorkflowStep } from "@theseus-cwl/types";
 
 import { useRenderField, useWorkflowState } from "../../hooks";
 import { hexToRgba } from "../../utils";
@@ -33,7 +33,7 @@ export const OutputNodeForm = (props: OutputNodeFormProps) => {
     JSON.stringify(formState) !== JSON.stringify(initialValues);
 
   const handleOnClick = () => {
-    updateOutput(output.__key, { ...formState, __key: output.__key });
+    // updateOutput(output.__key, { ...formState, __key: output.__key });
   };
 
   return (
@@ -59,7 +59,7 @@ export const OutputNodeForm = (props: OutputNodeFormProps) => {
       {Object.entries(formState).map(([key, value]) => (
         <div key={key} className="output-node-form-form-field">
           <label>{key}:</label>
-          {renderField(key as keyof Step, value)}
+          {renderField(key as keyof WorkflowStep, value)}
         </div>
       ))}
       {hasChanged && !readOnly && (

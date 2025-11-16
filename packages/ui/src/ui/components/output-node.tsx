@@ -3,11 +3,11 @@ import { Output } from "@theseus-cwl/types";
 import { useWorkflowState } from "../../hooks";
 
 export type OutputNodeComponentProps =
-  | { mode: "placeholder"; color: string }
-  | { mode: "output"; output: Output & { __key: string }; color: string };
+  | { mode: "placeholder"; color: string,isSubWorkflow?:boolean }
+  | { mode: "output"; output: Output & { __key: string }; color: string,isSubWorkflow?:boolean };
 
 export const OutputNodeComponent = (props: OutputNodeComponentProps) => {
-  const { mode, color } = props;
+  const { mode, color,isSubWorkflow } = props;
   const { addOutput } = useWorkflowState();
 
   if (mode === "output") {
@@ -29,16 +29,16 @@ export const OutputNodeComponent = (props: OutputNodeComponentProps) => {
             <circle cx="12" cy="12" r="6"></circle>
             <circle cx="12" cy="12" r="2"></circle>
           </svg>
-          <h1>{output.__key}</h1>
+          {!isSubWorkflow && <h1>{output.__key}</h1>}
         </div>
-        <div
+       {!isSubWorkflow&& <div
           className="output-node-card-badge"
           style={{ backgroundColor: color }}
         >
           {typeof output.type === "object"
             ? JSON.stringify(output.type)
             : output.type}
-        </div>
+        </div>}
       </div>
     );
   }
