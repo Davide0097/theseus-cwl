@@ -1,5 +1,11 @@
 # @theseus-cwl/ui
 
+## 1.1.1
+
+### Patch Changes
+
+- move configurations to dependencies
+
 ## 1.1.0
 
 ### Minor Changes

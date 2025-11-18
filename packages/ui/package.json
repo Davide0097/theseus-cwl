@@ -1,7 +1,7 @@
 {
   "name": "@theseus-cwl/ui",
   "description": "A React toolkit for displaying Common Workflow Language (CWL) workflows as interactive DAG graphs",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "davide giorgiutti",
   "license": "ISC",
   "main": "dist/index.js",
