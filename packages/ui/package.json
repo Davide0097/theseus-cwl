@@ -28,10 +28,10 @@
     }
   },
   "dependencies": {
-    "@xyflow/react": "^12.8.2"
+    "@xyflow/react": "^12.8.2",
+    "@theseus-cwl/configurations": "^1.1.0"
   },
   "devDependencies": {
-    "@theseus-cwl/configurations": "^1.1.0",
     "@theseus-cwl/eslint-config": "*",
     "@theseus-cwl/types": "*",
     "@theseus-cwl/typescript-config": "*",
