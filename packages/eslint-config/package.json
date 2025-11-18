@@ -1,7 +1,7 @@
 {
   "name": "@theseus-cwl/eslint-config",
   "description": "Collection of internal eslint configurations.",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "author": "davide giorgiutti",
   "license": "ISC",
   "main": "base.js",

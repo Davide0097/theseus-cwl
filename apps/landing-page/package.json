@@ -1,7 +1,7 @@
 {
   "name": "theseus-cwl-landing-page",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -16,8 +16,8 @@
     "react-router-dom": "^6.30.1",
     "lucide-react": "^0.462.0",
     "@theseus-cwl/configurations": "*",
-    "@theseus-cwl/types": "^1.0.3",
-    "@theseus-cwl/ui": "^1.0.20",
+    "@theseus-cwl/types": "^1.1.0",
+    "@theseus-cwl/ui": "^1.1.0",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7"
   },
