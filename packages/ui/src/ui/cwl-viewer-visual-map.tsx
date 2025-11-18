@@ -7,10 +7,13 @@ import {
   Node as xyFlowNode,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useEffect } from "react";
+import React, { ReactNode, useEffect } from "react";
 
-import { useWorkflowNodesAndEdges, useWorkflowState } from "../hooks";
-import { CwkViewerColorEditor } from "./cwl-viewer-color-editor";
+import { ANIMATION_TIME } from "@theseus-cwl/configurations";
+import { Input, WorkflowOutput, WorkflowStep } from "@theseus-cwl/types";
+
+import { useCwlFileNodesAndEdges, useCwlFileState } from "../hooks";
+import { CwlViewerColorEditor } from "./cwl-viewer-color-editor";
 
 const Backgorund_ = B as React.MemoExoticComponent<
   React.ForwardRefExoticComponent<
@@ -18,18 +21,26 @@ const Backgorund_ = B as React.MemoExoticComponent<
   >
 >;
 
-export type CwlViewerWorkflowProps = {
+export type CwlVisualMapProps = {
   onChange: (value: object) => void;
-  setSelectedNode: (node: xyFlowNode) => void;
+  setSelectedNode: (
+    node: xyFlowNode<{
+      label?: ReactNode;
+      input?: Input;
+      step?: WorkflowStep;
+      output?: WorkflowOutput;
+    }>,
+  ) => void;
   wrappers: boolean;
   minimap: boolean;
   labels: boolean;
   readOnly: boolean;
   background: BackgroundProps;
   colorEditor: boolean;
+  subWorkflowScalingFactor: number;
 };
 
-export const CwlViewerWorkflow = (props: CwlViewerWorkflowProps) => {
+export const CwlVisualMap = (props: CwlVisualMapProps) => {
   const {
     onChange,
     setSelectedNode,
@@ -39,33 +50,38 @@ export const CwlViewerWorkflow = (props: CwlViewerWorkflowProps) => {
     background,
     readOnly,
     colorEditor,
+    subWorkflowScalingFactor,
   } = props;
 
-  const { cwlObject } = useWorkflowState();
+  const { cwlFile } = useCwlFileState();
   const { nodes, edges, onNodesChange, onEdgesChange } =
-    useWorkflowNodesAndEdges({
+    useCwlFileNodesAndEdges({
       wrappers,
       readOnly,
       labels,
+      subWorkflowScalingFactor,
     });
-
   const { fitView } = useReactFlow();
 
-  // Reset view when workflow changes
   useEffect(() => {
     if (onChange) {
-      onChange(cwlObject);
+      onChange(cwlFile);
     }
 
     const timer = setTimeout(() => {
-      fitView({ padding: 0.2, duration: 700, interpolate: "linear" });
+      fitView({
+        padding: 0.2,
+        duration: ANIMATION_TIME,
+        interpolate: "smooth",
+      });
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [cwlObject, fitView]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cwlFile, fitView, subWorkflowScalingFactor]);
 
   return (
-    <div className="cwl-viewer-workfow">
+    <div className="cwl-visual-map">
       <ReactFlow
         fitView={true}
         attributionPosition="bottom-right"
@@ -77,24 +93,25 @@ export const CwlViewerWorkflow = (props: CwlViewerWorkflowProps) => {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeClick={(_event, node) => {
-          setSelectedNode(node);
-          fitView({
-            nodes: [node],
-            padding: 0.002, // how tight to zoom
-            duration: 700, // smooth animation
-            // optional zoom limit
-          });
+          if (node) {
+            setSelectedNode(node);
+            fitView({
+              nodes: [node],
+              padding: 0.002,
+              duration: ANIMATION_TIME,
+            });
+          }
         }}
       >
         {minimap && (
           <MiniMap
-            zoomable
-            pannable
+            zoomable={true}
+            pannable={true}
             nodeColor={(node) => node.style?.backgroundColor as string}
           />
         )}
         {background && <Backgorund_ {...background} />}
-        {colorEditor && <CwkViewerColorEditor />}
+        {colorEditor && <CwlViewerColorEditor />}
       </ReactFlow>
     </div>
   );

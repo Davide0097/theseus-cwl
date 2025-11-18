@@ -2,32 +2,38 @@ import { Process } from "./process";
 import { WorkflowOutput } from "./workflow-output";
 import { WorkflowStep } from "./workflow-step";
 
+export enum Shape {
+  Sanitized = "sanitized",
+  Raw = "raw",
+}
+
 /**
- * A workflow describes a set of **steps** and the **dependencies** between
- * those steps.
- * When a step produces output that will be consumed by a
- * second step, the first step is a dependency of the second step.
+ * # Workflow
  *
- * # Extensions
+ * "A workflow is a CWL processing unit that executes command-line tools, expression tools, or workflows (sub-workflows) as steps.
+ * It must have inputs, outputs, and steps defined in the CWL document."
  *
- * [ScatterFeatureRequirement](#ScatterFeatureRequirement) and
- * [SubworkflowFeatureRequirement](#SubworkflowFeatureRequirement) are
- * available as standard [extensions](#Extensions_and_Metadata) to core
- * workflow semantics.
- *
+ * The workflow is a process that contains steps.
+ * Steps can be other workflows (nested workflows), command-line tools, or expression tools.
+ * The inputs of a workflow can be passed to any of its steps, while the outputs produced by its steps can be used in the final output of the workflow.
  */
-export type Workflow = Process & {
-  class: string;
+
+export type Workflow<S extends Shape = Shape.Sanitized> = Process<
+  S,
+  "Workflow"
+> & {
+  /**
+   * The record of parameters representing the steps that make up the workflow.
+   */
+  steps?: Record<string, WorkflowStep<S>>;
 
   /**
-   * The individual steps that make up the workflow.
+   * The record of parameters representing the outputs that make up the workflow.
    */
-  steps?: Record<string, WorkflowStep>;
+  outputs: Record<string, WorkflowOutput<S>>;
 
-  /**
-   * Defines the parameters representing the output of the process.  May be
-   * used to generate and/or validate the output object.
-   */
-  outputs: Record<string, WorkflowOutput>;
+  requirements?: (
+    | { class: "ScatterFeatureRequirement" }
+    | { class: "SubworkflowFeatureRequirement" }
+  )[];
 };
-

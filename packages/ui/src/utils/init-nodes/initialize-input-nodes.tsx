@@ -1,4 +1,5 @@
 import { Position, Node as xyFlowNode } from "@xyflow/react";
+import { ReactElement } from "react";
 
 import {
   EDITOR_PADDING,
@@ -6,36 +7,30 @@ import {
   NODE_MARGIN,
   NODE_WIDTH,
 } from "@theseus-cwl/configurations";
-import { Input, WorkflowOutput, WorkflowStep } from "@theseus-cwl/types";
+import { Input, Workflow, WorkflowStep } from "@theseus-cwl/types";
 
 import { InputNodeComponent } from "../../ui";
-import { hexToRgba, normalizeInput, normalizeStepsIn } from "../general";
+import { getId, hexToRgba } from "../general";
 
 /**
  * Props common to all node initialization functions.
  */
-export type BaseInitializeNodeProps<
-  T extends
-    | Record<string, Input>
-    | Record<string, WorkflowOutput>
-    | Record<string, WorkflowStep>,
-> = {
-  nodesInfo: T;
+export type BaseInitializeNodeProps = {
   color: string;
   readOnly: boolean;
   isSubWorkflow: boolean;
+  cwlFile: Workflow;
 };
 
 /**
  * Props for {@link initializeInputNodes}.
  */
-export type InitializeInputNodesProps = BaseInitializeNodeProps<
-  Record<string, Input>
-> & {
-  stepNodes: Array<
+export type InitializeInputNodesProps = BaseInitializeNodeProps & {
+  nodesInfo: Record<string, Input>;
+  sortedStepNodes: Array<
     xyFlowNode<{
-      label: Node;
-      step: WorkflowStep;
+      label?: ReactElement;
+      step?: WorkflowStep;
     }>
   >;
 };
@@ -47,46 +42,40 @@ export type InitializeInputNodesProps = BaseInitializeNodeProps<
  * Returns an array of {@link xyFlowNode} objects that xyFlow uses to render the input nodes.
  */
 export const initializeInputNodes = (
-  props: InitializeInputNodesProps
-): xyFlowNode<{ label: React.ReactNode; input?: Input }>[] => {
-  const { nodesInfo, color, stepNodes, readOnly, isSubWorkflow } = props;
+  props: InitializeInputNodesProps,
+): xyFlowNode<{ label?: ReactElement; input?: Input }>[] => {
+  const {
+    nodesInfo,
+    color,
+    sortedStepNodes,
+    readOnly,
+    isSubWorkflow,
+    cwlFile,
+  } = props;
 
   const usedInputKeysInOrder: string[] = [];
 
   /** Calculates the positions of input nodes based on the already initialized step nodes. */
-  stepNodes.forEach((stepNode) => {
-    const step: WorkflowStep = stepNode.data.step;
+  sortedStepNodes.forEach((stepNode) => {
+    const step: WorkflowStep | undefined = stepNode.data.step;
 
-    if (!step.in) {
-      console.warn(`Step with id ${step.id} doesn't contain 'in' field`);
+    if (!step?.in) {
+      console.warn(`Step with id ${step?.id} doesn't contain 'in' field`);
       return;
     }
 
-    Object.entries(normalizeStepsIn(step.in)).forEach(
-      ([stepInputKey, stepInput]) => {
-        const source = stepInput?.source;
-        if (!source) {
-          console.warn(
-            `Step ${step.id} input ${stepInputKey} doesn't contain a valid source`
-          );
-          return;
-        }
+    Object.entries(step.in).forEach(([stepInputKey, stepInput]) => {
+      const source = stepInput?.source;
+      if (!source) {
+        console.warn(
+          `Step ${step.id} input ${stepInputKey} doesn't contain a valid source`,
+        );
+        return;
+      }
 
-        if (Array.isArray(source)) {
-          source.forEach((sourceString) => {
-            const [sourceKey] = sourceString.split("/");
-            if (
-              sourceKey &&
-              // Other sourcekey could come from other steps and not form an input
-              sourceKey in nodesInfo &&
-              !usedInputKeysInOrder.includes(sourceKey)
-            ) {
-              usedInputKeysInOrder.push(sourceKey);
-            }
-          });
-        } else {
-          const [sourceKey] = source.split("/");
-
+      if (Array.isArray(source)) {
+        source.forEach((sourceString) => {
+          const [sourceKey] = sourceString.split("/");
           if (
             sourceKey &&
             // Other sourcekey could come from other steps and not form an input
@@ -95,25 +84,36 @@ export const initializeInputNodes = (
           ) {
             usedInputKeysInOrder.push(sourceKey);
           }
+        });
+      } else {
+        const [sourceKey] = source.split("/");
+
+        if (
+          sourceKey &&
+          // Other sourcekey could come from other steps and not form an input
+          sourceKey in nodesInfo &&
+          !usedInputKeysInOrder.includes(sourceKey)
+        ) {
+          usedInputKeysInOrder.push(sourceKey);
         }
       }
-    );
+    });
   });
 
   const allInputKeys = Object.keys(nodesInfo);
   const unusedInputs = allInputKeys.filter(
-    (key) => !usedInputKeysInOrder.includes(key)
+    (key) => !usedInputKeysInOrder.includes(key),
   );
 
   const sortedInputKeys = [...usedInputKeysInOrder, ...unusedInputs];
 
-  const inputNodes: xyFlowNode<{ label: React.ReactNode; input?: Input }>[] =
+  const inputNodes: xyFlowNode<{ label?: ReactElement; input?: Input }>[] =
     sortedInputKeys.map((key, index) => {
-      const input = normalizeInput(nodesInfo[key]!);
+      const input = nodesInfo[key]!;
 
       return {
-        id: key,
-        targetPosition: Position.Left,
+        id: getId(cwlFile.id, key),
+        targetPosition: isSubWorkflow ? Position.Left : Position.Bottom,
         sourcePosition: Position.Bottom,
         data: {
           input: input,
@@ -121,8 +121,7 @@ export const initializeInputNodes = (
             <InputNodeComponent
               isSubWorkflow={isSubWorkflow}
               mode="input"
-              input={{ ...input, __key: key }}
-              color={color}
+              input={{ ...input }}
             />
           ),
         },
@@ -147,13 +146,13 @@ export const initializeInputNodes = (
 
   if (!readOnly) {
     const placeholderNode: xyFlowNode<{
-      label: React.ReactNode;
+      label?: ReactElement;
       input?: Input;
     }> = {
       id: "__new_input_placeholder__",
       type: "input",
       data: {
-        label: <InputNodeComponent mode="placeholder" color={color} />,
+        label: <InputNodeComponent mode="placeholder" />,
       },
       extent: "parent",
       position: {
@@ -175,22 +174,6 @@ export const initializeInputNodes = (
     };
 
     inputNodes.push(placeholderNode);
-  }
-  if (isSubWorkflow) {
-    const scale = 0.6;
-
-    inputNodes.forEach((node) => {
-      node.style = {
-        ...node.style,
-        width: NODE_WIDTH * scale,
-        height: NODE_HEIGHT * scale,
-      };
-
-      node.position = {
-        x: node.position.x * scale,
-        y: node.position.y * scale,
-      };
-    });
   }
 
   return inputNodes;

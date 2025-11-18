@@ -2,12 +2,13 @@ import { useEdgesState, useNodesState } from "@xyflow/react";
 import { useEffect } from "react";
 
 import { initializeEdges, initializeNodes } from "../utils";
-import { useWorkflowState } from "./use-workflow-state";
+import { useCwlFileState } from "./use-cwl-file-state";
 
-export type UseWorkflowNodesAndEdgesProps = {
+export type UseCwlFileNodesAndEdgesProps = {
   wrappers: boolean;
   readOnly: boolean;
   labels: boolean;
+  subWorkflowScalingFactor: number;
 };
 
 /**
@@ -18,8 +19,7 @@ export type UseWorkflowNodesAndEdgesProps = {
  * - Synchronizes them when relevant workflow state changes occur with an useEffect.
  * - Provides state setters and change handlers compatible with @xyflow/react.
  *
- * @param props - Hook configuration options
- * @param props.wrappers - If `true`, includes wrapper nodes in the generated node sets
+ * @param {UseCwlFileNodesAndEdgesProps} props - Hook configuration options
  *
  * @returns Object containing:
  * - `nodes`: Current workflow nodes
@@ -32,7 +32,7 @@ export type UseWorkflowNodesAndEdgesProps = {
  * @example
  * ```tsx
  * const { nodes, setNodes, onNodesChange, edges, setEdges, onEdgesChange } =
- *   useWorkflowNodesAndEdges({ readonly: false, wrappers: true });
+ *   useCwlFileNodesAndEdges({ readonly: false, wrappers: true, labels: true });
  *
  * return (
  *   <ReactFlow
@@ -48,14 +48,14 @@ export type UseWorkflowNodesAndEdgesProps = {
  * Editing behaviors are used internally as a possible evolution of the project.
  * They must not be considered part of the public API.
  */
-export const useWorkflowNodesAndEdges = (
-  props: UseWorkflowNodesAndEdgesProps
+export const useCwlFileNodesAndEdges = (
+  props: UseCwlFileNodesAndEdgesProps,
 ) => {
-  const { wrappers, readOnly, labels } = props;
+  const { wrappers, readOnly, labels, subWorkflowScalingFactor } = props;
 
   const {
-    cwlObject,
-    setCwlObject,
+    cwlFile,
+    setCwlFile,
     updateInput,
     updateStep,
     updateOutput,
@@ -64,41 +64,38 @@ export const useWorkflowNodesAndEdges = (
     addOutput,
     colors,
     setColors,
-  } = useWorkflowState();
-
+  } = useCwlFileState();
   const initialNodes = initializeNodes({
-           cwlFile:cwlObject,
-
+    cwlFile,
     wrappers,
     colors,
     readOnly,
     labels,
+    subWorkflowScalingFactor,
   });
-  const initialEdges = initializeEdges(cwlObject, labels);
-
+  const initialEdges = initializeEdges(cwlFile, labels);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   useEffect(() => {
     setNodes(
       initializeNodes({
-        cwlFile:cwlObject,
+        cwlFile,
         wrappers,
         colors,
         readOnly,
         labels,
-      })
+        subWorkflowScalingFactor,
+      }),
     );
-    setEdges(initializeEdges(cwlObject, labels));
-
-    console.log(nodes, edges)
+    setEdges(initializeEdges(cwlFile, labels));
   }, [
     wrappers,
     labels,
     setEdges,
     setNodes,
-    cwlObject,
-    setCwlObject,
+    cwlFile,
+    setCwlFile,
     updateInput,
     updateStep,
     updateOutput,
@@ -108,6 +105,7 @@ export const useWorkflowNodesAndEdges = (
     colors,
     setColors,
     readOnly,
+    subWorkflowScalingFactor,
   ]);
 
   return { nodes, setNodes, onNodesChange, edges, setEdges, onEdgesChange };

@@ -3,7 +3,7 @@
 A collection of **common TypeScript types** shared across the `@theseus-cwl` ecosystem.  
 This package provides reusable type definitions that can be imported by both **internal monorepo packages** and **external projects**.
 
-This is not intended to be a complete CWL standard TypeScript mapping. The type definition is not identical to the one provided by the standard. For example, outputs and inputs are treated as records rather than arrays.
+This is not intended to be a complete CWL standard TypeScript mapping. The type definition is not identical to the one provided by the standard..
 
 ## Installation
 
@@ -21,18 +21,22 @@ yarn add @theseus-cwl/types
 import { Workflow } from '@theseus-cwl/types';
 import { CwlViewer } from '@theseus-cwl/ui';
 
-const cwlObject: Workflow = {
-  cwlVersion: "v1.0",
-  class: "Workflow",
-  inputs: {
-    num1: { type: "int" },
-    num2: { type: "int" },
-    multiplier: { type: "int" },
-  },
-  steps: [
-    {
-      id: "add",
-      content: {
+const cwlObject: Workflow ={
+    cwlVersion: "v1.2",
+    class: "Workflow",
+    inputs: {
+      num1: {
+        type: "int",
+      },
+      num2: {
+        type: "int",
+      },
+      multiplier: {
+        type: "int",
+      },
+    },
+    steps: {
+      add: {
         run: "../math/add.cwl",
         in: {
           a: { source: "num1" },
@@ -40,10 +44,7 @@ const cwlObject: Workflow = {
         },
         out: "sum",
       },
-    },
-    {
-      id: "multiply",
-      content: {
+      multiply: {
         run: "../math/multiply.cwl",
         in: {
           number: { source: "add/sum" },
@@ -52,14 +53,13 @@ const cwlObject: Workflow = {
         out: "result",
       },
     },
-  ],
-  outputs: {
-    final_result: {
-      type: "int",
-      outputSource: "multiply/result",
+    outputs: {
+      final_result: {
+        type: "int",
+        outputSource: "multiply/result",
+      },
     },
-  },
-};
+  };
 
 export const Example = () => {
   return (

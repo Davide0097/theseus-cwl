@@ -9,15 +9,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@theseus-cwl/configurations": "*",
+    "@theseus-cwl/types": "*",
+    "@theseus-cwl/ui": "*",
     "@xyflow/react": "^12.4.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@theseus-cwl/configurations": "*",
-    "@theseus-cwl/types": "*",
-    "@theseus-cwl/ui": "*"
+    "yaml": "^2.8.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
+    "@theseus-cwl/eslint-config": "*",
+    "@theseus-cwl/typescript-config": "*",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react-swc": "^3.8.0",
@@ -27,8 +30,6 @@
     "globals": "^15.15.0",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.24.1",
-    "vite": "^6.2.0",
-    "@theseus-cwl/eslint-config": "*",
-    "@theseus-cwl/typescript-config": "*"
+    "vite": "^6.2.0"
   }
 }

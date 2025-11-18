@@ -1,15 +1,17 @@
 import { Type } from "./type";
 import { Expression } from "./workflow-step";
 
-/** The CWL file output */
+/**
+ * The CWL file output
+ */
 export type Output = {
   /**
    * Describes how to handle the outputs of a process.
-  
    */
   outputBinding?: {};
 
   type: Type;
+
   outputSource?: string;
 
   /**

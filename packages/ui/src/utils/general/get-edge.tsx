@@ -1,26 +1,42 @@
 import { Edge, MarkerType } from "@xyflow/react";
 
-export const getEdge = (
-  source: string,
-  target: string,
-  type:
-    | "input_to_step"
-    | "step_to_step"
-    | "step_to_output"
-    | "worflow_to_worflow",
-  labels: boolean,
-  id?: string
-): Edge => {
-    // Determine source handle
-  const sourceHandle =
-    type === "worflow_to_worflow" ? "right" : "bottom";
+export const getId = (workflowId: string, key: string) => {
+  return `${workflowId}-${key}`;
+};
+
+export type CwlEdgeType =
+  | "input_to_step"
+  | "step_to_step"
+  | "step_to_output"
+  | "workflow_to_workflow";
+
+export type GetEdgeProps = {
+  source: {
+    workflowId: string;
+    key: string;
+  };
+  target: {
+    workflowId: string;
+    key: string;
+  };
+  type: CwlEdgeType;
+  hasLabel: boolean;
+};
+
+export const getEdge = (props: GetEdgeProps): Edge => {
+  const { source, target, type, hasLabel } = props;
+
+  const sourceId = getId(source.workflowId, source.key);
+  const targetId = getId(target.workflowId, target.key);
+  const sourceHandle = type === "workflow_to_workflow" ? "right" : "bottom";
 
   return {
-    id: `${type}_edge_from_${source}_to_${target}_of_${id ?? "single_worflow"}`,
-    source: source,
-    target: target,   sourceHandle, 
+    id: `${type}_edge_from_${sourceId}_to_${targetId}`,
+    source: sourceId,
+    target: targetId,
+    sourceHandle: sourceHandle,
     animated: true,
-    label: labels ? `${source} → ${target}` : undefined,
+    label: hasLabel ? `${sourceId} → ${targetId}` : undefined,
     labelStyle: {
       background: "#f0f0f0",
       padding: "2px 6px",
@@ -30,7 +46,6 @@ export const getEdge = (
       color: "#333",
       boxShadow: "0 1px 2px rgba(0,0,0,0.5)",
     },
-    type: type === "worflow_to_worflow" ? "step" : undefined,
     markerEnd: {
       type: MarkerType.ArrowClosed,
       width: 16,
@@ -38,7 +53,7 @@ export const getEdge = (
       color: "rgba(0, 0, 0, 0.77)",
     },
     style: {
-      strokeWidth: type !== "worflow_to_worflow" ? 1.8 : 0.5,
+      strokeWidth: type !== "workflow_to_workflow" ? 1.8 : 0.5,
       stroke: "rgba(0, 0, 0, 0.77)",
     },
   };

@@ -8,13 +8,13 @@ import {
 
 export type ColorState = {
   input: string;
-  steps: string;
+  step: string;
   output: string;
 };
 
 const defaultColors: ColorState = {
   input: INPUT_NODE_COLOR,
-  steps: STEP_NODE_COLOR,
+  step: STEP_NODE_COLOR,
   output: OUTPUT_NODE_COLOR,
 };
 
@@ -26,7 +26,7 @@ export const useColorState = (props: UserColorStateProps) => {
   const { initialColorState } = props;
 
   const [colors, setColors] = useState<ColorState>(
-    initialColorState || defaultColors
+    initialColorState || defaultColors,
   );
 
   const setColorForType = (type: keyof ColorState, color: string) => {

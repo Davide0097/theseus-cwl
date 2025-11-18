@@ -1,3 +1,5 @@
+export * from "./commandline-tool";
+export * from "./expression-tool";
 export * from "./input";
 export * from "./output";
 export * from "./packed-document";

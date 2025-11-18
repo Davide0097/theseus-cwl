@@ -1,21 +1,26 @@
 import { useEffect, useState } from "react";
 
-import { Output, WorkflowStep } from "@theseus-cwl/types";
+import { WorkflowOutput, WorkflowStep } from "@theseus-cwl/types";
 
-import { useRenderField, useWorkflowState } from "../../hooks";
+import { useCwlFileState, useRenderField } from "../../hooks";
 import { hexToRgba } from "../../utils";
 
 export type OutputNodeFormProps = {
-  output: Output & { __key: string };
+  output: WorkflowOutput;
   readOnly: boolean;
 };
 
 export const OutputNodeForm = (props: OutputNodeFormProps) => {
   const { output, readOnly } = props;
-  const { colors, updateOutput } = useWorkflowState();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { colors, updateOutput } = useCwlFileState();
 
-  const [formState, setFormState] = useState<Output>({} as Output);
-  const [initialValues, setInitialValues] = useState<Output>({} as Output);
+  const [formState, setFormState] = useState<WorkflowOutput>(
+    {} as WorkflowOutput,
+  );
+  const [initialValues, setInitialValues] = useState<WorkflowOutput>(
+    {} as WorkflowOutput,
+  );
 
   useEffect(() => {
     setFormState(output);
@@ -32,15 +37,13 @@ export const OutputNodeForm = (props: OutputNodeFormProps) => {
   const hasChanged =
     JSON.stringify(formState) !== JSON.stringify(initialValues);
 
-  const handleOnClick = () => {
-    // updateOutput(output.__key, { ...formState, __key: output.__key });
-  };
+  const handleOnClick = () => {};
 
   return (
     <div className="output-node-form">
       <div className="output-node-form-header">
         <svg
-          style={{ background: hexToRgba(colors.output, 0.4) }}
+          style={{ backgroundColor: hexToRgba(colors.output, 0.4) }}
           xmlns="http://www.w3.org/2000/svg"
           width="24"
           height="24"
@@ -53,7 +56,7 @@ export const OutputNodeForm = (props: OutputNodeFormProps) => {
           <circle cx="12" cy="12" r="2"></circle>
         </svg>
         <h2>
-          {!readOnly ? "Edit" : ""} {output.__key}
+          {!readOnly ? "Edit" : ""} {output.id}
         </h2>
       </div>
       {Object.entries(formState).map(([key, value]) => (

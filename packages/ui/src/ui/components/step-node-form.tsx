@@ -2,21 +2,23 @@ import { useEffect, useState } from "react";
 
 import { WorkflowStep } from "@theseus-cwl/types";
 
-import { useRenderField, useWorkflowState } from "../../hooks";
+import { useRenderField, useCwlFileState } from "../../hooks";
 import { hexToRgba } from "../../utils";
 
 export type StepNodeFormProps = {
-  step: WorkflowStep & { __key: string };
+  step: WorkflowStep;
   readOnly: boolean;
 };
 
 export const StepNodeForm = (props: StepNodeFormProps) => {
   const { step, readOnly } = props;
 
-  const { colors, updateStep } = useWorkflowState();
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { colors, updateStep } = useCwlFileState();
   const [formState, setFormState] = useState<WorkflowStep>({} as WorkflowStep);
-  const [initialValues, setInitialValues] = useState<WorkflowStep>({} as WorkflowStep);
+  const [initialValues, setInitialValues] = useState<WorkflowStep>(
+    {} as WorkflowStep,
+  );
 
   useEffect(() => {
     setFormState(step);
@@ -33,15 +35,13 @@ export const StepNodeForm = (props: StepNodeFormProps) => {
   const hasChanged =
     JSON.stringify(formState) !== JSON.stringify(initialValues);
 
-  const handleOnClick = () => {
-    // updateStep(step.__key, { ...formState, __key: step.__key });
-  };
+  const handleOnClick = () => {};
 
   return (
     <div className="step-node-form">
       <div className="step-node-form-header">
         <svg
-          style={{ background: hexToRgba(colors.steps, 0.4) }}
+          style={{ background: hexToRgba(colors.step, 0.4) }}
           xmlns="http://www.w3.org/2000/svg"
           width="24"
           height="24"
@@ -65,7 +65,7 @@ export const StepNodeForm = (props: StepNodeFormProps) => {
           <path d="m11 13.73-4 6.93"></path>
         </svg>
         <h2>
-          {!readOnly ? "Edit" : ""} {step.__key}
+          {!readOnly ? "Edit" : ""} {step.id}
         </h2>
       </div>
       {Object.entries(formState).map(([key, value]) => (
@@ -78,7 +78,7 @@ export const StepNodeForm = (props: StepNodeFormProps) => {
         <div className="step-node-form-save-button">
           <button
             onClick={handleOnClick}
-            style={{ backgroundColor: hexToRgba(colors.steps, 0.4) }}
+            style={{ backgroundColor: hexToRgba(colors.step, 0.4) }}
           >
             Save Changes
           </button>

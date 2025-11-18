@@ -6,7 +6,7 @@ import {
   OUTPUT_NODE_COLOR,
   STEP_NODE_COLOR,
 } from "@theseus-cwl/configurations";
-import { Workflow } from "@theseus-cwl/types";
+import { Shape, Workflow } from "@theseus-cwl/types";
 import { CwlViewer } from "@theseus-cwl/ui";
 
 export type ToggleButtonProps = {
@@ -36,10 +36,10 @@ export const LandingPage = () => {
   const [initialColors, setInitialColors] = useState<{
     input: string;
     output: string;
-    steps: string;
+    step: string;
   }>({
     input: INPUT_NODE_COLOR,
-    steps: STEP_NODE_COLOR,
+    step: STEP_NODE_COLOR,
     output: OUTPUT_NODE_COLOR,
   });
 
@@ -49,9 +49,10 @@ export const LandingPage = () => {
       {
         cwlVersion: "v1.2",
         class: "Workflow",
-        inputs: { input_a: { type: "string" } },
+        inputs: { input_a: { id: "input_a", type: "string" } },
         steps: {
           step1: {
+            id: "step1",
             run: "tools/step1.cwl",
             in: { param_a: { source: "input_a" } },
             out: ["out1"],
@@ -59,14 +60,15 @@ export const LandingPage = () => {
         },
         outputs: {
           result: {
+            id: "result",
             type: "File",
             outputSource: "step1/out1",
           },
         },
-      } as Workflow,
+      } as Workflow<Shape.Raw>,
       null,
-      2
-    )
+      2,
+    ),
   );
 
   return (
@@ -178,7 +180,7 @@ export const LandingPage = () => {
                       <input
                         className="w-10 h-8 rounded-md cursor-pointer border border-border/50"
                         type="color"
-                        value={initialColors.steps}
+                        value={initialColors.step}
                         onChange={(event) =>
                           setInitialColors({
                             ...initialColors,
@@ -203,55 +205,114 @@ export const LandingPage = () => {
                     </label>
                   </div>
                   {/* Viewer */}
-                  <div className="h-[600px] border-border/50 bg-white ">
+                  <div className="h-[800px] border-border/50 bg-white ">
                     <CwlViewer
                       input={{
                         cwlVersion: "v1.2",
                         class: "Workflow",
-                        inputs: {
-                          input_a: { type: "string" },
-                          input_b: { type: "string" },
-                          input_c: { type: "string" },
-                          input_list: { type: "string[]" },
-                          condition_flag: { type: "boolean" },
-                        },
-                        steps: {
-                          step1: {
-                            run: "tools/step1.cwl",
-                            in: {
-                              param_a: { source: "input_a" },
+                        $graph: {
+                          "#main": {
+                            class: "Workflow",
+                            label: "Main Image Processing Workflow",
+                            doc: "Coordinates preprocessing, segmentation, and final report generation from an input image.",
+                            inputs: {
+                              input_image: { type: "File" },
+                              filter_strength: { type: "int" },
+                              model_type: { type: "string" },
                             },
-                            out: ["out1"],
-                          },
-                          step2: {
-                            run: "tools/step2.cwl",
-                            scatter: "param_b",
-                            in: {
-                              param_b: { source: "input_list" },
-                              dependency: { source: "step1/out1" },
+                            outputs: {
+                              report: {
+                                type: "File",
+                                outputSource: "report_generation/report_file",
+                              },
                             },
-                            out: ["out2"],
-                          },
-                          step3: {
-                            run: "tools/step3.cwl",
-                            in: {
-                              param_c: { source: "input_c" },
-                              dependency: { source: "step2/out2" },
+                            steps: {
+                              preprocessing: {
+                                run: "#ImagePreprocessWorkflow",
+                                in: {
+                                  raw_image: "input_image",
+                                  strength: "filter_strength",
+                                },
+                                out: ["clean_image"],
+                              },
+                              segmentation: {
+                                run: "#SegmentationWorkflow",
+                                in: {
+                                  image: "preprocessing/clean_image",
+                                  model: "model_type",
+                                },
+                                out: ["mask_image"],
+                              },
+                              report_generation: {
+                                run: "#ReportTool",
+                                in: {
+                                  original: "input_image",
+                                  cleaned: "preprocessing/clean_image",
+                                  mask: "segmentation/mask_image",
+                                },
+                                out: ["report_file"],
+                              },
                             },
-                            out: ["out3"],
                           },
-                          final: {
-                            run: "tools/finalize.cwl",
-                            in: {
-                              input: { source: "step3/out3" },
+                          "#ImagePreprocessWorkflow": {
+                            class: "Workflow",
+                            label: "Image Preprocessing Workflow",
+                            doc: "Cleans and filters an image before analysis.",
+                            inputs: {
+                              raw_image: { type: "File" },
+                              strength: { type: "int" },
                             },
-                            out: ["final_output"],
+                            outputs: {
+                              clean_image: {
+                                type: "File",
+                                outputSource: "enhance/enhanced_image",
+                              },
+                            },
+                            steps: {
+                              denoise: {
+                                run: "#DenoiseTool",
+                                in: { image: "raw_image" },
+                                out: ["denoised_image"],
+                              },
+                              enhance: {
+                                run: "#EnhanceTool",
+                                in: {
+                                  image: "denoise/denoised_image",
+                                  level: "strength",
+                                },
+                                out: ["enhanced_image"],
+                              },
+                            },
                           },
-                        },
-                        outputs: {
-                          result: {
-                            type: "File",
-                            outputSource: "final/final_output",
+                          "#SegmentationWorkflow": {
+                            class: "Workflow",
+                            label: "Segmentation Workflow",
+                            doc: "Applies deep learning models to segment key regions in the input image.",
+                            inputs: {
+                              image: { type: "File" },
+                              model: { type: "string" },
+                            },
+                            outputs: {
+                              mask_image: {
+                                type: "File",
+                                outputSource: "apply_model/mask",
+                              },
+                            },
+                            steps: {
+                              normalize: {
+                                run: "#NormalizeTool",
+                                in: { image: "image" },
+                                out: ["normalized_image"],
+                              },
+                              apply_model: {
+                                run: "#SegmentationTool",
+                                in: {
+                                  image: "normalize/normalized_image",
+                                  model_name: "model",
+                                },
+                                out: ["mask"],
+                              },
+                            },
                           },
                         },
                       }}

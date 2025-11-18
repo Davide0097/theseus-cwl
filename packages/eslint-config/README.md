@@ -1,4 +1,3 @@
-
 # @theseus-cwl/eslint-config
 
 A collection of **internal ESLint configurations** used across the `@theseus-cwl` ecosystem.  
@@ -35,8 +34,8 @@ export default {
   ...baseConfig,
   rules: {
     ...baseConfig.rules,
-    "no-console": "warn"
-  }
+    "no-console": "warn",
+  },
 };
 ```
 

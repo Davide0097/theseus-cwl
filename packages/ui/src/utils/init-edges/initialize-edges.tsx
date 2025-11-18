@@ -2,114 +2,69 @@ import { Edge } from "@xyflow/react";
 
 import { CWLPackedDocument, Workflow } from "@theseus-cwl/types";
 
-import { initializeInputToStepEdges } from "./initialize-input-step-edges";
-import { initializeStepToOutputEdges } from "./initialize-step-to-output-edges";
-import { initializeStepToStepEdges } from "./initialize-step-to-step-edges";
- 
-import { getEdge } from "../general";
-import { isPackedWorkflow } from "../general/is-packed-worflow";
+import { getMainWorkflow, isPackedDocument } from "../general";
+import { initializeInputToStepEdges } from "./initialize-inputs-to-steps-edges";
+import { initializeMainStepToSubworkflowInputEdges } from "./initialize-main-steps-to-subworkflow-inputs-edges";
+import { initializeStepToOutputEdges } from "./initialize-steps-to-outputs-edges";
+import { initializeStepToStepEdges } from "./initialize-steps-to-steps-edges";
 
 export const intializeSingleWorkflowEdges = (
-  cwlObject: Workflow,
-  labels: boolean
+  cwlFile: Workflow,
+  labels: boolean,
 ) => {
-  const inputToStepEdges = initializeInputToStepEdges(
-    cwlObject as Workflow,
-    labels
-  );
-  const stepToStepEdges = initializeStepToStepEdges(
-    cwlObject as Workflow,
-    labels
-  );
-  const stepToOutputEdges = initializeStepToOutputEdges(
-    cwlObject as Workflow,
-    labels
-  );
+  const inputToStepEdges = initializeInputToStepEdges(cwlFile, labels);
+  const stepToStepEdges = initializeStepToStepEdges(cwlFile, labels);
+  const stepToOutputEdges = initializeStepToOutputEdges(cwlFile, labels);
   return [...inputToStepEdges, ...stepToStepEdges, ...stepToOutputEdges];
 };
 
 /**
- * Initialize all the edges from the CWLWorkflow object
+ * Initialize all the edges from the CWLFile object
  *
- * @param {CWLWorkflow} cwlWorkflow
+ * @param {Workflow | CWLPackedDocument} cwlFile
  *
  * @returns {Edge[]}
  */
 export const initializeEdges = (
-  cwlObject: Workflow | CWLPackedDocument,
-  labels: boolean
+  cwlFile: Workflow | CWLPackedDocument,
+  labels: boolean,
 ): Edge[] => {
-  if (!isPackedWorkflow(cwlObject)) {
-    return intializeSingleWorkflowEdges(cwlObject, labels);
+  if (!isPackedDocument(cwlFile)) {
+    return intializeSingleWorkflowEdges(cwlFile, labels);
   } else {
     const allEdges: Edge[] = [];
 
-    Object.entries(cwlObject.$graph).map(([id, workflow]) => {
-      const inputToStepEdges = initializeInputToStepEdges(workflow, labels, id);
-      const stepToStepEdges = initializeStepToStepEdges(workflow, labels, id);
-      const stepToOutputEdges = initializeStepToOutputEdges(
-        workflow,
-        labels,
-        id
+    const mainWorkflow =
+      getMainWorkflow(cwlFile) || Object.values(cwlFile.$graph)[0];
+
+    if (!mainWorkflow) {
+      console.warn(
+        "CWLViewer: Could not find a main workflow in the packed document. " +
+          "Ensure that the CWL file has a valid entrypoint or main workflow defined.",
       );
+      return [];
+    }
+
+    Object.values(cwlFile.$graph).map((workflow) => {
+      const inputToStepEdges = initializeInputToStepEdges(workflow, labels);
+      const stepToStepEdges = initializeStepToStepEdges(workflow, labels);
+      const stepToOutputEdges = initializeStepToOutputEdges(workflow, labels);
       allEdges.push(
         ...inputToStepEdges,
         ...stepToStepEdges,
-        ...stepToOutputEdges
+        ...stepToOutputEdges,
       );
     });
 
-    const mainWorkflow = cwlObject?.$graph?.find(
-      (wf) => wf.id === "#main" || wf.class === "Workflow"
-    ) as Workflow;
+    const mainStepsToSubWorkflowInputEdges =
+      initializeMainStepToSubworkflowInputEdges(
+        mainWorkflow,
+        cwlFile.$graph,
+        labels,
+      );
 
-    const allWorkflowsMap: Record<string, Workflow> = {};
-    cwlObject.$graph.forEach((wf) => (allWorkflowsMap[wf.id] = wf));
-
-    const mainToSubEdges = initializeMainToSubworkflowInputEdges(
-      mainWorkflow,
-      allWorkflowsMap,
-      labels
-    );
-
-    allEdges.push(...mainToSubEdges);
+    allEdges.push(...mainStepsToSubWorkflowInputEdges);
 
     return allEdges;
   }
-};
-
-/**
- * Creates edges between the MAIN workflow steps → SUBWORKFLOW inputs.
- *
- */
-
-/**
- * Creates edges from MAIN workflow steps → SUBWORKFLOW inputs.
- */
-export const initializeMainToSubworkflowInputEdges = (
-  mainWorkflow: Workflow,
-  allWorkflows: Record<string, Workflow>,
-  labels: boolean
-): Edge[] => {
-  const edges: Edge[] = [];
-
-  Object.entries(mainWorkflow.steps || {}).forEach(([stepKey, step]) => {
-    const subWorkflowId = typeof step.run === "string" ? step.run : undefined;
-
-    if (!subWorkflowId || !allWorkflows[subWorkflowId]) return; // not a subworkflow
-
-    const subWorkflow = allWorkflows[subWorkflowId];
-
-    edges.push(
-      getEdge(
-        stepKey,
-        Object.keys(subWorkflow.inputs)[0]!,
-        "worflow_to_worflow",
-        labels,
-        mainWorkflow.id
-      )
-    );
-  });
-
-  return edges;
 };

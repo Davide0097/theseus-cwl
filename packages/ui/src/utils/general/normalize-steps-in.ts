@@ -1,9 +1,9 @@
-import { WorkflowStep } from "@theseus-cwl/types";
+import { Shape, WorkflowStep, WorkflowStepInput } from "@theseus-cwl/types";
 
 export const normalizeStepsIn = (
-  stepIn: WorkflowStep["in"]
-): Record<string, { source?: string | string[] }> => {
-  const normalized: Record<string, { source?: string | string[] }> = {};
+  stepIn: WorkflowStep<Shape.Raw | Shape.Raw>["in"],
+): Record<string, WorkflowStepInput> => {
+  const normalized: Record<string, WorkflowStepInput> = {};
 
   Object.entries(stepIn).forEach(([stepInKey, stepIn]) => {
     if (stepIn && typeof stepIn === "string") {

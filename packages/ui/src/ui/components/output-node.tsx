@@ -1,14 +1,18 @@
-import { Output } from "@theseus-cwl/types";
+import { WorkflowOutput } from "@theseus-cwl/types";
 
-import { useWorkflowState } from "../../hooks";
+import { useCwlFileState } from "../../hooks";
 
 export type OutputNodeComponentProps =
-  | { mode: "placeholder"; color: string,isSubWorkflow?:boolean }
-  | { mode: "output"; output: Output & { __key: string }; color: string,isSubWorkflow?:boolean };
+  | { mode: "placeholder"; isSubWorkflow?: boolean }
+  | {
+      mode: "output";
+      output: WorkflowOutput;
+      isSubWorkflow?: boolean;
+    };
 
 export const OutputNodeComponent = (props: OutputNodeComponentProps) => {
-  const { mode, color,isSubWorkflow } = props;
-  const { addOutput } = useWorkflowState();
+  const { mode, isSubWorkflow } = props;
+  const { colors, addOutput } = useCwlFileState();
 
   if (mode === "output") {
     const { output } = props;
@@ -23,22 +27,24 @@ export const OutputNodeComponent = (props: OutputNodeComponentProps) => {
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            style={{ backgroundColor: color }}
+            style={{ backgroundColor: colors.output }}
           >
             <circle cx="12" cy="12" r="10"></circle>
             <circle cx="12" cy="12" r="6"></circle>
             <circle cx="12" cy="12" r="2"></circle>
           </svg>
-          {!isSubWorkflow && <h1>{output.__key}</h1>}
+          <h1>{output.id}</h1>
         </div>
-       {!isSubWorkflow&& <div
-          className="output-node-card-badge"
-          style={{ backgroundColor: color }}
-        >
-          {typeof output.type === "object"
-            ? JSON.stringify(output.type)
-            : output.type}
-        </div>}
+        {!isSubWorkflow && (
+          <div
+            className="output-node-card-badge"
+            style={{ backgroundColor: colors.output }}
+          >
+            {typeof output.type === "object"
+              ? JSON.stringify(output.type)
+              : output.type}
+          </div>
+        )}
       </div>
     );
   }

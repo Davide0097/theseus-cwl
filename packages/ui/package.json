@@ -1,6 +1,6 @@
 {
   "name": "@theseus-cwl/ui",
-  "description": "A React toolkit for displaying Common Workflow Language (CWL) workflows as interactive graphs",
+  "description": "A React toolkit for displaying Common Workflow Language (CWL) workflows as interactive DAG graphs",
   "version": "1.0.20",
   "author": "davide giorgiutti",
   "license": "ISC",
@@ -21,15 +21,14 @@
   ],
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
       "types": "./dist/index.d.ts",
-      "style": "./dist/style.css"
+      "style": "./dist/style.css",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
     }
   },
   "dependencies": {
-    "@xyflow/react": "^12.8.2",
-    "uuid": "^11.1.0"
+    "@xyflow/react": "^12.8.2"
   },
   "devDependencies": {
     "@theseus-cwl/configurations": "^1.0.3",

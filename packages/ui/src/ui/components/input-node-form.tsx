@@ -1,28 +1,29 @@
 import { useEffect, useState } from "react";
 
-import { DefaultInput, Input } from "@theseus-cwl/types";
+import { ExtendedInput, Input } from "@theseus-cwl/types";
 
-import { useRenderField, useWorkflowState } from "../../hooks";
-import { hexToRgba, normalizeInput } from "../../utils";
+import { useCwlFileState, useRenderField } from "../../hooks";
+import { hexToRgba } from "../../utils";
 
 export type InputNodeFormProps = {
-  input: Input & { __key: string };
+  input: Input;
   readOnly: boolean;
 };
 
 export const InputNodeForm = (props: InputNodeFormProps) => {
   const { input, readOnly } = props;
 
-  const { colors, updateInput } = useWorkflowState();
-
-  const [formState, setFormState] = useState<DefaultInput>({} as DefaultInput);
-  const [initialValues, setInitialValues] = useState<DefaultInput>(
-    {} as DefaultInput
+  const { colors } = useCwlFileState();
+  const [formState, setFormState] = useState<ExtendedInput>(
+    {} as ExtendedInput,
+  );
+  const [initialValues, setInitialValues] = useState<ExtendedInput>(
+    {} as ExtendedInput,
   );
 
   useEffect(() => {
-    setFormState(normalizeInput(input));
-    setInitialValues(normalizeInput(input));
+    setFormState(input);
+    setInitialValues(input);
   }, [input]);
 
   const { renderField } = useRenderField((field, value) => {
@@ -35,9 +36,7 @@ export const InputNodeForm = (props: InputNodeFormProps) => {
   const hasChanged =
     JSON.stringify(formState) !== JSON.stringify(initialValues);
 
-  const handleOnClick = () => {
-    // updateInput(input.__key, { ...formState, __key: input.__key });
-  };
+  const handleOnClick = () => {};
 
   return (
     <div className="input-node-form">
@@ -57,9 +56,8 @@ export const InputNodeForm = (props: InputNodeFormProps) => {
           <path d="M5 12h14"></path>
           <path d="m12 5 7 7-7 7"></path>
         </svg>
-
         <h2>
-          {!readOnly ? "Edit" : ""} {input.__key}
+          {!readOnly ? "Edit" : ""} {initialValues.id}
         </h2>
       </div>
       {Object.entries(formState).map(([key, value]) => (

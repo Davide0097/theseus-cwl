@@ -9,16 +9,15 @@ import {
 import { WorkflowOutput, WorkflowStep } from "@theseus-cwl/types";
 
 import { OutputNodeComponent } from "../../ui";
-import { getMaxBottom, getMaxRight, hexToRgba } from "../general";
+import { getId, getMaxBottom, getMaxRight, hexToRgba } from "../general";
 import { BaseInitializeNodeProps } from "./initialize-input-nodes";
 
 /**
  * Props for {@link initializeOutputNodes}.
  */
-export type InitializeOutputNodesProps = BaseInitializeNodeProps<
-  Record<string, WorkflowOutput>
-> & {
-  stepNodes: xyFlowNode<{ label: ReactNode; step?: WorkflowStep }>[];
+export type InitializeOutputNodesProps = BaseInitializeNodeProps & {
+  nodesInfo: Record<string, WorkflowOutput>;
+  sortedStepNodes: xyFlowNode<{ label?: ReactNode; step?: WorkflowStep }>[];
   isSubWorkflow: boolean;
 };
 
@@ -29,9 +28,16 @@ export type InitializeOutputNodesProps = BaseInitializeNodeProps<
  * Returns an array of {@link xyFlowNode} objects that xyFlow uses to render the output nodes.
  */
 export const initializeOutputNodes = (
-  props: InitializeOutputNodesProps
-): xyFlowNode<{ label: ReactNode; output?: WorkflowOutput }>[] => {
-  const { nodesInfo, color, stepNodes, readOnly, isSubWorkflow } = props;
+  props: InitializeOutputNodesProps,
+): xyFlowNode<{ label?: ReactNode; output?: WorkflowOutput }>[] => {
+  const {
+    nodesInfo,
+    color,
+    sortedStepNodes,
+    readOnly,
+    isSubWorkflow,
+    cwlFile,
+  } = props;
 
   const outputNodes: xyFlowNode<{
     label: ReactNode;
@@ -40,17 +46,18 @@ export const initializeOutputNodes = (
 
   Object.entries(nodesInfo).forEach(([key, output]) => {
     let matchedStepNode:
-      | xyFlowNode<{ label: ReactNode; output?: WorkflowOutput }>
+      | xyFlowNode<{ label?: ReactNode; output?: WorkflowOutput }>
       | undefined;
 
-    for (const stepNode of stepNodes) {
+    for (const stepNode of sortedStepNodes) {
       const step: WorkflowStep | undefined = stepNode.data.step;
 
       if (!step) {
+        console.warn("");
         return;
       }
 
-      if (output.outputSource?.split("/")[0] === step.__key) {
+      if (output.outputSource?.split("/")[0] === step.id) {
         matchedStepNode = stepNode;
         break;
       }
@@ -59,24 +66,23 @@ export const initializeOutputNodes = (
     const position = matchedStepNode
       ? {
           x: matchedStepNode.position.x,
-          y: getMaxBottom(stepNodes) + NODE_MARGIN + NODE_MARGIN,
+          y: getMaxBottom(sortedStepNodes) + NODE_MARGIN + NODE_MARGIN,
         }
       : {
-          x: getMaxRight(stepNodes) + NODE_MARGIN,
-          y: getMaxBottom(stepNodes) + NODE_MARGIN + NODE_MARGIN,
+          x: getMaxRight(sortedStepNodes) + NODE_MARGIN,
+          y: getMaxBottom(sortedStepNodes) + NODE_MARGIN + NODE_MARGIN,
         };
 
     outputNodes.push({
-      id: key,
+      id: getId(cwlFile?.id, key),
       extent: "parent",
       data: {
         output: output,
         label: (
           <OutputNodeComponent
             isSubWorkflow={isSubWorkflow}
-            output={{ ...output, __key: key }}
+            output={{ ...output }}
             mode="output"
-            color={color}
           />
         ),
       },
@@ -105,7 +111,6 @@ export const initializeOutputNodes = (
         label: (
           <OutputNodeComponent
             mode="placeholder"
-            color={color}
             isSubWorkflow={isSubWorkflow}
           />
         ),
@@ -127,23 +132,6 @@ export const initializeOutputNodes = (
     };
 
     outputNodes.push(placeholderNode);
-  }
-
-  if (isSubWorkflow) {
-    const scale = 0.6;
-
-    outputNodes.forEach((node) => {
-      node.style = {
-        ...node.style,
-        width: NODE_WIDTH * scale,
-        height: NODE_HEIGHT * scale,
-      };
-
-      node.position = {
-        x: node.position.x,
-        y: node.position.y * scale + NODE_HEIGHT,
-      };
-    });
   }
 
   return outputNodes;

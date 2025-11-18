@@ -18,7 +18,7 @@ yarn add @theseus-cwl/configurations
 Import constants or configurations directly:
 
 ```ts
-import { EDITOR_PADDING } from '@theseus-cwl/configurations';
+import { EDITOR_PADDING } from "@theseus-cwl/configurations";
 
 console.log(EDITOR_PADDING);
 ```

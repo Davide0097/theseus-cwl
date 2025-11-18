@@ -1,15 +1,19 @@
 import { WorkflowStep } from "@theseus-cwl/types";
-import { Handle, Position } from "@xyflow/react";
+import { Handle as H, HandleProps, Position } from "@xyflow/react";
 
-import { useWorkflowState } from "../../hooks";
+import { useCwlFileState } from "../../hooks";
+
+const Handle_ = H as React.MemoExoticComponent<
+  React.ForwardRefExoticComponent<HandleProps & React.RefAttributes<Element>>
+>;
 
 export type StepNodeComponentProps =
-  | { mode: "placeholder"; color: string , isSubWorkflow: boolean }
-  | { mode: "step"; step: WorkflowStep & { __key: string }; color: string ,isSubWorkflow: boolean};
+  | { mode: "placeholder"; isSubWorkflow: boolean }
+  | { mode: "step"; step?: WorkflowStep; isSubWorkflow: boolean };
 
 export const StepNodeComponent = (props: StepNodeComponentProps) => {
-  const { mode, color,isSubWorkflow } = props;
-  const { addStep } = useWorkflowState();
+  const { mode, isSubWorkflow } = props;
+  const { colors, addStep } = useCwlFileState();
 
   if (mode === "step") {
     const { step } = props;
@@ -18,7 +22,7 @@ export const StepNodeComponent = (props: StepNodeComponentProps) => {
       <div className="step-node-card">
         <div className="step-node-card-header">
           <svg
-            style={{ backgroundColor: color }}
+            style={{ backgroundColor: colors.step }}
             xmlns="http://www.w3.org/2000/svg"
             width="24"
             height="24"
@@ -41,32 +45,24 @@ export const StepNodeComponent = (props: StepNodeComponentProps) => {
             <path d="m17 3.34-1 1.73"></path>
             <path d="m11 13.73-4 6.93"></path>
           </svg>
-        {!isSubWorkflow &&   <h1>{step.__key}</h1>}
+          <h1>{step?.id}</h1>
         </div>
-     {!isSubWorkflow &&   <div
-          className="step-node-card-badge"
-          style={{ backgroundColor: color }}
-        >
-          step
-        </div>}
-        {!isSubWorkflow&&<div className="step-node-card-info">
-          Run: {typeof step.run === "string" ? step.run : step.run.id || ""}
-        </div>}   {/* RIGHT handle = subworkflow link */}
-
- 
- <Handle
-  type="source"
-  id="bottom"
-  position={Position.Bottom}
-  style={{ background: "#333" }}
-/>
-
-<Handle
-  type="source"
-  id="right"
-  position={Position.Right}
-  style={{ background: "#333" }}
-/>
+        {!isSubWorkflow && (
+          <div
+            className="step-node-card-badge"
+            style={{ backgroundColor: colors.step }}
+          >
+            step
+          </div>
+        )}
+        {!isSubWorkflow && (
+          <div className="step-node-card-info">
+            Run: {typeof step?.run === "string" ? step.run : step?.run.id || ""}
+          </div>
+        )}
+        {/* RIGHT handle = subworkflow link */}
+        <Handle_ type="source" id="bottom" position={Position.Bottom} />
+        <Handle_ type="source" id="right" position={Position.Right} />
       </div>
     );
   }

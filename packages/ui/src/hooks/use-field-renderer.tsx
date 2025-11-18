@@ -1,15 +1,15 @@
 import { useCallback } from "react";
 
-import { Input, Output, WorkflowStep } from "@theseus-cwl/types";
+import { Input, WorkflowOutput, WorkflowStep } from "@theseus-cwl/types";
 
-type FieldType = keyof Input | keyof WorkflowStep | keyof Output;
+type FieldType = keyof Input | keyof WorkflowStep | keyof WorkflowOutput;
 
 export const useRenderField = (
   handleChange: (
     field: FieldType,
-    value: string | number | Record<string, never> | Array<string>
+    value: string | number | Record<string, never> | Array<string>,
   ) => void,
-  readOnly: boolean
+  readOnly: boolean,
 ) => {
   const renderField = useCallback(
     (field: FieldType, value: string | number | boolean | object) => {
@@ -33,7 +33,7 @@ export const useRenderField = (
             onChange={(event) =>
               handleChange(
                 field,
-                event.target.value.split(",").map((string) => string.trim())
+                event.target.value.split(",").map((string) => string.trim()),
               )
             }
           />
@@ -59,7 +59,7 @@ export const useRenderField = (
 
       return null;
     },
-    [handleChange, readOnly]
+    [handleChange, readOnly],
   );
 
   return { renderField };

@@ -1,22 +1,17 @@
-import {  Input, Type } from "@theseus-cwl/types";
+import { Input, Shape, Type } from "@theseus-cwl/types";
 
 export const normalizeInput = (
-  input: Input
-):  {
-    type: Type | Type[];
-    default?: string;
-    inputBinding?: {
-        position: number;
-    };
-} => {
+  input: Input<Shape.Raw | Shape.Raw>,
+): Input<Shape.Sanitized> => {
   let normalized;
 
   if (typeof input === "string") {
     normalized = {
+      id: input,
       type: "string" as Type,
     };
   } else {
-    normalized = input;
+    normalized = input as unknown as Input<Shape.Sanitized>;
   }
 
   return normalized;
