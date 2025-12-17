@@ -1,10 +1,12 @@
 import { yaml } from "@codemirror/lang-yaml";
-import { EditorView, lineNumbers } from "@uiw/react-codemirror";
-
+import { lineNumbers } from "@uiw/react-codemirror";
+// EditorView,
 import CodeMirror from "@uiw/react-codemirror";
 
-const CodeMirror_ = CodeMirror as React.MemoExoticComponent<
-  React.ForwardRefExoticComponent<any & React.RefAttributes<Element>>
+const CodeMirror_ = CodeMirror as unknown as React.MemoExoticComponent<
+  React.ForwardRefExoticComponent<
+    Record<string, unknown> & React.RefAttributes<Element>
+  >
 >;
 
 export type CwlCodeEditorProps = {
