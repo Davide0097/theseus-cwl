@@ -27,7 +27,6 @@
       "require": "./dist/index.js"
     }
   },
- 
   "devDependencies": {
     "@theseus-cwl/eslint-config": "*",
     "@theseus-cwl/types": "*",
@@ -44,5 +43,9 @@
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "dependencies": {
+    "@codemirror/lang-yaml": "^6.1.2",
+    "@uiw/react-codemirror": "^4.25.4"
   }
 }
