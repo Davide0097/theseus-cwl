@@ -1,0 +1,30 @@
+{
+  "name": "@theseus-cwl/types",
+  "description": "Collection of internal typescript definitions.",
+  "version": "1.1.0",
+  "author": "davide giorgiutti",
+  "license": "MIT",
+  "main": "index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc -p tsconfig.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "index.js",
+    "index.d.ts",
+    "LICENSE-MIT"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "devDependencies": {
+    "@theseus-cwl/typescript-config": "*"
+  }
+}

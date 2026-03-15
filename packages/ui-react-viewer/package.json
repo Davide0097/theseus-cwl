@@ -1,0 +1,53 @@
+{
+  "name": "@theseus-cwl/ui-react-viewer",
+  "description": "A React toolkit for displaying Common Workflow Language (CWL) workflows as interactive DAG graphs",
+  "version": "1.1.1",
+  "author": "davide giorgiutti",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "lint": "eslint . --max-warnings 0",
+    "check-types": "tsc --noEmit"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "LICENSE-MIT"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "style": "./dist/style.css",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@xyflow/react": "^12.8.2",
+    "@theseus-cwl/configurations": "^1.1.0",
+    "@theseus-cwl/parser": "*"
+  },
+  "devDependencies": {
+    "@theseus-cwl/eslint-config": "*",
+    "@theseus-cwl/types": "*",
+    "@theseus-cwl/typescript-config": "*",
+    "@types/node": "^22.13.10",
+    "@types/react": "19.0.12",
+    "@types/react-dom": "19.0.4",
+    "eslint": "^9.23.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tsup": "^8.5.0",
+    "typescript": "5.8.2"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  }
+}

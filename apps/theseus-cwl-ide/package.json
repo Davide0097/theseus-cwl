@@ -1,0 +1,41 @@
+{
+  "name": "theseus-cwl-ide",
+  "private": true,
+  "version": "0.1.0",
+  "author": "davide giorgiutti",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@theseus-cwl/configurations": "*",
+    "@theseus-cwl/types": "*",
+    "@theseus-cwl/parser": "*",
+    "@theseus-cwl/ui-react-viewer": "*",
+    "@theseus-cwl/ui-react-editor": "*",
+    "@xyflow/react": "^12.4.4",
+    "antd": "^6.1.1",
+    "mobx": "^6.15.0",
+    "mobx-react": "^9.2.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "@theseus-cwl/eslint-config": "*",
+    "@theseus-cwl/typescript-config": "*",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react-swc": "^3.8.0",
+    "eslint": "^9.21.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^15.15.0",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.24.1",
+    "vite": "^6.2.0"
+  }
+}

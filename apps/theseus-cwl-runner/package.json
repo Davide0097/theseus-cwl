@@ -1,0 +1,23 @@
+{
+  "name": "theseus-cwl-runner",
+  "version": "1.0.0",
+  "type": "module",
+  "author": "davide giorgiutti",
+  "license": "MIT",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "yaml": "^2.8.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@theseus-cwl/types": "*",
+    "tsx": "^4.7.0",
+    "typescript": "^5.4.0"
+  }
+}

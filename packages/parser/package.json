@@ -1,0 +1,38 @@
+{
+  "name": "@theseus-cwl/parser",
+  "description": "",
+  "version": "0.0.0",
+  "author": "davide giorgiutti",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "build": "tsup src/index.ts --format cjs,esm --dts"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "LICENSE?MIT"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "devDependencies": {
+    "@theseus-cwl/typescript-config": "*",
+    "@theseus-cwl/types": "*",
+    "typescript": "^5.8.2",
+    "tsup": "^8.5.0"
+  },
+  "dependencies": {
+    "@theseus-cwl/configurations": "^1.1.0",
+    "yaml": "^2.8.1"
+  }
+}
