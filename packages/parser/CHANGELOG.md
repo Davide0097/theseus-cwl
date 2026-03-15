@@ -1,11 +1,9 @@
-# theseus-cwl-landing-page
+# @theseus-cwl/parser
 
-## 0.1.1
+## 0.0.1
 
 ### Patch Changes
 
 - reinitialize changelogs
 - Updated dependencies
   - @theseus-cwl/configurations@1.1.1
-  - @theseus-cwl/types@1.1.1
-  - @theseus-cwl/ui-react-viewer@1.1.2

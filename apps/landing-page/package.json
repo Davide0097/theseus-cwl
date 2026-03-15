@@ -1,7 +1,7 @@
 {
   "name": "theseus-cwl-landing-page",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,8 +12,8 @@
   "dependencies": {
     "@codemirror/lang-yaml": "^6.1.2",
     "@theseus-cwl/configurations": "*",
-    "@theseus-cwl/types": "^1.1.0",
-    "@theseus-cwl/ui-react-viewer": "^1.1.0",
+    "@theseus-cwl/types": "^1.1.1",
+    "@theseus-cwl/ui-react-viewer": "^1.1.2",
     "@uiw/react-codemirror": "^4.25.3",
     "@xyflow/react": "^12.4.4",
     "js-yaml": "^4.1.1",

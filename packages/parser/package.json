@@ -1,7 +1,7 @@
 {
   "name": "@theseus-cwl/parser",
   "description": "",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "davide giorgiutti",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -32,7 +32,7 @@
     "tsup": "^8.5.0"
   },
   "dependencies": {
-    "@theseus-cwl/configurations": "^1.1.0",
+    "@theseus-cwl/configurations": "^1.1.1",
     "yaml": "^2.8.1"
   }
 }

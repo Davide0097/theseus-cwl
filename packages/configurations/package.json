@@ -1,7 +1,7 @@
 {
   "name": "@theseus-cwl/configurations",
   "description": "Collection of internal static configurations.",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "davide giorgiutti",
   "license": "MIT",
   "main": "./dist/index.js",
