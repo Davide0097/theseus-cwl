@@ -57,13 +57,17 @@ export class CwlIdeRunner {
 
       const { runId } = await response.json();
       this.pollRunStatus(runId);
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.store.setRunStatus(RunStatus.FAILED);
+
+      const errorMessage =
+        error instanceof Error
+          ? `Run request failed: ${error.message}`
+          : "Run request failed";
+
       this.store.addLogs({
         component: "theseus-cwl-ide",
-        text: error.message
-          ? `Run request failed: ${error.message}`
-          : "Run request failed",
+        text: errorMessage,
         timeStamp: new Date().toISOString(),
         type: "error",
       });
@@ -127,14 +131,18 @@ export class CwlIdeRunner {
             type: "error",
           });
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         clearInterval(interval);
         this.store.setRunStatus(RunStatus.FAILED);
+
+        const errorMessage =
+          error instanceof Error
+            ? `Run request failed: ${error.message}`
+            : "Run request failed";
+
         this.store.addLogs({
           component: "theseus-cwl-ide",
-          text: error.message
-            ? `Run request failed: ${error.message}`
-            : "Run request failed",
+          text: errorMessage,
           timeStamp: new Date().toISOString(),
           type: "error",
         });

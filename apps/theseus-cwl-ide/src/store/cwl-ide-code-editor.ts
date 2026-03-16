@@ -3,7 +3,7 @@ import { action, computed, makeObservable, observable } from "mobx";
 import { CwlIdeStore } from "./cwl-ide-store";
 import { CwlSource, Shape } from "@theseus-cwl/types";
 
-export const DEFAULT_CWL_VIEWER_OPTIONS: Record<string, any> = {
+export const DEFAULT_CWL_VIEWER_OPTIONS: Record<string, unknown> = {
   wrap: false,
   fontSize: 14,
   autocomplete: true,
@@ -11,13 +11,13 @@ export const DEFAULT_CWL_VIEWER_OPTIONS: Record<string, any> = {
 
 export type CwlIdeCodeEditorParams = {
   store: CwlIdeStore;
-  initialOptions: Record<string, any> | undefined;
+  initialOptions: Record<string, unknown> | undefined;
 };
 
 export class CwlIdeCodeEditor {
   readonly store: CwlIdeStore;
 
-  @observable options: Record<string, any> | undefined;
+  @observable options: Record<string, unknown> | undefined;
 
   constructor(params: CwlIdeCodeEditorParams) {
     this.store = params.store;
@@ -30,7 +30,7 @@ export class CwlIdeCodeEditor {
   }
 
   @action
-  setOptions = (patch: Record<string, any>) => {
+  setOptions = (patch: Record<string, unknown>) => {
     this.options = {
       ...this.options,
       ...patch,

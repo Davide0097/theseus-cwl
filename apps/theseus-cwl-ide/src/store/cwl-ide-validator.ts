@@ -95,13 +95,17 @@ export class CwlIdeValidator {
 
         return false;
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       this.store.setValidationStatus(ValidationStatus.NOT_VALID);
+
+      const errorMessage =
+        error instanceof Error
+          ? `Validation request failed: ${error.message}`
+          : "Validation request failed";
+
       this.store.addLogs({
         component: "theseus-cwl-ide",
-        text: error.message
-          ? `Validation request failed: ${error.message}`
-          : "Validation request failed",
+        text: errorMessage,
         timeStamp: new Date().toISOString(),
         type: "error",
       });

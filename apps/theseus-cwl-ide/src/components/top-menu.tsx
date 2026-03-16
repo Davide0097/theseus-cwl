@@ -151,7 +151,10 @@ export const CwlIdeTopMenu = observer((props: CwlIdeMenuProps) => {
         key: "fontPlus",
         onClick: () => {
           editor?.setOptions({
-            fontSize: Math.max(10, editor?.options?.fontSize || 10 + 1),
+            fontSize: Math.max(
+              10,
+              (editor?.options?.fontSize as number) || 10 + 1,
+            ),
           });
         },
       },
@@ -160,7 +163,10 @@ export const CwlIdeTopMenu = observer((props: CwlIdeMenuProps) => {
         key: "fontMinus",
         onClick: () => {
           editor?.setOptions({
-            fontSize: Math.max(10, editor?.options?.fontSize || 10 - 1),
+            fontSize: Math.max(
+              10,
+              (editor?.options?.fontSize as number) || 10 - 1,
+            ),
           });
         },
       },

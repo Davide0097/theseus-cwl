@@ -13,7 +13,7 @@ const { TabPane } = Tabs;
 export type RunDetailsDrawerProps = {
   run?: Run;
   visible: boolean;
-  onClose: () => any;
+  onClose: () => unknown;
 };
 
 const RunDetailsDrawer = (props: RunDetailsDrawerProps) => {
@@ -43,7 +43,11 @@ const RunDetailsDrawer = (props: RunDetailsDrawerProps) => {
           <ul>
             {Object.entries(run.outputs).map(([name, path]) => (
               <li key={name}>
-                <a href={`http://localhost:3004/${path}`} target="_blank">
+                <a
+                  href={`http://localhost:3004/${path}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   {name}
                 </a>
               </li>

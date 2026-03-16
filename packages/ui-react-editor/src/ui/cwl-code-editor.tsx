@@ -5,7 +5,6 @@ import CodeMirror, {
   EditorView,
   lineNumbers,
   ReactCodeMirrorProps,
-  ViewUpdate,
 } from "@uiw/react-codemirror";
 import { useEffect, useMemo, useState } from "react";
 import YAML from "yaml";
@@ -103,8 +102,8 @@ export const CwlCodeEditor = (props: CwlCodeEditorProps) => {
     input = undefined,
     activeFileId = undefined,
     readOnly = false,
-    onChange = (value) => console.log(value),
-    fontSize = "24px",
+    // onChange = (value) => console.log(value),
+    // fontSize = "24px",
     wrap = true,
   } = props;
 
@@ -173,7 +172,7 @@ export const CwlCodeEditor = (props: CwlCodeEditorProps) => {
     ];
   }, [wrap]);
 
-  const onValueChange = async (value: string, viewUpdate: ViewUpdate) => {
+  const onValueChange = async (value: string) => {
     if (!input || !selectedFileId) {
       return;
     }

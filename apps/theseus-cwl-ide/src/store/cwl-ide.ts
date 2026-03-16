@@ -18,7 +18,7 @@ export type CWLIdeParams = {
   options:
     | {
         // ! todo: fix the editor typing
-        editor: Record<string, any> | undefined;
+        editor: Record<string, unknown> | undefined;
         viewer: Omit<CwlViewerProps, "input"> | undefined;
       }
     | undefined;
