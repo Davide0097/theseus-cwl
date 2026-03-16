@@ -1,7 +1,7 @@
 {
   "name": "@theseus-cwl/ui-react-editor",
   "description": "A React toolkit for displaying a Common Workflow Language (CWL) workflows source editor",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "davide giorgiutti",
   "license": "MIT",
   "main": "dist/index.js",
