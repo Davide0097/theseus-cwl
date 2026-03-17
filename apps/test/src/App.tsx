@@ -1,13 +1,14 @@
 import { useState } from "react";
 
 import { SUBWORKFLOW_NODE_SCALING_FACTOR } from "@theseus-cwl/configurations";
-import { CwlViewer } from "@theseus-cwl/ui-react-viewer";
 import { CwlCodeEditor } from "@theseus-cwl/ui-react-editor";
+import { CwlViewer } from "@theseus-cwl/ui-react-viewer";
 
-import { SOURCES } from "./sources";
+import { SOURCES } from "./examples";
 
 export const ExampleComponent = () => {
   const [sourceIndex, setSourceIndex] = useState(0);
+  const [useString, setUseString] = useState(false);
   const [minimap, setMinimap] = useState<boolean>(false);
   const [wrappers, setWrappers] = useState<boolean>(false);
   const [labels, setLabels] = useState<boolean>(false);
@@ -15,6 +16,10 @@ export const ExampleComponent = () => {
   const [scalingFactor, setScalingFactor] = useState<number>(
     SUBWORKFLOW_NODE_SCALING_FACTOR,
   );
+
+  const currentSource = useString
+    ? SOURCES[sourceIndex]!.string
+    : SOURCES[sourceIndex]!.object;
 
   return (
     <div className="example">
@@ -27,10 +32,18 @@ export const ExampleComponent = () => {
           >
             {SOURCES.map((_, index) => (
               <option key={index} value={index}>
-                CWL Source {_.title}
+                CWL Source {index + 1}
               </option>
             ))}
           </select>
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={useString}
+            onChange={() => setUseString(!useString)}
+          />
+          Use string input
         </label>
         <label>
           <input
@@ -79,14 +92,14 @@ export const ExampleComponent = () => {
       </div>
       <div className="example-content">
         <CwlViewer
-          input={SOURCES[sourceIndex]}
+          input={currentSource}
           wrappers={wrappers}
           minimap={minimap}
           colorEditor={colorEditor}
           labels={labels}
           subWorkflowScalingFactor={scalingFactor}
         />
-        <CwlCodeEditor activeFileId={undefined} input={SOURCES[sourceIndex]} />
+        <CwlCodeEditor activeFileId={undefined} input={currentSource} />
       </div>
     </div>
   );
