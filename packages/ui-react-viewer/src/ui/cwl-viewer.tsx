@@ -26,7 +26,7 @@ import "../style.css";
  */
 export type CwlViewerProps = {
   /** CWL source to be loaded into the viewer */
-  input?: CwlSource<Shape.Raw | Shape.Sanitized>;
+  input?: CwlSource<Shape.Raw>;
 
   /** Callback triggered when the cwl file changes, default is a function that logs in the console the changes */
   onChange?: (value: object) => void;

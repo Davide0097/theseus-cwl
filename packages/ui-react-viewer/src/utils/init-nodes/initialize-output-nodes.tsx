@@ -5,8 +5,15 @@ import {
   NODE_HEIGHT,
   NODE_MARGIN,
   NODE_WIDTH,
+  VIEWER_PADDING,
 } from "@theseus-cwl/configurations";
-import { WorkflowOutput, WorkflowStep } from "@theseus-cwl/types";
+import {
+  Input,
+  Output,
+  Process,
+  WorkflowOutput,
+  WorkflowStep,
+} from "@theseus-cwl/types";
 
 import { OutputNodeComponent } from "../../ui";
 import { getId, getMaxBottom, getMaxRight, hexToRgba } from "../general";
@@ -132,6 +139,109 @@ export const initializeOutputNodes = (
     };
 
     outputNodes.push(placeholderNode);
+  }
+
+  return outputNodes;
+};
+
+/**
+ * Props for {@link initializeOutputNodes}.
+ */
+export type InitializeProcessOutputNodesProps = {
+  color: string;
+  readOnly: boolean;
+  isSubWorkflow: boolean;
+  cwlFile: Process;
+  nodesInfo: Record<string, Output>;
+  sortedInputNodes: xyFlowNode<{ label?: ReactNode; step?: Input }>[];
+};
+
+/**
+ * Initializes Process output nodes.
+ *
+ * Takes CWL output information as {@link Outputs} and the already initialized {@link xyFlowNode[]} representing the steps.
+ * Returns an array of {@link xyFlowNode} objects that xyFlow uses to render the output nodes.
+ */
+export const initializeProcessOutputNodes = (
+  props: InitializeProcessOutputNodesProps,
+): xyFlowNode<{ label?: ReactNode; output?: Output }>[] => {
+  const {
+    nodesInfo,
+    color,
+    sortedInputNodes,
+    readOnly,
+    isSubWorkflow,
+    cwlFile,
+  } = props;
+
+  const outputNodes: xyFlowNode<{
+    label?: ReactNode;
+    output?: Output;
+  }>[] = [];
+
+  const baseY =
+    sortedInputNodes.length > 0
+      ? getMaxBottom(sortedInputNodes) + NODE_MARGIN * 2
+      : NODE_MARGIN;
+
+  Object.entries(nodesInfo).forEach(([key, output], index) => {
+    outputNodes.push({
+      id: getId(cwlFile.id, key),
+      extent: "parent",
+      data: {
+        output,
+        label: (
+          <OutputNodeComponent
+            isSubWorkflow={isSubWorkflow}
+            output={{ ...output, id: key }}
+            mode="output"
+          />
+        ),
+      },
+      draggable: !readOnly,
+      position: {
+        x: VIEWER_PADDING + index * (NODE_WIDTH + NODE_MARGIN),
+        y: baseY,
+      },
+      style: {
+        width: NODE_WIDTH,
+        height: NODE_HEIGHT,
+        margin: "0px",
+        borderRadius: "6px",
+        padding: "0px",
+        border: "1px solid rgba(0, 0, 0, 0.60)",
+        boxShadow: "4px 4px 16px rgba(0, 0, 0, 0.05)",
+        background: hexToRgba(color, 0.3),
+      },
+    });
+  });
+
+  if (!readOnly) {
+    outputNodes.push({
+      id: "__new_output_placeholder__",
+      data: {
+        label: (
+          <OutputNodeComponent
+            mode="placeholder"
+            isSubWorkflow={isSubWorkflow}
+          />
+        ),
+      },
+      extent: "parent",
+      position: {
+        x: NODE_MARGIN,
+        y: baseY,
+      },
+      style: {
+        width: NODE_WIDTH,
+        height: NODE_HEIGHT,
+        backgroundColor: hexToRgba(color, 0.2),
+        borderStyle: "dashed",
+        cursor: "pointer",
+        margin: "0px",
+        padding: "0px",
+      },
+    });
   }
 
   return outputNodes;

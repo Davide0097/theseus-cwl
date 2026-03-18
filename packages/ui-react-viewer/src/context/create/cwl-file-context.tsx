@@ -3,6 +3,7 @@ import { createContext } from "react";
 import {
   CWLPackedDocument,
   Input,
+  Process,
   Workflow,
   WorkflowOutput,
   WorkflowStep,
@@ -12,11 +13,11 @@ import { ColorState } from "../../hooks";
 
 export type CwlFileContextType = {
   /** The main CWL file source as object */
-  cwlFile: Workflow | CWLPackedDocument;
+  cwlFile: Workflow | CWLPackedDocument | Process;
 
   /** Updates the main CWL file source state */
   setCwlFile: React.Dispatch<
-    React.SetStateAction<Workflow | CWLPackedDocument>
+    React.SetStateAction<Workflow | CWLPackedDocument | Process>
   >;
 
   /**

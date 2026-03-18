@@ -7,7 +7,7 @@ import {
   NODE_MARGIN,
   NODE_WIDTH,
 } from "@theseus-cwl/configurations";
-import { Input, Workflow, WorkflowStep } from "@theseus-cwl/types";
+import { Input, Process, Workflow, WorkflowStep } from "@theseus-cwl/types";
 
 import { InputNodeComponent } from "../../ui";
 import { getId, hexToRgba } from "../general";
@@ -174,6 +174,81 @@ export const initializeInputNodes = (
     };
 
     inputNodes.push(placeholderNode);
+  }
+
+  return inputNodes;
+};
+
+/**
+ * Initializes process input nodes.
+ */
+export const initializeProcessInputNodes = (props: {
+  nodesInfo: Record<string, Input>;
+  color: string;
+  readOnly: boolean;
+  cwlFile: Process;
+}): xyFlowNode<{ label?: ReactElement; input?: Input }>[] => {
+  const { nodesInfo, color, readOnly, cwlFile } = props;
+
+  const inputKeys = Object.keys(nodesInfo);
+
+  const inputNodes: xyFlowNode<{ label?: ReactElement; input?: Input }>[] =
+    inputKeys.map((key, index) => {
+      const input = nodesInfo[key]!;
+
+      return {
+        id: getId(cwlFile.id, key),
+        targetPosition: Position.Left,
+        sourcePosition: Position.Right,
+        data: {
+          input,
+          label: (
+            <InputNodeComponent
+              mode="input"
+              input={{ ...input }}
+              isSubWorkflow={false}
+            />
+          ),
+        },
+        position: {
+          y: VIEWER_PADDING,
+          x: VIEWER_PADDING + index * (NODE_WIDTH + NODE_MARGIN),
+        },
+        draggable: !readOnly,
+        style: {
+          width: NODE_WIDTH,
+          height: NODE_HEIGHT,
+          boxShadow: "4px 4px 16px rgba(0, 0, 0, 0.05)",
+          background: hexToRgba(color, 0.3),
+          margin: "0px",
+          padding: "0px",
+          border: "1px solid rgba(0, 0, 0, 0.60)",
+          borderRadius: "6px",
+        },
+      };
+    });
+
+  if (!readOnly) {
+    inputNodes.push({
+      id: "__new_input_placeholder__",
+      type: "input",
+      data: {
+        label: <InputNodeComponent mode="placeholder" />,
+      },
+      position: {
+        x: VIEWER_PADDING,
+        y: VIEWER_PADDING + inputKeys.length * (NODE_HEIGHT + NODE_MARGIN),
+      },
+      style: {
+        width: NODE_WIDTH,
+        height: NODE_HEIGHT,
+        backgroundColor: hexToRgba(color, 0.2),
+        borderStyle: "dashed",
+        cursor: "pointer",
+        margin: "0px",
+        padding: "0px",
+      },
+    });
   }
 
   return inputNodes;

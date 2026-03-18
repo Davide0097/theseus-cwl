@@ -1,6 +1,6 @@
 import { Edge } from "@xyflow/react";
 
-import { Workflow } from "@theseus-cwl/types";
+import { Process, Workflow } from "@theseus-cwl/types";
 
 import { getEdge } from "../general";
 
@@ -39,6 +39,34 @@ export const initializeInputToStepEdges = (
           }
         });
       }
+    });
+  });
+
+  return edges;
+};
+
+export const initializeProcessInputToOutputEdges = (
+  cwlFile: Workflow | Process,
+  labels: boolean,
+): Edge[] => {
+  const edges: Edge[] = [];
+
+  Object.keys(cwlFile.outputs || {}).forEach((inputKey) => {
+    Object.keys(cwlFile.inputs || {}).forEach((outputKey) => {
+      edges.push(
+        getEdge({
+          source: {
+            workflowId: cwlFile.id,
+            key: outputKey,
+          },
+          target: {
+            workflowId: cwlFile.id,
+            key: inputKey,
+          },
+          type: "input_to_output",
+          hasLabel: labels,
+        }),
+      );
     });
   });
 

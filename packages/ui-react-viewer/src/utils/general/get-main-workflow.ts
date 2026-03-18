@@ -1,3 +1,4 @@
+import { isWorkflow } from "@theseus-cwl/parser";
 import { CWLPackedDocument, Workflow } from "@theseus-cwl/types";
 
 /**
@@ -5,16 +6,24 @@ import { CWLPackedDocument, Workflow } from "@theseus-cwl/types";
  * Looks for workflow with id "#main" or "main".
  *
  * @param {CWLPackedDocument} packedWorkflow CWL packed document
+ * 
  * @returns The main Workflow, or undefined if not found
  */
 export const getMainWorkflow = (
-  packedWorkflow: CWLPackedDocument,
+  packedDocument: CWLPackedDocument,
 ): Workflow | undefined => {
-  return (
-    Object.values(packedWorkflow.$graph).find(
-      (item: Workflow) =>
-        item.id.trim().toLocaleLowerCase() === "#main" ||
-        item.id.trim().toLocaleLowerCase() === "main",
-    ) || Object.values(packedWorkflow.$graph)[0]
+  const graph = Object.values(packedDocument.$graph) || [];
+
+  const byEntryPoint = graph.find(
+    (item) =>
+      item.id === packedDocument.entryPoint ||
+      item.id?.trim().toLowerCase() === "#main" ||
+      item.id?.trim().toLowerCase() === "main",
   );
+
+  if (byEntryPoint && isWorkflow(byEntryPoint)) {
+    return byEntryPoint;
+  } else {
+    return undefined;
+  }
 };

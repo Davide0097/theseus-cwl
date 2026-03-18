@@ -1,11 +1,11 @@
-import { Workflow } from "@theseus-cwl/types";
+import { Process, Workflow } from "@theseus-cwl/types";
 import { Edge } from "@xyflow/react";
 
 import { getEdge } from "../general";
 
 export const initializeMainStepToSubworkflowInputEdges = (
   mainWorkflow: Workflow,
-  allWorkflows: Record<string, Workflow>,
+  allWorkflows: Record<string, Workflow | Process>,
   labels: boolean,
 ): Edge[] => {
   const edges: Edge[] = [];

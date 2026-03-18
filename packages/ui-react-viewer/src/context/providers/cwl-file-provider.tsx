@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {
   CWLPackedDocument,
   Input,
+  Process,
   Workflow,
   WorkflowOutput,
   WorkflowStep,
@@ -14,14 +15,14 @@ import { CwlFileContext } from "../create";
 
 export type CwlFileProviderProps = {
   children: React.ReactNode;
-  initialCwlFile: Workflow | CWLPackedDocument;
+  initialCwlFile: Workflow | CWLPackedDocument | Process;
   initialColorState?: ColorState;
 };
 
 export const CwlFileProvider = (props: CwlFileProviderProps) => {
-  const [cwlFile, setCwlFile] = useState<Workflow | CWLPackedDocument>(
-    props.initialCwlFile,
-  );
+  const [cwlFile, setCwlFile] = useState<
+    Workflow | CWLPackedDocument | Process
+  >(props.initialCwlFile);
   const { colors, setColors, resetColors } = useColorState({
     initialColorState: props.initialColorState,
   });

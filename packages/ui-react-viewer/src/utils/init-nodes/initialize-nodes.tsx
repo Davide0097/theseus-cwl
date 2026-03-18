@@ -1,5 +1,5 @@
 import { Node as xyFlowNode } from "@xyflow/react";
-import { ReactNode } from "react";
+import { ReactElement, ReactNode } from "react";
 
 import {
   VIEWER_PADDING,
@@ -8,6 +8,7 @@ import {
 import {
   CWLPackedDocument,
   Input,
+  Process,
   Workflow,
   WorkflowOutput,
   WorkflowStep,
@@ -20,17 +21,23 @@ import {
   getMainWorkflow,
   getMaxRight,
   getWrapperNode,
-  isPackedDocument,
 } from "../general";
-import { initializeInputNodes } from "./initialize-input-nodes";
-import { initializeOutputNodes } from "./initialize-output-nodes";
+import {
+  initializeInputNodes,
+  initializeProcessInputNodes,
+} from "./initialize-input-nodes";
+import {
+  initializeOutputNodes,
+  initializeProcessOutputNodes,
+} from "./initialize-output-nodes";
 import { initializeStepNodes } from "./initialize-step-nodes";
+import { isPackedDocument, isWorkflow } from "@theseus-cwl/parser";
 
 /**
  * The config for {@link initializeSingleWorkflowNodes}.
  */
 export type initializeSingleWorkflowNodesConfig = {
-  cwlFile: Workflow;
+  cwlFile: Workflow | Process;
   wrappers: boolean;
   colors: ColorState;
   readOnly: boolean;
@@ -60,35 +67,57 @@ const initializeSingleWorkflowNodes = (
     isSubWorkflow,
   } = props;
 
-  let nodes = [];
+  let nodes: xyFlowNode[] = [];
+  let inputNodes = [],
+    outputNodes = [],
+    stepNodes: xyFlowNode<{ label?: ReactElement; step?: WorkflowStep }>[] = [];
 
-  const sortedStepNodes = initializeStepNodes({
-    nodesInfo: workflow.steps || {},
-    color: colors.step,
-    isSubWorkflow,
-    readOnly,
-    cwlFile: workflow,
-  });
+  if (!isWorkflow(workflow)) {
+    inputNodes = initializeProcessInputNodes({
+      nodesInfo: workflow.inputs!,
+      color: colors.input,
+      readOnly,
+      cwlFile: workflow,
+    });
+    outputNodes = initializeProcessOutputNodes({
+      nodesInfo: workflow.outputs!,
+      color: colors.output,
+      readOnly,
+      cwlFile: workflow,
+      isSubWorkflow: false,
+      sortedInputNodes: inputNodes,
+    });
 
-  const inputNodes = initializeInputNodes({
-    nodesInfo: workflow.inputs!,
-    color: colors.input,
-    sortedStepNodes,
-    isSubWorkflow,
-    readOnly,
-    cwlFile: workflow,
-  });
+    nodes = [...inputNodes, ...outputNodes];
+  } else {
+    stepNodes = initializeStepNodes({
+      nodesInfo: workflow.steps!,
+      color: colors.step,
+      isSubWorkflow,
+      readOnly,
+      cwlFile: workflow,
+    });
 
-  const outputNodes = initializeOutputNodes({
-    nodesInfo: workflow.outputs!,
-    color: colors.output,
-    sortedStepNodes,
-    isSubWorkflow,
-    readOnly,
-    cwlFile: workflow,
-  });
+    inputNodes = initializeInputNodes({
+      nodesInfo: workflow.inputs!,
+      color: colors.input,
+      sortedStepNodes: stepNodes,
+      isSubWorkflow,
+      readOnly,
+      cwlFile: workflow,
+    });
 
-  nodes = [...inputNodes, ...sortedStepNodes, ...outputNodes];
+    outputNodes = initializeOutputNodes({
+      nodesInfo: workflow.outputs!,
+      color: colors.output,
+      sortedStepNodes: stepNodes,
+      isSubWorkflow,
+      readOnly,
+      cwlFile: workflow,
+    });
+
+    nodes = [...inputNodes, ...stepNodes, ...outputNodes];
+  }
 
   if (wrappers) {
     const maxRight = getMaxRight(nodes);
@@ -105,7 +134,7 @@ const initializeSingleWorkflowNodes = (
         isSubWorkflow: isSubWorkflow,
       }),
       getWrapperNode({
-        nodes: sortedStepNodes,
+        nodes: stepNodes,
         maxRight: maxRight,
         label: undefined,
         isSubWorkflow: isSubWorkflow,
@@ -127,7 +156,7 @@ const initializeSingleWorkflowNodes = (
  * The config for {@link initializeNodes}.
  */
 export type InitializeNodesProps = {
-  cwlFile: Workflow | CWLPackedDocument;
+  cwlFile: Workflow | CWLPackedDocument | Process;
   wrappers: boolean;
   colors: ColorState;
   readOnly: boolean;

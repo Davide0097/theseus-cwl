@@ -8,7 +8,8 @@ export type CwlEdgeType =
   | "input_to_step"
   | "step_to_step"
   | "step_to_output"
-  | "workflow_to_workflow";
+  | "workflow_to_workflow"
+  | "input_to_output";
 
 export type GetEdgeProps = {
   source: {
