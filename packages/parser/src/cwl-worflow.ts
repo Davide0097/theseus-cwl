@@ -6,6 +6,7 @@ import {
   CwlSourceDocument,
   CwlSourceParameter,
   Input,
+  Process,
   Shape,
   Type,
   Workflow,
@@ -14,31 +15,38 @@ import {
   WorkflowStepInput,
 } from "@theseus-cwl/types";
 
-export const isPackedDocument = <T extends Shape>(
-  object: CWLPackedDocument<T> | Workflow<T>,
-): object is CWLPackedDocument<T> => {
+export const isPackedDocument = (
+  object:
+    | CWLPackedDocument
+    | Workflow
+    | Process
+    | CWLPackedDocument<Shape.Raw>
+    | Workflow<Shape.Raw>
+    | Process<Shape.Raw>,
+): object is CWLPackedDocument => {
   return typeof object === "object" && object !== null && "$graph" in object;
 };
 
-export const normalizeInput = (
-  input: Input<Shape.Raw | Shape.Raw>,
-): Input<Shape.Sanitized> => {
-  let normalized;
+export const isWorkflow = (obj: any): obj is Workflow => {
+  return obj.class === "Workflow";
+};
 
+export const normalizeInput = (
+  input: Input<Shape.Raw> | Input,
+  key: string,
+): Input<Shape.Sanitized> => {
   if (typeof input === "string") {
-    normalized = {
-      id: input,
+    return {
+      id: key,
       type: "string" as Type,
     };
-  } else {
-    normalized = input as unknown as Input<Shape.Sanitized>;
-  }
-
-  return normalized;
+  } else if (typeof input === "object") {
+    return { ...input, id: key };
+  } else return input;
 };
 
 export const normalizeStepsIn = (
-  stepIn: WorkflowStep<Shape.Raw | Shape.Raw>["in"],
+  stepIn: WorkflowStep<Shape.Raw>["in"],
 ): Record<string, WorkflowStepInput> => {
   const normalized: Record<string, WorkflowStepInput> = {};
 
@@ -55,15 +63,14 @@ export const normalizeStepsIn = (
 
 export class CWLSourceHolder {
   public readonly source: CwlSource;
-  public readonly activeFile: Workflow | CWLPackedDocument;
+  public readonly activeFile: Workflow | CWLPackedDocument | Process;
 
-  private constructor(source: CwlSource<Shape.Sanitized>) {
+  private constructor(source: CwlSource) {
     this.source = source;
     // Todo! active file should be set as the selected file otherwise the entrypoint
     this.activeFile =
-      (source.documents.find((file) => file.name === source.entrypoint)
-        ?.content as Workflow | CWLPackedDocument) ||
-      source.documents[0]?.content;
+      source.documents.find((file) => file.name === source.entrypoint)
+        ?.content || source.documents[0]?.content!;
   }
 
   /**
@@ -78,7 +85,7 @@ export class CWLSourceHolder {
     const sanitizedDocuments = await this.sanitizeDocuments_(source);
     const sanitizedParameters = await this.sanitizeParameters_(source);
 
-    const sanitizedSource: CwlSource<Shape.Sanitized> = {
+    const sanitizedSource: CwlSource = {
       ...source,
       documents: [sanitizedDocuments[0]!],
       parameters: sanitizedParameters,
@@ -89,9 +96,9 @@ export class CWLSourceHolder {
 
   private static sanitizeDocuments_(
     source: CwlSource<Shape.Raw>,
-  ): Promise<CwlSourceDocument<Shape.Sanitized>[]> {
+  ): Promise<CwlSourceDocument[]> {
     return Promise.all(
-      source.documents.map(async (document: CwlSourceDocument<Shape.Raw>) => {
+      source.documents.map(async (document) => {
         if (!document.name) {
           throw new Error("Document file is missing the name");
         }
@@ -117,13 +124,13 @@ export class CWLSourceHolder {
             const fileContent = JSON.parse(document.content);
             return {
               ...document,
-              content: this.sanitize_(fileContent),
+              content: this.sanitizeCwlDocument_(fileContent),
             };
           } else if (format === "yaml") {
             const fileContent = YAML.parse(document.content);
             return {
               ...document,
-              content: this.sanitize_(fileContent),
+              content: this.sanitizeCwlDocument_(fileContent),
             };
           } else {
             throw new Error(
@@ -135,13 +142,13 @@ export class CWLSourceHolder {
             const fileContent = await document.content.text();
             return {
               ...document,
-              content: this.sanitize_(JSON.parse(fileContent)),
+              content: this.sanitizeCwlDocument_(JSON.parse(fileContent)),
             };
           } else if (format === "yaml") {
             const fileContent = await document.content.text();
             return {
               ...document,
-              content: this.sanitize_(YAML.parse(fileContent)),
+              content: this.sanitizeCwlDocument_(YAML.parse(fileContent)),
             };
           } else {
             throw new Error(
@@ -151,7 +158,7 @@ export class CWLSourceHolder {
         } else if (typeof document.content === "object") {
           return {
             ...document,
-            content: this.sanitize_(document.content),
+            content: this.sanitizeCwlDocument_(document.content),
           };
         } else {
           throw new Error(
@@ -164,7 +171,7 @@ export class CWLSourceHolder {
 
   private static sanitizeParameters_(
     source: CwlSource<Shape.Raw>,
-  ): Promise<CwlSourceParameter<Shape.Sanitized>[]> {
+  ): Promise<CwlSourceParameter[]> {
     return Promise.all(
       source.parameters.map(async (parameter) => {
         if (!parameter.name) {
@@ -210,71 +217,97 @@ export class CWLSourceHolder {
     );
   }
 
-  private static sanitize_(
-    obj: Workflow<Shape.Raw> | CWLPackedDocument<Shape.Raw>,
-  ): Workflow | CWLPackedDocument {
-    let sanitizedObj: Workflow | CWLPackedDocument;
+  private static sanitizeCwlDocument_(
+    object:
+      | Workflow<Shape.Raw>
+      | Workflow
+      | CWLPackedDocument<Shape.Raw>
+      | CWLPackedDocument
+      | Process<Shape.Raw>
+      | Process,
+  ): Process | Workflow | CWLPackedDocument {
+    if (isPackedDocument(object)) {
+      const graphAsRecord: Record<string, Workflow | Process> = Array.isArray(
+        object.$graph,
+      )
+        ? Object.fromEntries(
+            object.$graph
+              .filter((process) => process.id)
+              .map((process) => [process.id, process]),
+          )
+        : object.$graph;
 
-    if (isPackedDocument(obj)) {
-      if (Array.isArray(obj.$graph)) {
-        const graphAsRecord: Record<string, Workflow> = {};
-        obj.$graph.forEach((wf) => {
-          graphAsRecord[wf.id] = wf;
-        });
-        obj.$graph = graphAsRecord;
-      }
-    }
+      const newGraph: Record<string, Workflow | Process> = {};
 
-    if (isPackedDocument(obj)) {
-      const newGraph: Record<string, Workflow> = {};
-      for (const [key, wf] of Object.entries(obj.$graph)) {
-        newGraph[key] = {
-          ...this.sanitizeWorkflow(wf),
-          id: wf.id || key,
-        } as Workflow;
+      for (const [id, process] of Object.entries(graphAsRecord)) {
+        newGraph[id] = {
+          ...this.sanitizeProcess(process),
+          id: id,
+        };
       }
-      sanitizedObj = { ...obj, $graph: newGraph } as CWLPackedDocument;
-      return sanitizedObj;
+
+      return {
+        ...object,
+        $graph: newGraph,
+      } as CWLPackedDocument;
     } else {
-      return this.sanitizeWorkflow(obj);
+      return this.sanitizeProcess(object);
     }
   }
 
-  private static sanitizeWorkflow(wf: Workflow<Shape.Raw>): Workflow {
+  private static sanitizeProcess(
+    object: Workflow<Shape.Raw> | Workflow | Process<Shape.Raw> | Process,
+  ): Process | Workflow {
     const newInputs: Record<string, Input> = {};
-    if (wf.inputs) {
-      for (const [key, input] of Object.entries(wf.inputs)) {
+    if (object.inputs) {
+      for (const [key, input] of Object.entries(object.inputs)) {
         if (typeof input === "string") {
-          newInputs[key] = { ...normalizeInput(input), id: key };
+          newInputs[key] = normalizeInput(input, key);
         } else {
           newInputs[key] = { ...input, id: key };
         }
       }
     }
 
-    const newSteps: Record<string, WorkflowStep> = {};
-    if (wf.steps) {
-      for (const [key, step] of Object.entries(wf.steps)) {
-        newSteps[key] = {
-          ...step,
-          in: normalizeStepsIn(step.in),
-          id: key,
-        } as WorkflowStep;
-      }
-    }
-
     const newOutputs: Record<string, WorkflowOutput> = {};
-    if (wf.outputs) {
-      for (const [key, output] of Object.entries(wf.outputs)) {
+    if (object.outputs) {
+      for (const [key, output] of Object.entries(object.outputs)) {
         newOutputs[key] = { ...output, id: key };
       }
     }
 
+    if (isWorkflow(object)) {
+      const newSteps: Record<string, WorkflowStep> = {};
+
+      if (object.steps) {
+        for (const [key, step] of Object.entries(object.steps)) {
+          const run =
+            typeof step.run === "string"
+              ? step.run
+              : this.sanitizeProcess(step.run);
+
+          newSteps[key] = {
+            ...step,
+            run,
+            in: normalizeStepsIn(step.in),
+            id: key,
+          };
+        }
+      }
+
+      return {
+        ...object,
+        id: object.id || `workflow_${Math.random().toFixed(2).toString()}`,
+        inputs: newInputs,
+        steps: newSteps,
+        outputs: newOutputs,
+      };
+    }
+
     return {
-      ...wf,
-      id: wf.id ?? "Workflow",
+      ...object,
+      id: object.id || `process_${Math.random().toFixed(2).toString()}`,
       inputs: newInputs,
-      steps: newSteps,
       outputs: newOutputs,
     };
   }

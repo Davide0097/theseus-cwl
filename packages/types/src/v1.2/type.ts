@@ -19,9 +19,5 @@ export type Type =
   | PrimitiveType
   | ComplexType
   | SpecialType
-  | ArrayType<
-      | PrimitiveType
-      | ComplexType
-      | SpecialType
-      | OptionalType<PrimitiveType | ComplexType | SpecialType>
-    >;
+  | ArrayType<PrimitiveType | ComplexType | SpecialType>
+  | OptionalType<PrimitiveType | ComplexType | SpecialType>;

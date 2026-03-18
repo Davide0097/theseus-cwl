@@ -79,7 +79,7 @@ export type WorkflowStepOutput = {
  * of the underlying process to workflow parameters.
  */
 export type WorkflowStep<S extends Shape = Shape.Sanitized> =
-  (S extends Shape.Sanitized ? { id: string } : {}) & {
+  (S extends Shape.Sanitized ? { id: string } : { id?: string }) & {
     /**
      * Defines the input parameters of the workflow step.
      */
@@ -95,7 +95,7 @@ export type WorkflowStep<S extends Shape = Shape.Sanitized> =
     /**
      * Specifies the process to run.
      */
-    run: string | Process<S>;
+    run: string | Process<Shape.Raw> | Process<Shape.Sanitized>;
 
     /**
      * Declares requirements that apply to either the runtime environment or the

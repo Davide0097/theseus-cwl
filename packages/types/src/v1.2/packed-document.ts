@@ -21,7 +21,7 @@ import { Shape, Workflow } from "./workflow";
 export type CWLPackedDocument<S extends Shape = Shape.Sanitized> =
   Process<S> & {
     cwlVersion: CWLVersion;
-    $graph: S extends Shape.Sanitized
+    $graph: S extends Shape.Raw
       ?
           | (
               | Workflow<Shape.Raw>
