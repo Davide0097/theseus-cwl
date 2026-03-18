@@ -18,10 +18,7 @@ export enum Shape {
  * The inputs of a workflow can be passed to any of its steps, while the outputs produced by its steps can be used in the final output of the workflow.
  */
 
-export type Workflow<S extends Shape = Shape.Sanitized> = Process<
-  S,
-  "Workflow"
-> & {
+export type Workflow<S extends Shape = Shape.Sanitized> = Process<S> & {
   /**
    * The record of parameters representing the steps that make up the workflow.
    */
@@ -31,9 +28,4 @@ export type Workflow<S extends Shape = Shape.Sanitized> = Process<
    * The record of parameters representing the outputs that make up the workflow.
    */
   outputs: Record<string, WorkflowOutput<S>>;
-
-  requirements?: (
-    | { class: "ScatterFeatureRequirement" }
-    | { class: "SubworkflowFeatureRequirement" }
-  )[];
 };

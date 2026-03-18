@@ -15,11 +15,14 @@ export type ExtendedInput<S extends Shape = Shape.Sanitized> =
      */
     inputBinding?: {
       position: number;
+      prefix?: string;
     };
+
+    label?: string;
 
     doc?: string;
   };
 
 export type Input<S extends Shape = Shape.Sanitized> = S extends Shape.Sanitized
-  ? ExtendedInput<S>
-  : Type | ExtendedInput<S>;
+  ? ExtendedInput<Shape.Sanitized>
+  : Type | ExtendedInput<Shape.Raw> | ExtendedInput<Shape.Sanitized>;

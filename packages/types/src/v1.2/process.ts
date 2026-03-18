@@ -27,7 +27,7 @@ export type Process<
   /**
    *  The type of process that the object is describing.
    */
-  class?: T;
+  class: T; 
 
   /**
    * The inputs of a tool is a list of input parameters that control how to run the tool.
@@ -45,7 +45,7 @@ export type Process<
    * Declares requirements that apply to either the runtime environment or the
    * workflow engine that must be met in order to execute this process.
    */
-  requirements?: any[];
+  requirements?: Record<string, any>;
 
   /**
    * Declares hints applying to either the runtime environment or the

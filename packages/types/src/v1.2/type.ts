@@ -1,4 +1,4 @@
-export type PrimitiveType =
+type PrimitiveType =
   | "string"
   | "boolean"
   | "int"
@@ -7,14 +7,21 @@ export type PrimitiveType =
   | "double"
   | "null";
 
-export type ComplexType = "array" | "record";
+type ComplexType = "array" | "record";
 
-export type SpecialType = "File" | "Directory" | "Any";
+type SpecialType = "File" | "Directory" | "Any";
 
-export type ArrayType<T extends string> = `${T}[]`;
+type ArrayType<T extends string> = `${T}[]`;
+
+type OptionalType<T extends string> = `${T}?`;
 
 export type Type =
   | PrimitiveType
   | ComplexType
   | SpecialType
-  | ArrayType<PrimitiveType | ComplexType | SpecialType>;
+  | ArrayType<
+      | PrimitiveType
+      | ComplexType
+      | SpecialType
+      | OptionalType<PrimitiveType | ComplexType | SpecialType>
+    >;

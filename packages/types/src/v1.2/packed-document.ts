@@ -18,10 +18,24 @@ import { Shape, Workflow } from "./workflow";
  * Instead, there is a $graph field which consists of a list of process objects. Each process object must have an id field.
  * Workflow run fields cross-reference other processes in the document $graph using the id of the process object.
  */
-export type CWLPackedDocument<S extends Shape = Shape.Sanitized> = Process<
-  S,
-  "Workflow"
-> & {
-  cwlVersion: CWLVersion;
-  $graph: Record<string, Workflow<S>>;
-};
+export type CWLPackedDocument<S extends Shape = Shape.Sanitized> =
+  Process<S> & {
+    cwlVersion: CWLVersion;
+    $graph: S extends Shape.Sanitized
+      ?
+          | (
+              | Workflow<Shape.Raw>
+              | Process<Shape.Raw>
+              | Workflow<Shape.Sanitized>
+              | Process<Shape.Sanitized>
+            )[]
+          | Record<
+              string,
+              | Workflow<Shape.Raw>
+              | Process<Shape.Raw>
+              | Workflow<Shape.Sanitized>
+              | Process<Shape.Sanitized>
+            >
+      : Record<string, Workflow<Shape.Sanitized> | Process<Shape.Sanitized>>;
+    entryPoint?: string;
+  };
