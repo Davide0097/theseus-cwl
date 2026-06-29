@@ -11,6 +11,7 @@
   "scripts": {
     "dev": "tsup src/index.ts --format esm --dts --watch",
     "build": "tsup src/index.ts --format esm --dts",
+    "lint": "eslint . --max-warnings 0",
     "check-types": "tsc --noEmit"
   },
   "publishConfig": {
@@ -27,7 +28,9 @@
     }
   },
   "devDependencies": {
+    "@theseus-cwl/eslint-config": "*",
     "@theseus-cwl/typescript-config": "*",
+    "eslint": "^9.23.0",
     "typescript": "^5.8.2",
     "tsup": "^8.5.0"
   }
