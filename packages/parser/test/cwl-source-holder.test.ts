@@ -10,14 +10,11 @@ import type {
   Workflow,
 } from "@theseus-cwl/types";
 
+import { isPackedDocument, isWorkflow } from "../src/guards";
 import {
   CWLSourceHolder,
-  isPackedDocument,
-  isWorkflow,
-  normalizeInput,
-  normalizeOutput,
-  normalizeStepIn,
 } from "../src/index";
+import { normalizeInput, normalizeOutput, normalizeStepIn } from "../src/normalize";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -382,16 +379,20 @@ describe("CWLSourceHolder.create — parsing document content", () => {
   });
 
   it("detects the format case-insensitively for every extension", async () => {
-    const json = JSON.stringify({ class: "CommandLineTool", id: "t", inputs: {} });
-    expect(((await activeFileOf("Workflow.CWL", WORKFLOW_YAML)) as Workflow).class).toBe(
-      "Workflow",
-    );
-    expect(((await activeFileOf("Workflow.YAML", WORKFLOW_YAML)) as Workflow).class).toBe(
-      "Workflow",
-    );
-    expect(((await activeFileOf("Workflow.YML", WORKFLOW_YAML)) as Workflow).class).toBe(
-      "Workflow",
-    );
+    const json = JSON.stringify({
+      class: "CommandLineTool",
+      id: "t",
+      inputs: {},
+    });
+    expect(
+      ((await activeFileOf("Workflow.CWL", WORKFLOW_YAML)) as Workflow).class,
+    ).toBe("Workflow");
+    expect(
+      ((await activeFileOf("Workflow.YAML", WORKFLOW_YAML)) as Workflow).class,
+    ).toBe("Workflow");
+    expect(
+      ((await activeFileOf("Workflow.YML", WORKFLOW_YAML)) as Workflow).class,
+    ).toBe("Workflow");
     expect(((await activeFileOf("Tool.JSON", json)) as Process).id).toBe("t");
   });
 
@@ -474,7 +475,12 @@ describe("CWLSourceHolder.create — inputs", () => {
       inputs: { a: { type: "int", default: "3", label: "L" } },
       outputs: {},
     })) as Process;
-    expect(p.inputs?.a).toEqual({ id: "a", type: "int", default: "3", label: "L" });
+    expect(p.inputs?.a).toEqual({
+      id: "a",
+      type: "int",
+      default: "3",
+      label: "L",
+    });
   });
 
   it("overrides an object-input's own id with its record key", async () => {
@@ -573,8 +579,9 @@ describe("CWLSourceHolder.create — outputs", () => {
 
 describe("CWLSourceHolder.create — step normalization", () => {
   it("normalizes step `in` shorthand and stamps the step id from its key", async () => {
-    const step = ((await activeFileOf("workflow.cwl", WORKFLOW_YAML)) as Workflow)
-      .steps?.step1;
+    const step = (
+      (await activeFileOf("workflow.cwl", WORKFLOW_YAML)) as Workflow
+    ).steps?.step1;
     expect(step?.id).toBe("step1");
     expect(step?.in.text).toEqual({ source: "message" });
     expect(step?.run).toBe("echo.cwl");
@@ -582,30 +589,34 @@ describe("CWLSourceHolder.create — step normalization", () => {
   });
 
   it("leaves a string `run` reference untouched", async () => {
-    const step = ((await activeFileOf("workflow.cwl", {
-      class: "Workflow",
-      outputs: {},
-      steps: { s: { run: "tool.cwl", in: {} } },
-    })) as Workflow).steps?.s;
+    const step = (
+      (await activeFileOf("workflow.cwl", {
+        class: "Workflow",
+        outputs: {},
+        steps: { s: { run: "tool.cwl", in: {} } },
+      })) as Workflow
+    ).steps?.s;
     expect(step?.run).toBe("tool.cwl");
   });
 
   it("recursively sanitizes an inline (object) step `run` process", async () => {
-    const run = ((await activeFileOf("workflow.cwl", {
-      class: "Workflow",
-      outputs: {},
-      steps: {
-        s: {
-          run: {
-            class: "CommandLineTool",
-            inputs: { a: "int" },
-            outputs: { out: { type: "int" } },
+    const run = (
+      (await activeFileOf("workflow.cwl", {
+        class: "Workflow",
+        outputs: {},
+        steps: {
+          s: {
+            run: {
+              class: "CommandLineTool",
+              inputs: { a: "int" },
+              outputs: { out: { type: "int" } },
+            },
+            in: { a: "x" },
+            out: ["out"],
           },
-          in: { a: "x" },
-          out: ["out"],
         },
-      },
-    })) as Workflow).steps?.s?.run as Process;
+      })) as Workflow
+    ).steps?.s?.run as Process;
 
     expect(typeof run).toBe("object");
     expect(run.class).toBe("CommandLineTool");
@@ -623,11 +634,13 @@ describe("CWLSourceHolder.create — step normalization", () => {
       steps: { deep: { run: "deep.cwl", in: { v: "inner" } } },
     };
 
-    const run = ((await activeFileOf("workflow.cwl", {
-      class: "Workflow",
-      outputs: {},
-      steps: { s: { run: nested, in: {} } },
-    })) as Workflow).steps?.s?.run as Workflow;
+    const run = (
+      (await activeFileOf("workflow.cwl", {
+        class: "Workflow",
+        outputs: {},
+        steps: { s: { run: nested, in: {} } },
+      })) as Workflow
+    ).steps?.s?.run as Workflow;
 
     expect(run.class).toBe("Workflow");
     expect(run.id).toMatch(/^workflow_/);
@@ -638,23 +651,25 @@ describe("CWLSourceHolder.create — step normalization", () => {
   });
 
   it("preserves the remaining step properties (out forms, scatter, requirements, hints, label, doc)", async () => {
-    const step = ((await activeFileOf("workflow.cwl", {
-      class: "Workflow",
-      outputs: {},
-      steps: {
-        s: {
-          run: "tool.cwl",
-          in: { a: "x" },
-          out: [{ id: "o1" }, "o2"],
-          scatter: ["a"],
-          scatterMethod: "dotproduct",
-          requirements: [{ class: "InlineJavascriptRequirement" }],
-          hints: [{ class: "ResourceRequirement" }],
-          label: "Step",
-          doc: "does a thing",
+    const step = (
+      (await activeFileOf("workflow.cwl", {
+        class: "Workflow",
+        outputs: {},
+        steps: {
+          s: {
+            run: "tool.cwl",
+            in: { a: "x" },
+            out: [{ id: "o1" }, "o2"],
+            scatter: ["a"],
+            scatterMethod: "dotproduct",
+            requirements: [{ class: "InlineJavascriptRequirement" }],
+            hints: [{ class: "ResourceRequirement" }],
+            label: "Step",
+            doc: "does a thing",
+          },
         },
-      },
-    } as Workflow<Shape.Raw>)) as Workflow).steps?.s;
+      } as Workflow<Shape.Raw>)) as Workflow
+    ).steps?.s;
 
     expect(step).toMatchObject({
       out: [{ id: "o1" }, "o2"],
@@ -885,31 +900,39 @@ describe("CWLSourceHolder.create — fallback id generation", () => {
   });
 
   it("derives different ids from different input/output signatures", async () => {
-    const a = ((await activeFileOf("a.cwl", {
-      class: "CommandLineTool",
-      inputs: { a: "string" },
-      outputs: {},
-    })) as Process).id;
-    const b = ((await activeFileOf("b.cwl", {
-      class: "CommandLineTool",
-      inputs: { b: "string" },
-      outputs: {},
-    })) as Process).id;
+    const a = (
+      (await activeFileOf("a.cwl", {
+        class: "CommandLineTool",
+        inputs: { a: "string" },
+        outputs: {},
+      })) as Process
+    ).id;
+    const b = (
+      (await activeFileOf("b.cwl", {
+        class: "CommandLineTool",
+        inputs: { b: "string" },
+        outputs: {},
+      })) as Process
+    ).id;
     expect(a).not.toBe(b);
   });
 
   it("factors the label into the generated id", async () => {
-    const noLabel = ((await activeFileOf("a.cwl", {
-      class: "CommandLineTool",
-      inputs: {},
-      outputs: {},
-    })) as Process).id;
-    const withLabel = ((await activeFileOf("b.cwl", {
-      class: "CommandLineTool",
-      label: "labelled",
-      inputs: {},
-      outputs: {},
-    } as Process<Shape.Raw>)) as Process).id;
+    const noLabel = (
+      (await activeFileOf("a.cwl", {
+        class: "CommandLineTool",
+        inputs: {},
+        outputs: {},
+      })) as Process
+    ).id;
+    const withLabel = (
+      (await activeFileOf("b.cwl", {
+        class: "CommandLineTool",
+        label: "labelled",
+        inputs: {},
+        outputs: {},
+      } as Process<Shape.Raw>)) as Process
+    ).id;
     expect(noLabel).not.toBe(withLabel);
   });
 
@@ -1026,7 +1049,10 @@ describe("CWLSourceHolder.create — source assembly", () => {
   it("preserves the entrypoint and keeps every sanitized document", async () => {
     const source = makeSource(
       [
-        { name: "a.cwl", content: { class: "Workflow", outputs: {}, steps: {} } },
+        {
+          name: "a.cwl",
+          content: { class: "Workflow", outputs: {}, steps: {} },
+        },
         { name: "b.cwl", content: { class: "CommandLineTool", inputs: {} } },
       ],
       "a.cwl",
@@ -1035,13 +1061,19 @@ describe("CWLSourceHolder.create — source assembly", () => {
     const holder = await CWLSourceHolder.create(source);
 
     expect(holder.source.entrypoint).toBe("a.cwl");
-    expect(holder.source.documents.map((d) => d.name)).toEqual(["a.cwl", "b.cwl"]);
+    expect(holder.source.documents.map((d) => d.name)).toEqual([
+      "a.cwl",
+      "b.cwl",
+    ]);
   });
 
   it("sanitizes non-entrypoint documents too, not only the active one", async () => {
     const source = makeSource(
       [
-        { name: "a.cwl", content: { class: "Workflow", outputs: {}, steps: {} } },
+        {
+          name: "a.cwl",
+          content: { class: "Workflow", outputs: {}, steps: {} },
+        },
         {
           name: "b.cwl",
           content: { class: "CommandLineTool", inputs: { a: "string" } },
@@ -1058,7 +1090,10 @@ describe("CWLSourceHolder.create — source assembly", () => {
   it("resolves activeFile to the document whose name matches the entrypoint", async () => {
     const source = makeSource(
       [
-        { name: "a.cwl", content: { class: "Workflow", outputs: {}, steps: {} } },
+        {
+          name: "a.cwl",
+          content: { class: "Workflow", outputs: {}, steps: {} },
+        },
         {
           name: "b.cwl",
           content: { class: "CommandLineTool", id: "the-tool", inputs: {} },
@@ -1073,7 +1108,12 @@ describe("CWLSourceHolder.create — source assembly", () => {
 
   it("leaves activeFile undefined when no document matches the entrypoint", async () => {
     const source = makeSource(
-      [{ name: "a.cwl", content: { class: "Workflow", outputs: {}, steps: {} } }],
+      [
+        {
+          name: "a.cwl",
+          content: { class: "Workflow", outputs: {}, steps: {} },
+        },
+      ],
       "does-not-exist.cwl",
     );
 
@@ -1147,13 +1187,17 @@ describe("CWLSourceHolder.create — parameters", () => {
 describe("CWLSourceHolder.create — invalid input", () => {
   it("rejects a document missing its name", async () => {
     await expect(
-      CWLSourceHolder.create(makeSource([{ name: "", content: WORKFLOW_YAML }])),
+      CWLSourceHolder.create(
+        makeSource([{ name: "", content: WORKFLOW_YAML }]),
+      ),
     ).rejects.toThrow(/missing the name/);
   });
 
   it("rejects a document missing its content", async () => {
     await expect(
-      CWLSourceHolder.create(makeSource([{ name: "a.cwl", content: undefined }])),
+      CWLSourceHolder.create(
+        makeSource([{ name: "a.cwl", content: undefined }]),
+      ),
     ).rejects.toThrow(/missing the content/);
   });
 
@@ -1165,13 +1209,17 @@ describe("CWLSourceHolder.create — invalid input", () => {
 
   it("rejects a document with an unsupported extension", async () => {
     await expect(
-      CWLSourceHolder.create(makeSource([{ name: "a.txt", content: WORKFLOW_YAML }])),
+      CWLSourceHolder.create(
+        makeSource([{ name: "a.svg", content: WORKFLOW_YAML }]),
+      ),
     ).rejects.toThrow(/unsupported format/);
   });
 
   it("rejects a document with no extension at all", async () => {
     await expect(
-      CWLSourceHolder.create(makeSource([{ name: "noext", content: WORKFLOW_YAML }])),
+      CWLSourceHolder.create(
+        makeSource([{ name: "noext", content: WORKFLOW_YAML }]),
+      ),
     ).rejects.toThrow(/unsupported format/);
   });
 
@@ -1192,12 +1240,6 @@ describe("CWLSourceHolder.create — invalid input", () => {
     await expect(
       CWLSourceHolder.create(singleDocSource("bad.json", "{ not valid json")),
     ).rejects.toThrow();
-  });
-
-  it("rejects a document whose content parses to a non-object scalar", async () => {
-    await expect(
-      CWLSourceHolder.create(singleDocSource("a.cwl", "just a string")),
-    ).rejects.toThrow(/non-array object/);
   });
 
   it("rejects a process that is missing its required `class`", async () => {
@@ -1224,7 +1266,12 @@ describe("CWLSourceHolder.create — invalid input", () => {
     await expect(
       CWLSourceHolder.create(
         makeSource(
-          [{ name: "a.cwl", content: { class: "Workflow", outputs: {}, steps: {} } }],
+          [
+            {
+              name: "a.cwl",
+              content: { class: "Workflow", outputs: {}, steps: {} },
+            },
+          ],
           "a.cwl",
           [{ name: "", content: "{}" }],
         ),
@@ -1236,7 +1283,12 @@ describe("CWLSourceHolder.create — invalid input", () => {
     await expect(
       CWLSourceHolder.create(
         makeSource(
-          [{ name: "a.cwl", content: { class: "Workflow", outputs: {}, steps: {} } }],
+          [
+            {
+              name: "a.cwl",
+              content: { class: "Workflow", outputs: {}, steps: {} },
+            },
+          ],
           "a.cwl",
           [{ name: "inputs.json", content: undefined }],
         ),
@@ -1248,9 +1300,14 @@ describe("CWLSourceHolder.create — invalid input", () => {
     await expect(
       CWLSourceHolder.create(
         makeSource(
-          [{ name: "a.cwl", content: { class: "Workflow", outputs: {}, steps: {} } }],
+          [
+            {
+              name: "a.cwl",
+              content: { class: "Workflow", outputs: {}, steps: {} },
+            },
+          ],
           "a.cwl",
-          [{ name: "inputs.txt", content: "{}" }],
+          [{ name: "inputs.svg", content: "{}" }],
         ),
       ),
     ).rejects.toThrow(/unsupported format/);

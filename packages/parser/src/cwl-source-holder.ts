@@ -7,190 +7,20 @@ import {
   CwlSourceDocumentContent,
   CwlSourceParameter,
   Input,
-  Output,
   Process,
   Shape,
-  Type,
   Workflow,
   WorkflowOutput,
   WorkflowStep,
-  WorkflowStepInput,
 } from "@theseus-cwl/types";
 
-/**
- * Type guard for packed (`$graph`) CWL documents.
- *
- * A packed document bundles multiple processes under a top-level `$graph`
- * field instead of describing a single process at the root.
- *
- * @param object - a raw CWL document (packed, workflow, or process).
- */
-export const isPackedDocument = (
-  object:
-    | CWLPackedDocument<Shape.Raw>
-    | Workflow<Shape.Raw>
-    | Process<Shape.Raw>,
-): object is CWLPackedDocument<Shape.Raw> => {
-  return typeof object === "object" && object !== null && "$graph" in object;
-};
-
-/**
- * Type guard distinguishing a `Workflow` from any other process.
- *
- * @param object - a raw workflow or process.
- */
-export const isWorkflow = (
-  object: Workflow<Shape.Raw> | Process<Shape.Raw>,
-): object is Workflow<Shape.Raw> => {
-  return object.class === "Workflow";
-};
-
-/**
- * Yields `[id, entry]` pairs from a CWL field that may be authored either as an
- * identifier map (`{ foo: <entry> }`) or as the equivalent list of entries that
- * each carry their own `id` (`[{ id: "foo", ...entry }]`).
- *
- * Both forms are valid CWL: the array is the schema's normative shape and the
- * map is sugar over it (Schema Salad `mapSubject: id`), and the spec requires
- * consumers to accept both. `inputs`, `outputs`, `steps` and a step's `in` all
- * run through here so either form normalizes to the same keyed record.
- *
- * - **map** — returned verbatim as `Object.entries(field)`.
- * - **array** — each entry is keyed by its own `id`, which CWL requires for the
- *   array form. An entry that is not an object, or whose `id` is missing/blank,
- *   throws: the array form has no outer key to fall back to. (A blank or
- *   whitespace-only `id` is treated as missing, matching how blank process ids
- *   are handled in {@link CWLSourceHolder.sanitizeProcess_}.)
- *
- * @param fieldName - human-readable label of the field, used only to make the
- * missing-`id` error message point at the offending field.
- */
-const toIdEntries = <V>(
-  field: Record<string, V> | V[] | undefined,
-  fieldName: string,
-): [string, V][] => {
-  if (!field) {
-    return [];
-  }
-
-  if (Array.isArray(field)) {
-    return field.map((entry, index): [string, V] => {
-      const entryId =
-        entry && typeof entry === "object"
-          ? (entry as { id?: unknown }).id
-          : undefined;
-
-      if (typeof entryId !== "string" || !entryId.trim()) {
-        throw new Error(
-          `A ${fieldName} entry authored in array form is missing its required \`id\` (index ${index}).`,
-        );
-      }
-
-      return [entryId, entry];
-    });
-  }
-
-  return Object.entries(field);
-};
-
-/**
- * Normalizes a single raw input parameter into its sanitized, keyed form.
- *
- * In a raw document an input may be written either as a type shorthand string
- * (e.g. `"string"`) or as a full input object. Either way the result carries
- * an explicit `id` taken from the record key:
- * - `string` shorthand → `{ id: inputId, type: <string> }`.
- * - object → `{ ...input, id: inputId }`.
- *
- * Any other value is returned unchanged.
- *
- * @param input - the raw input: a type shorthand string or an input object.
- * @param inputId - the record key to stamp as the input's `id`.
- */
-export const normalizeInput = (
-  input: Input<Shape.Raw>,
-  inputId: string,
-): Input => {
-  if (typeof input === "string") {
-    return {
-      id: inputId,
-      type: input,
-    };
-  } else if (typeof input === "object") {
-    return { ...input, id: inputId };
-  } else return input;
-};
-
-/**
- * Normalizes a single raw output parameter into its sanitized, keyed form.
- *
- * Mirrors {@link normalizeInput}: in a raw document an output may be written
- * either as a type shorthand string (e.g. `"File"`) or as a full output
- * object. Either way the result carries an explicit `id` taken from the
- * record key:
- * - `string` shorthand → `{ id: outputId, type: <string> }`.
- * - object → `{ ...output, id: outputId }`.
- *
- * Any other value is returned unchanged.
- *
- * @param output - the raw output: a type shorthand string or an output object.
- * @param outputId - the record key to stamp as the output's `id`.
- */
-export const normalizeOutput = (
-  output: Output | Type,
-  outputId: string,
-): WorkflowOutput => {
-  if (typeof output === "string") {
-    return {
-      id: outputId,
-      type: output,
-    };
-  } else if (typeof output === "object") {
-    return { ...output, id: outputId };
-  } else return output;
-};
-
-/**
- * Normalizes a workflow step's `in` into a record of {@link WorkflowStepInput}
- * objects.
- *
- * `in` may be authored as an identifier map or as the equivalent array of
- * id-bearing entries (see {@link toIdEntries}); each entry is then either a
- * `source` shorthand string or a full step-input object:
- * - `string` → `{ source: <string> }`.
- * - object → kept as-is, minus any `id` (in the array form the `id` is the
- *   parameter name and becomes the record key, so both forms produce the same
- *   shape).
- *
- * @throws if `in` is missing — it is a required field on a workflow step.
- */
-export const normalizeStepIn = (
-  stepIn: WorkflowStep<Shape.Raw>["in"],
-): Record<string, WorkflowStepInput> => {
-  // `in` is a required field on a workflow step; preserve that contract with a
-  // clear error instead of the cryptic TypeError `Object.entries(undefined)`
-  // would otherwise throw.
-  if (!stepIn) {
-    throw new Error("A workflow step is missing the required `in` mapping");
-  }
-
-  const normalized: Record<string, WorkflowStepInput> = {};
-
-  for (const [stepInKey, stepInValue] of toIdEntries(
-    stepIn,
-    "workflow step `in`",
-  )) {
-    if (stepInValue && typeof stepInValue === "string") {
-      normalized[stepInKey] = { source: stepInValue };
-    } else if (stepInValue && typeof stepInValue === "object") {
-      const value: WorkflowStepInput & { id?: string } = { ...stepInValue };
-      delete value.id;
-      normalized[stepInKey] = value;
-    }
-  }
-
-  return normalized;
-};
+import { isPackedDocument, isWorkflow } from "./guards";
+import {
+  normalizeInput,
+  normalizeOutput,
+  normalizeStepIn,
+  toIdEntries,
+} from "./normalize";
 
 /**
  * Holds a fully sanitized CWL source together with the document that should
@@ -303,42 +133,26 @@ export class CWLSourceHolder {
           );
         }
 
+        let parsed:
+          | Workflow<Shape.Raw>
+          | CWLPackedDocument<Shape.Raw>
+          | Process<Shape.Raw>;
         if (typeof document.content === "string") {
-          if (format === "json") {
-            return {
-              ...document,
-              content: this.sanitizeDocument_(JSON.parse(document.content)),
-            };
-          } else {
-            return {
-              ...document,
-              content: this.sanitizeDocument_(YAML.parse(document.content)),
-            };
-          }
+          parsed = this.parse_(document.content, format);
         } else if (document.content instanceof File) {
-          if (format === "json") {
-            const fileContent = await document.content.text();
-            return {
-              ...document,
-              content: this.sanitizeDocument_(JSON.parse(fileContent)),
-            };
-          } else {
-            const fileContent = await document.content.text();
-            return {
-              ...document,
-              content: this.sanitizeDocument_(YAML.parse(fileContent)),
-            };
-          }
+          parsed = this.parse_(await document.content.text(), format);
         } else if (typeof document.content === "object") {
-          return {
-            ...document,
-            content: this.sanitizeDocument_(document.content),
-          };
+          parsed = document.content;
         } else {
           throw new Error(
             `Document item named ${document.name} contains an invalid content`,
           );
         }
+
+        return {
+          ...document,
+          content: this.sanitizeDocument_(parsed),
+        };
       }),
     );
   }
@@ -559,5 +373,16 @@ export class CWLSourceHolder {
     }
 
     return `${object.class.toLowerCase()}_${(hash >>> 0).toString(36)}`;
+  }
+
+  /**
+   * Parses raw document text into an object according to the detected format:
+   * `JSON.parse` for json, `YAML.parse` for yaml.
+   */
+  private static parse_(
+    text: string,
+    format: "json" | "yaml",
+  ): Workflow<Shape.Raw> | CWLPackedDocument<Shape.Raw> | Process<Shape.Raw> {
+    return format === "json" ? JSON.parse(text) : YAML.parse(text);
   }
 }
