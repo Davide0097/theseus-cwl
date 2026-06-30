@@ -31,14 +31,13 @@
   "devDependencies": {
     "@theseus-cwl/eslint-config": "*",
     "@theseus-cwl/typescript-config": "*",
-    "@theseus-cwl/types": "*",
     "eslint": "^9.23.0",
     "tsup": "^8.5.0",
     "typescript": "^5.8.2",
     "vitest": "^4.1.9"
   },
   "dependencies": {
-    "@theseus-cwl/configurations": "^1.1.2",
+    "@theseus-cwl/types": "^1.1.2",
     "yaml": "^2.8.1"
   }
 }
