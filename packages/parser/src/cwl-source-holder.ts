@@ -176,7 +176,10 @@ export const normalizeStepIn = (
 
   const normalized: Record<string, WorkflowStepInput> = {};
 
-  for (const [stepInKey, stepInValue] of toIdEntries(stepIn, "workflow step `in`")) {
+  for (const [stepInKey, stepInValue] of toIdEntries(
+    stepIn,
+    "workflow step `in`",
+  )) {
     if (stepInValue && typeof stepInValue === "string") {
       normalized[stepInKey] = { source: stepInValue };
     } else if (stepInValue && typeof stepInValue === "object") {
@@ -375,7 +378,7 @@ export class CWLSourceHolder {
           lowerCaseName.endsWith(".yaml") ||
           lowerCaseName.endsWith(".yml") ||
           lowerCaseName.endsWith(".cwl") ||
-          lowerCaseName.endsWith(".txt");;
+          lowerCaseName.endsWith(".txt");
 
         if (!hasReadableFormat) {
           throw new Error(
