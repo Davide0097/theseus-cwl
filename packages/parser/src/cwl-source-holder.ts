@@ -185,13 +185,17 @@ export class CWLSourceHolder {
   /**
    * Normalizes a single process (a `Workflow` or any non-packed `Process`) into its sanitized shape.
    *
-   * @param {Workflow<Shape.Raw> | CWLPackedDocument<Shape.Raw> | Process<Shape.Raw>} process
+   * @param {Workflow<Shape.Raw> | Process<Shape.Raw>} process
    *
-   * @returns { Process | Workflow}
+   * @returns {Process | Workflow}
    */
   private static sanitizeProcess_(
     process: Workflow<Shape.Raw> | Process<Shape.Raw>,
   ): Process | Workflow {
+    if (!process || typeof process !== "object" || Array.isArray(process)) {
+      throw new Error("A CWL process must be a mapping with a `class` field");
+    }
+
     assertAndGetProcessClass(process.class);
     const id = process.id?.trim() ? process.id : buildFallbackId(process);
 
@@ -235,8 +239,7 @@ export class CWLSourceHolder {
    *
    * @param {string} text
    * @param {"json" | "yaml"} format
-   * @param {string} name - the document name, used to give a parse failure
-   *   context about which document could not be parsed.
+   * @param {string} name - the document name
    *
    * @returns {CwlSourceDocumentContent}
    */

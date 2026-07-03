@@ -10,13 +10,17 @@ import type {
   Workflow,
 } from "@theseus-cwl/types";
 
-import { isPackedDocument, isWorkflow } from "../src/guards";
+import { isPackedDocument } from "../src/guards";
 import { CWLSourceHolder } from "../src/index";
-import {
-  normalizeInput,
-  normalizeOutput,
-  normalizeStepIn,
-} from "../src/normalize";
+
+// ---------------------------------------------------------------------------
+// This suite covers the public entry point CWLSourceHolder.create end-to-end
+// (parsing → sanitization → source assembly → activeFile). The unit-level
+// behavior of the helpers it orchestrates lives in the sibling suites:
+//   - guards.test.ts     (isPackedDocument, isWorkflow)
+//   - normalize.test.ts  (normalizeInput/Output/StepIn, toRecordById)
+//   - utils.test.ts      (assertAndGet* validators, buildFallbackId)
+// ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -65,292 +69,6 @@ steps:
     out:
       - out
 `;
-
-// ===========================================================================
-// Standalone helper: normalizeInput
-// ===========================================================================
-
-describe("normalizeInput", () => {
-  it("expands a string shorthand into { id, type }", () => {
-    expect(normalizeInput("string", "msg")).toEqual({
-      id: "msg",
-      type: "string",
-    });
-  });
-
-  it("supports array/optional shorthand type strings", () => {
-    expect(normalizeInput("File[]", "files")).toEqual({
-      id: "files",
-      type: "File[]",
-    });
-    expect(normalizeInput("string?", "maybe")).toEqual({
-      id: "maybe",
-      type: "string?",
-    });
-  });
-
-  it("wraps a union-type list shorthand under `type` (mapPredicate), not spread", () => {
-    // `myinput: ["null", "File"]` is the map-form union-type shorthand: per
-    // Schema Salad a non-mapping value (here a list) is assigned to the
-    // `mapPredicate` field (`type`), it is not spread as if it were an entry.
-    expect(normalizeInput(["null", "File"] as never, "myinput")).toEqual({
-      id: "myinput",
-      type: ["null", "File"],
-    });
-  });
-
-  it("stamps the key onto an object input and preserves every property", () => {
-    expect(
-      normalizeInput(
-        {
-          type: "int",
-          default: "5",
-          inputBinding: { position: 1, prefix: "-n" },
-          label: "count",
-          doc: "how many",
-        },
-        "n",
-      ),
-    ).toEqual({
-      id: "n",
-      type: "int",
-      default: "5",
-      inputBinding: { position: 1, prefix: "-n" },
-      label: "count",
-      doc: "how many",
-    });
-  });
-
-  it("overwrites an existing object id with the record key", () => {
-    expect(normalizeInput({ type: "int", id: "old" } as never, "new")).toEqual({
-      id: "new",
-      type: "int",
-    });
-  });
-
-  it("throws on a value that is neither a type string, type list, nor object", () => {
-    // these are invalid Input shapes — the parser rejects rather than leaking them
-    expect(() => normalizeInput(undefined as never, "x")).toThrow(
-      /Input "x" has an invalid value/,
-    );
-    expect(() => normalizeInput(42 as never, "x")).toThrow(
-      /Input "x" has an invalid value/,
-    );
-  });
-
-  it("does not mutate the source object", () => {
-    const src = { type: "int" as const };
-    normalizeInput(src, "n");
-    expect(src).toEqual({ type: "int" });
-    expect("id" in src).toBe(false);
-  });
-});
-
-// ===========================================================================
-// Standalone helper: normalizeOutput
-// ===========================================================================
-
-describe("normalizeOutput", () => {
-  it("expands a string shorthand into { id, type }", () => {
-    expect(normalizeOutput("File", "out")).toEqual({
-      id: "out",
-      type: "File",
-    });
-  });
-
-  it("supports array/optional shorthand type strings", () => {
-    expect(normalizeOutput("File[]", "files")).toEqual({
-      id: "files",
-      type: "File[]",
-    });
-    expect(normalizeOutput("File?", "maybe")).toEqual({
-      id: "maybe",
-      type: "File?",
-    });
-  });
-
-  it("wraps a union-type list shorthand under `type` (mapPredicate), not spread", () => {
-    expect(normalizeOutput(["null", "File"] as never, "out")).toEqual({
-      id: "out",
-      type: ["null", "File"],
-    });
-  });
-
-  it("stamps the key onto an object output and preserves every property", () => {
-    expect(
-      normalizeOutput(
-        {
-          type: "File",
-          outputBinding: { glob: "*.txt" },
-          outputSource: "step/out",
-          secondaryFiles: ".bai",
-          format: "edam:format_1234",
-          streamable: true,
-          doc: "the output",
-          label: "Out",
-        } as never,
-        "out",
-      ),
-    ).toEqual({
-      id: "out",
-      type: "File",
-      outputBinding: { glob: "*.txt" },
-      outputSource: "step/out",
-      secondaryFiles: ".bai",
-      format: "edam:format_1234",
-      streamable: true,
-      doc: "the output",
-      label: "Out",
-    });
-  });
-
-  it("overwrites an existing object id with the record key", () => {
-    expect(
-      normalizeOutput({ type: "File", id: "old" } as never, "new"),
-    ).toEqual({
-      id: "new",
-      type: "File",
-    });
-  });
-
-  it("throws on a value that is neither a type string, type list, nor object", () => {
-    expect(() => normalizeOutput(undefined as never, "x")).toThrow(
-      /Output "x" has an invalid value/,
-    );
-    expect(() => normalizeOutput(42 as never, "x")).toThrow(
-      /Output "x" has an invalid value/,
-    );
-  });
-
-  it("does not mutate the source object", () => {
-    const src = { type: "File" as const };
-    normalizeOutput(src, "out");
-    expect(src).toEqual({ type: "File" });
-    expect("id" in src).toBe(false);
-  });
-});
-
-// ===========================================================================
-// Standalone helper: normalizeStepIn
-// ===========================================================================
-
-describe("normalizeStepIn", () => {
-  it("expands a string step-in into { source }", () => {
-    expect(normalizeStepIn({ a: "src" })).toEqual({ a: { source: "src" } });
-  });
-
-  it("passes an object step-in through unchanged, including all fields", () => {
-    const stepIn = {
-      a: {
-        source: ["x", "y"],
-        valueFrom: "$(self)",
-        default: 1,
-        linkMerge: "merge_flattened" as const,
-      },
-    };
-    expect(normalizeStepIn(stepIn)).toEqual(stepIn);
-  });
-
-  it("wraps a list source shorthand under `source` (mapPredicate), not spread", () => {
-    // `x: ["a/out", "b/out"]` is the map-form multi-source shorthand: the list
-    // is assigned to `source`, not spread into an index-keyed object.
-    expect(normalizeStepIn({ x: ["a/out", "b/out"] } as never)).toEqual({
-      x: { source: ["a/out", "b/out"] },
-    });
-  });
-
-  it("throws on an invalid step-input value (empty string / undefined / null)", () => {
-    expect(() => normalizeStepIn({ a: "" } as never)).toThrow(
-      /Step input "a" has an invalid value/,
-    );
-    expect(() => normalizeStepIn({ c: undefined } as never)).toThrow(
-      /Step input "c" has an invalid value/,
-    );
-    expect(() => normalizeStepIn({ d: null } as never)).toThrow(
-      /Step input "d" has an invalid value/,
-    );
-  });
-
-  it("returns an empty record for an empty mapping", () => {
-    expect(normalizeStepIn({})).toEqual({});
-  });
-
-  it("normalizes a mix of string and object entries together", () => {
-    expect(
-      normalizeStepIn({ a: "srcA", b: { source: "srcB" } } as never),
-    ).toEqual({ a: { source: "srcA" }, b: { source: "srcB" } });
-  });
-
-  it("accepts the array (list) form, keying by each entry's id and stripping it from the value", () => {
-    expect(
-      normalizeStepIn([
-        { id: "a", source: "srcA" },
-        { id: "b", source: ["x", "y"], linkMerge: "merge_flattened" },
-      ] as never),
-    ).toEqual({
-      a: { source: "srcA" },
-      b: { source: ["x", "y"], linkMerge: "merge_flattened" },
-    });
-  });
-
-  it("throws when `in` is missing entirely", () => {
-    expect(() => normalizeStepIn(undefined as never)).toThrow(
-      /missing the required `in`/,
-    );
-  });
-
-  it("throws when an array-form `in` entry omits its id", () => {
-    expect(() => normalizeStepIn([{ source: "src" }] as never)).toThrow(
-      /missing its required `id`/,
-    );
-  });
-});
-
-// ===========================================================================
-// Standalone type guard: isPackedDocument
-// ===========================================================================
-
-describe("isPackedDocument", () => {
-  it("is true for objects carrying a $graph (array or record)", () => {
-    expect(isPackedDocument({ $graph: [] } as never)).toBe(true);
-    expect(isPackedDocument({ $graph: {} } as never)).toBe(true);
-  });
-
-  it("checks key presence, not value — $graph: undefined is still packed", () => {
-    expect(isPackedDocument({ $graph: undefined } as never)).toBe(true);
-  });
-
-  it("is false for a plain process/workflow", () => {
-    expect(isPackedDocument({ class: "Workflow" } as never)).toBe(false);
-    expect(isPackedDocument({ class: "CommandLineTool" } as never)).toBe(false);
-  });
-
-  it("is false for null, undefined, and non-object primitives", () => {
-    expect(isPackedDocument(null as never)).toBe(false);
-    expect(isPackedDocument(undefined as never)).toBe(false);
-    expect(isPackedDocument("$graph" as never)).toBe(false);
-  });
-
-  it("is false for an array without a $graph key", () => {
-    expect(isPackedDocument([] as never)).toBe(false);
-  });
-});
-
-// ===========================================================================
-// Standalone type guard: isWorkflow
-// ===========================================================================
-
-describe("isWorkflow", () => {
-  it("is true only when class === 'Workflow'", () => {
-    expect(isWorkflow({ class: "Workflow" })).toBe(true);
-  });
-
-  it("is false for every other process class", () => {
-    expect(isWorkflow({ class: "CommandLineTool" })).toBe(false);
-    expect(isWorkflow({ class: "ExpressionTool" })).toBe(false);
-    expect(isWorkflow({ class: "Operation" })).toBe(false);
-  });
-});
 
 // ===========================================================================
 // CWLSourceHolder.create — parsing document content (format + content type)
@@ -882,7 +600,10 @@ steps:
 });
 
 // ===========================================================================
-// CWLSourceHolder.create — fallback id generation (buildFallbackId_)
+// CWLSourceHolder.create — fallback id generation (buildFallbackId)
+//
+// Unit-level determinism/collision behavior is covered in utils.test.ts; these
+// assert the id is wired through the create() pipeline correctly.
 // ===========================================================================
 
 describe("CWLSourceHolder.create — fallback id generation", () => {
@@ -938,43 +659,6 @@ describe("CWLSourceHolder.create — fallback id generation", () => {
     const first = ((await activeFileOf("tool.cwl", content)) as Process).id;
     const second = ((await activeFileOf("tool.cwl", content)) as Process).id;
     expect(first).toBe(second);
-  });
-
-  it("derives different ids from different input/output signatures", async () => {
-    const a = (
-      (await activeFileOf("a.cwl", {
-        class: "CommandLineTool",
-        inputs: { a: "string" },
-        outputs: {},
-      })) as Process
-    ).id;
-    const b = (
-      (await activeFileOf("b.cwl", {
-        class: "CommandLineTool",
-        inputs: { b: "string" },
-        outputs: {},
-      })) as Process
-    ).id;
-    expect(a).not.toBe(b);
-  });
-
-  it("factors the label into the generated id", async () => {
-    const noLabel = (
-      (await activeFileOf("a.cwl", {
-        class: "CommandLineTool",
-        inputs: {},
-        outputs: {},
-      })) as Process
-    ).id;
-    const withLabel = (
-      (await activeFileOf("b.cwl", {
-        class: "CommandLineTool",
-        label: "labelled",
-        inputs: {},
-        outputs: {},
-      } as Process<Shape.Raw>)) as Process
-    ).id;
-    expect(noLabel).not.toBe(withLabel);
   });
 
   it("treats an explicit empty-string id as missing and generates a fallback", async () => {
@@ -1202,6 +886,26 @@ describe("CWLSourceHolder.create — source assembly", () => {
     expect(holder.activeFile).toBeUndefined();
   });
 
+  it("resolves activeFile to the first document sharing the entrypoint name", async () => {
+    // `find` returns the first match, so a duplicate name resolves to it.
+    const source = makeSource(
+      [
+        {
+          name: "dup.cwl",
+          content: { class: "Workflow", id: "first", outputs: {}, steps: {} },
+        },
+        {
+          name: "dup.cwl",
+          content: { class: "CommandLineTool", id: "second", inputs: {} },
+        },
+      ],
+      "dup.cwl",
+    );
+
+    const holder = await CWLSourceHolder.create(source);
+    expect((holder.activeFile as Workflow).id).toBe("first");
+  });
+
   it("handles an empty documents list (no active file, no throw)", async () => {
     const holder = await CWLSourceHolder.create(makeSource([], "anything.cwl"));
     expect(holder.source.documents).toEqual([]);
@@ -1232,11 +936,19 @@ describe("CWLSourceHolder.create — parameters", () => {
       { name: "p.yaml", content: "{}" },
       { name: "p.yml", content: "{}" },
       { name: "p.cwl", content: "{}" },
+      { name: "p.txt", content: "free text" },
     ];
     const holder = await CWLSourceHolder.create(
       makeSource([doc], "a.cwl", params),
     );
     expect(holder.source.parameters).toEqual(params);
+  });
+
+  it("carries a .txt parameter as text without parsing it", async () => {
+    const holder = await CWLSourceHolder.create(
+      makeSource([doc], "a.cwl", [{ name: "notes.txt", content: "not: json" }]),
+    );
+    expect(holder.source.parameters[0]?.content).toBe("not: json");
   });
 
   it("reads File parameter content to text without parsing it", async () => {
@@ -1258,6 +970,11 @@ describe("CWLSourceHolder.create — parameters", () => {
     );
     expect(holder.source.parameters[0]?.content).toBe("{}");
     expect(holder.source.parameters[1]?.content).toBe("k: v");
+  });
+
+  it("leaves parameters as an empty array when none are supplied", async () => {
+    const holder = await CWLSourceHolder.create(makeSource([doc], "a.cwl", []));
+    expect(holder.source.parameters).toEqual([]);
   });
 });
 
@@ -1327,6 +1044,14 @@ describe("CWLSourceHolder.create — invalid input", () => {
     ).rejects.toThrow(/unsupported format/);
   });
 
+  it("rejects a .txt document (allowed only for parameters)", async () => {
+    await expect(
+      CWLSourceHolder.create(
+        makeSource([{ name: "notes.txt", content: WORKFLOW_YAML }]),
+      ),
+    ).rejects.toThrow(/unsupported format/);
+  });
+
   it("rejects a document whose content is neither string, File, nor object", async () => {
     await expect(
       CWLSourceHolder.create(
@@ -1350,6 +1075,29 @@ describe("CWLSourceHolder.create — invalid input", () => {
     await expect(
       CWLSourceHolder.create(singleDocSource("bad.cwl", "key: : :")),
     ).rejects.toThrow(/Document named bad\.cwl is not valid yaml/);
+  });
+
+  it("reports the document name when a File's content is invalid JSON", async () => {
+    const file = new File(["{ not valid json"], "bad.json");
+    await expect(activeFileOf("bad.json", file)).rejects.toThrow(
+      /Document named bad\.json is not valid json/,
+    );
+  });
+
+  it("keeps the original parse error as `cause` (json)", async () => {
+    const error = await CWLSourceHolder.create(
+      singleDocSource("bad.json", "{ not valid json"),
+    ).catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(Error);
+    expect((error as Error).cause).toBeInstanceOf(Error);
+  });
+
+  it("keeps the original parse error as `cause` (yaml)", async () => {
+    const error = await CWLSourceHolder.create(
+      singleDocSource("bad.cwl", "key: : :"),
+    ).catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(Error);
+    expect((error as Error).cause).toBeInstanceOf(Error);
   });
 
   it("rejects a process that is missing its required `class`", async () => {

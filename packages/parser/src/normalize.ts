@@ -16,15 +16,19 @@ import {
  * An object gets the id merged in (overwriting any authored id, since the
  * record key is canonical); a string/list is assigned to the `type` field.
  * Anything else is not a recognized parameter shape and is rejected — `kind`
- * ("Input"/"Output") names the offending field in the error.
+ * ("input"/"output") names the offending field in the error.
  */
-const stampId = (value: unknown, id: string, kind: string): unknown => {
+const stampId = (
+  value: unknown,
+  id: string,
+  kind: "input" | "output",
+): unknown => {
   if (value && typeof value === "object" && !Array.isArray(value)) {
-    return { ...value, id };
+    return { ...value, id: id };
   }
 
   if (typeof value === "string" || Array.isArray(value)) {
-    return { id, type: value };
+    return { id: id, type: value };
   }
 
   throw new Error(
@@ -35,28 +39,26 @@ const stampId = (value: unknown, id: string, kind: string): unknown => {
 /**
  * Normalizes a single raw input parameter into its sanitized, keyed form.
  *
- * In a raw document an input may be written either as a type shorthand string
- * (e.g. `"string"`) or as a full input object.
- *
  * @param input - the raw input: a type shorthand string or an input object.
  * @param id - the record key to stamp as the input's `id`.
+ *
+ * @returns {Input}
  */
 export const normalizeInput = (input: Input<Shape.Raw>, id: string): Input =>
-  stampId(input, id, "Input") as Input;
+  stampId(input, id, "input") as Input;
 
 /**
  * Normalizes a single raw output parameter into its sanitized, keyed form.
  *
- * In a raw document an output may be written either as a type shorthand string
- * (e.g. `"File"`) or as a full output object.
- *
  * @param output - the raw output: a type shorthand string or an output object.
  * @param id - the record key to stamp as the output's `id`.
+ *
+ * @returns {WorkflowOutput}
  */
 export const normalizeOutput = (
   output: Output | Type,
   id: string,
-): WorkflowOutput => stampId(output, id, "Output") as WorkflowOutput;
+): WorkflowOutput => stampId(output, id, "output") as WorkflowOutput;
 
 /**
  * Normalizes a single step-input value.
@@ -86,8 +88,11 @@ const normalizeStepInValue = (
 };
 
 /**
- * Normalizes a workflow step's `in` into a record of {@link WorkflowStepInput}
- * objects.
+ * Normalizes a workflow step's `in` into a record of {@link WorkflowStepInput} objects.
+ *
+ * @param {WorkflowStep<Shape.Raw>["in"]} stepIn
+ *
+ * @returns {Record<string, WorkflowStepInput>}
  */
 export const normalizeStepIn = (
   stepIn: WorkflowStep<Shape.Raw>["in"],
@@ -127,6 +132,11 @@ const idOf = (entry: unknown): string => {
  * This turns either form into a record, running `normalize` on each entry and rejecting
  * duplicate ids. In list form the id comes from the entry itself; in map form
  * it is the key.
+ *
+ * @param {Record<string, In> | In[] | undefined} field
+ * @param {(entry: In, id: string) => Out} normalize
+ *
+ * @returns {Record<string, Out>}
  */
 export const toRecordById = <In, Out>(
   field: Record<string, In> | In[] | undefined,
