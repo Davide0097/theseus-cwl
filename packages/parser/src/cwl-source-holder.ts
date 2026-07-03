@@ -141,17 +141,18 @@ export class CWLSourceHolder {
 
         if (typeof content === "string") {
           return parameter;
-        } else if (content instanceof File) {
+        }
+
+        if (content instanceof File) {
           return {
             ...parameter,
             content: await content.text(),
           };
-        } else {
-          return {
-            ...parameter,
-            content: JSON.stringify(parameter.content),
-          };
         }
+
+        throw new Error(
+          `Parameter named ${name} has invalid content: expected a string or File`,
+        );
       }),
     );
   }

@@ -1364,6 +1364,18 @@ describe("CWLSourceHolder.create — invalid input", () => {
     ).rejects.toThrow(/missing the required `class`/);
   });
 
+  it("rejects a workflow step whose `run` is an array with a clear error (not a class error)", async () => {
+    await expect(
+      CWLSourceHolder.create(
+        singleDocSource("workflow.cwl", {
+          class: "Workflow",
+          outputs: {},
+          steps: { s: { run: [] as never, in: {} } },
+        }),
+      ),
+    ).rejects.toThrow(/invalid `run`/);
+  });
+
   it("rejects a parameter missing its name", async () => {
     await expect(
       CWLSourceHolder.create(
@@ -1396,6 +1408,28 @@ describe("CWLSourceHolder.create — invalid input", () => {
         ),
       ),
     ).rejects.toThrow(/Parameter item is missing the content/);
+  });
+
+  it("rejects a parameter whose content is neither string nor File", async () => {
+    await expect(
+      CWLSourceHolder.create(
+        makeSource(
+          [
+            {
+              name: "a.cwl",
+              content: { class: "Workflow", outputs: {}, steps: {} },
+            },
+          ],
+          "a.cwl",
+          [
+            {
+              name: "inputs.json",
+              content: 42 as unknown as CwlSourceParameter["content"],
+            },
+          ],
+        ),
+      ),
+    ).rejects.toThrow(/invalid content/);
   });
 
   it("rejects a parameter with an unsupported extension", async () => {

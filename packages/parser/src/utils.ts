@@ -75,7 +75,7 @@ export const assertAndGetParameterFormat = (
 
   if (!format) {
     throw new Error(
-      `Parameter item named ${name} has an unsupported format, allowed extensions are .json, .yaml, .yml and .cwl`,
+      `Parameter item named ${name} has an unsupported format, allowed extensions are .json, .yaml, .yml, .cwl and .txt`,
     );
   }
 
@@ -116,8 +116,17 @@ export const assertAndGetProcessClass = (cls: string) => {
 export const assertAndGetStepRun = (
   run: WorkflowStep<Shape.Raw>["run"] | undefined,
 ): string | Process<Shape.Raw> => {
-  if (!run || (typeof run !== "string" && typeof run !== "object")) {
+  if (!run) {
     throw new Error("A workflow step is missing the required `run` field");
+  }
+
+  if (
+    typeof run !== "string" &&
+    (typeof run !== "object" || Array.isArray(run))
+  ) {
+    throw new Error(
+      "A workflow step has an invalid `run` field: expected a string reference or an inline process",
+    );
   }
 
   return run;
