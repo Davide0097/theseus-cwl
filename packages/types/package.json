@@ -4,27 +4,38 @@
   "version": "1.1.2",
   "author": "davide giorgiutti",
   "license": "MIT",
-  "main": "index.js",
-  "types": "dist/index.d.ts",
+  "keywords": [
+    "cwl",
+    "common-workflow-language",
+    "types",
+    "typescript",
+    "workflow",
+    "theseus-cwl"
+  ],
+  "type": "module",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "dev": "tsc --watch",
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint . --max-warnings 0"
   },
   "publishConfig": {
     "access": "public"
   },
   "files": [
     "dist",
-    "index.js",
-    "index.d.ts",
     "LICENSE-MIT"
   ],
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     }
   },
   "devDependencies": {
-    "@theseus-cwl/typescript-config": "*"
+    "@theseus-cwl/eslint-config": "*",
+    "@theseus-cwl/typescript-config": "*",
+    "eslint": "^9.23.0"
   }
 }
