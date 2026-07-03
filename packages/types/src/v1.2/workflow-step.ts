@@ -121,7 +121,7 @@ export type WorkflowStep<S extends Shape = Shape.Sanitized> =
     /**
      * A long, human-readable description of this process object.
      */
-    doc?: string;
+    doc?: string | string[];
 
     scatter?: string | string[];
 

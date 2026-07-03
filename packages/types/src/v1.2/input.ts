@@ -1,21 +1,28 @@
 import { Type } from "./type";
 import { Shape } from "./workflow";
+import { Expression } from "./workflow-step";
 
 export type ExtendedInput<S extends Shape = Shape.Sanitized> =
   (S extends Shape.Sanitized ? { id: string } : { id?: string }) & {
     type: Type | Type[];
 
     /**
-     * A default value that can be overridden, e.g. --message "Hola mundo"
+     * A default value used if the parameter is not supplied. May be any value
+     * (e.g. a string, number, boolean, or a File/Directory object).
      */
-    default?: string;
+    default?: any;
 
     /**
-     * Bind this message value as an argument to "echo".
+     * How to turn this input into a command-line argument. `position` defaults
+     * to 0 when omitted.
      */
     inputBinding?: {
-      position: number;
+      position?: number;
       prefix?: string;
+      separate?: boolean;
+      itemSeparator?: string;
+      valueFrom?: string | Expression;
+      shellQuote?: boolean;
     };
 
     label?: string;

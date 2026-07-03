@@ -69,7 +69,7 @@ export type Process<
   /**
    * A long, human-readable description of this process object.
    */
-  doc?: string;
+  doc?: string | string[];
 
   /**
    * CWL document version. Always required at the document root. Not
@@ -78,7 +78,7 @@ export type Process<
    */
   cwlVersion?: CWLVersion;
 
-  baseCommand?: string;
+  baseCommand?: string | string[];
 
   stdout?: string;
 };

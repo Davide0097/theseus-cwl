@@ -10,7 +10,7 @@ export type Output = {
    */
   outputBinding?: {};
 
-  type: Type;
+  type: Type | Type[];
 
   /**
    * Only valid when `type: File` or is an array of `items: File`.
