@@ -12,8 +12,6 @@ export type Output = {
 
   type: Type;
 
-  outputSource?: string;
-
   /**
    * Only valid when `type: File` or is an array of `items: File`.
    *

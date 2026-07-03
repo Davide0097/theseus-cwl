@@ -17,15 +17,22 @@ export enum Shape {
  * Steps can be other workflows (nested workflows), command-line tools, or expression tools.
  * The inputs of a workflow can be passed to any of its steps, while the outputs produced by its steps can be used in the final output of the workflow.
  */
-
 export type Workflow<S extends Shape = Shape.Sanitized> = Process<S> & {
   /**
-   * The record of parameters representing the steps that make up the workflow.
+   * The parameters representing the steps that make up the workflow.
    */
-  steps?: Record<string, WorkflowStep<S>>;
+  steps: S extends Shape.Sanitized
+    ? Record<string, WorkflowStep<Shape.Sanitized>>
+    :
+        | Record<string, WorkflowStep<Shape.Raw>>
+        | Array<WorkflowStep<Shape.Raw> & { id: string }>;
 
   /**
-   * The record of parameters representing the outputs that make up the workflow.
+   * The parameters representing the outputs that make up the workflow.
    */
-  outputs: Record<string, WorkflowOutput<S>>;
+  outputs: S extends Shape.Sanitized
+    ? Record<string, WorkflowOutput<Shape.Sanitized>>
+    :
+        | Record<string, WorkflowOutput<Shape.Raw>>
+        | Array<WorkflowOutput<Shape.Raw> & { id: string }>;
 };

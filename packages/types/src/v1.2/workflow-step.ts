@@ -85,7 +85,9 @@ export type WorkflowStep<S extends Shape = Shape.Sanitized> =
      */
     in: S extends Shape.Sanitized
       ? Record<string, WorkflowStepInput>
-      : Record<string, WorkflowStepInput | string>;
+      :
+          | Record<string, WorkflowStepInput | string>
+          | Array<WorkflowStepInput & { id: string }>;
 
     /**
      * Defines the parameters representing the output of the process.

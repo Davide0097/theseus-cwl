@@ -1,7 +1,6 @@
+import { Output } from "./output";
 import { Process } from "./process";
 import { Shape } from "./workflow";
-import { WorkflowOutput } from "./workflow-output";
-import { WorkflowStep } from "./workflow-step";
 
 /**
  * # Command-line tool
@@ -14,12 +13,7 @@ export type CommandlineTool<S extends Shape = Shape.Sanitized> = Process<
   "CommandLineTool"
 > & {
   /**
-   * The record of parameters representing the steps that make up the workflow.
+   * The output parameters of the tool.
    */
-  steps?: Record<string, WorkflowStep<S>>;
-
-  /**
-   * The record of parameters representing the outputs that make up the workflow.
-   */
-  outputs: Record<string, WorkflowOutput<S>>;
+  outputs: Record<string, Output>;
 };

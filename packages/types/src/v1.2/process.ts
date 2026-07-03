@@ -1,4 +1,4 @@
-import { Input } from "./input";
+import { ExtendedInput, Input } from "./input";
 import { Output } from "./output";
 import { CWLVersion } from "./version";
 import { Shape } from "./workflow";
@@ -33,13 +33,19 @@ export type Process<
    * The inputs of a tool is a list of input parameters that control how to run the tool.
    * Each parameter has an id for the name of parameter, and type describing what types of values are valid for that parameter.
    */
-  inputs?: Record<string, Input<S>>;
+  inputs?: S extends Shape.Sanitized
+    ? Record<string, Input<Shape.Sanitized>>
+    :
+        | Record<string, Input<Shape.Raw>>
+        | Array<ExtendedInput<Shape.Raw> & { id: string }>;
 
   /**
    * The outputs of a tool is a list of output parameters that should be returned after running the tool.
    * Each parameter has an id for the name of parameter, and type describing what types of values are valid for that parameter.
    */
-  outputs?: Record<string, Output>;
+  outputs?: S extends Shape.Sanitized
+    ? Record<string, Output>
+    : Record<string, Output> | Array<Output & { id: string }>;
 
   /**
    * Declares requirements that apply to either the runtime environment or the
