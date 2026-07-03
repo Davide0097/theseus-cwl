@@ -23,19 +23,8 @@ export type CWLPackedDocument<S extends Shape = Shape.Sanitized> =
     cwlVersion: CWLVersion;
     $graph: S extends Shape.Raw
       ?
-          | (
-              | Workflow<Shape.Raw>
-              | Process<Shape.Raw>
-              | Workflow<Shape.Sanitized>
-              | Process<Shape.Sanitized>
-            )[]
-          | Record<
-              string,
-              | Workflow<Shape.Raw>
-              | Process<Shape.Raw>
-              | Workflow<Shape.Sanitized>
-              | Process<Shape.Sanitized>
-            >
+          | (Workflow<Shape.Raw> | Process<Shape.Raw>)[]
+          | Record<string, Workflow<Shape.Raw> | Process<Shape.Raw>>
       : Record<string, Workflow<Shape.Sanitized> | Process<Shape.Sanitized>>;
     entryPoint?: string;
   };
