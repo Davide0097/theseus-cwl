@@ -16,9 +16,10 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "dev": "tsc --watch",
-    "build": "tsc -p tsconfig.json",
-    "lint": "eslint . --max-warnings 0"
+    "dev": "tsup src/index.ts --format esm --dts --watch",
+    "build": "tsup src/index.ts --format esm --dts",
+    "lint": "eslint . --max-warnings 0",
+    "check-types": "tsc --noEmit"
   },
   "publishConfig": {
     "access": "public"
@@ -36,6 +37,7 @@
   "devDependencies": {
     "@theseus-cwl/eslint-config": "*",
     "@theseus-cwl/typescript-config": "*",
-    "eslint": "^9.23.0"
+    "eslint": "^9.23.0",
+    "tsup": "^8.5.0"
   }
 }
