@@ -1326,10 +1326,16 @@ describe("CWLSourceHolder.create — invalid input", () => {
     ).rejects.toThrow(/invalid content/);
   });
 
-  it("propagates a JSON syntax error from malformed .json content", async () => {
+  it("reports the document name and format on malformed .json content", async () => {
     await expect(
       CWLSourceHolder.create(singleDocSource("bad.json", "{ not valid json")),
-    ).rejects.toThrow();
+    ).rejects.toThrow(/Document named bad\.json is not valid json/);
+  });
+
+  it("reports the document name and format on malformed .cwl (yaml) content", async () => {
+    await expect(
+      CWLSourceHolder.create(singleDocSource("bad.cwl", "key: : :")),
+    ).rejects.toThrow(/Document named bad\.cwl is not valid yaml/);
   });
 
   it("rejects a process that is missing its required `class`", async () => {

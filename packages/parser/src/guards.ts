@@ -11,7 +11,7 @@ import {
  *
  * @param {CwlSourceDocumentContent<Shape.Raw>} object
  *
- * @returns {boolean}
+ * @returns {object is CWLPackedDocument<Shape.Raw>}
  */
 export const isPackedDocument = (
   object: CwlSourceDocumentContent<Shape.Raw>,
@@ -24,7 +24,7 @@ export const isPackedDocument = (
  *
  * @param {Workflow<Shape.Raw> | Process<Shape.Raw>} object
  *
- * @returns {boolean}
+ * @returns {object is Workflow<Shape.Raw>}
  */
 export const isWorkflow = (
   object: Workflow<Shape.Raw> | Process<Shape.Raw>,

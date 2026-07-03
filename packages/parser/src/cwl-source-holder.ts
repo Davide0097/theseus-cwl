@@ -104,9 +104,9 @@ export class CWLSourceHolder {
           | Process<Shape.Raw> = undefined;
 
         if (typeof content === "string") {
-          parsed = this.parse_(content, format);
+          parsed = this.parse_(content, format, name);
         } else if (content instanceof File) {
-          parsed = this.parse_(await content.text(), format);
+          parsed = this.parse_(await content.text(), format, name);
         } else if (typeof content === "object") {
           parsed = content;
         } else {
@@ -199,16 +199,19 @@ export class CWLSourceHolder {
     const outputs = toRecordById(process.outputs, normalizeOutput);
 
     if (isWorkflow(process)) {
-      const steps = toRecordById(process.steps, (step, id): WorkflowStep => {
-        const run = assertAndGetStepRun(step.run);
+      const steps = toRecordById(
+        process.steps,
+        (step, stepId): WorkflowStep => {
+          const run = assertAndGetStepRun(step.run);
 
-        return {
-          ...step,
-          id: id,
-          run: typeof run === "string" ? run : this.sanitizeProcess_(run),
-          in: normalizeStepIn(step.in),
-        };
-      });
+          return {
+            ...step,
+            id: stepId,
+            run: typeof run === "string" ? run : this.sanitizeProcess_(run),
+            in: normalizeStepIn(step.in),
+          };
+        },
+      );
 
       return {
         ...process,
@@ -232,13 +235,27 @@ export class CWLSourceHolder {
    *
    * @param {string} text
    * @param {"json" | "yaml"} format
+   * @param {string} name - the document name, used to give a parse failure
+   *   context about which document could not be parsed.
    *
    * @returns {CwlSourceDocumentContent}
    */
   private static parse_(
     text: string,
     format: "json" | "yaml",
+    name: string,
   ): CwlSourceDocumentContent {
-    return format === "json" ? JSON.parse(text) : YAML.parse(text);
+    try {
+      return format === "json" ? JSON.parse(text) : YAML.parse(text);
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : String(error);
+
+      throw new Error(
+        `Document named ${name} is not valid ${format}: ${reason}`,
+        {
+          cause: error,
+        },
+      );
+    }
   }
 }

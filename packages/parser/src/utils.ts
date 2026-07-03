@@ -6,111 +6,107 @@ import {
   WorkflowStep,
 } from "@theseus-cwl/types";
 
-export const assertAndGetDocumentName = (name: string): string => {
-  if (typeof name !== "string" || !name.trim()) {
-    throw new Error("Document `name` must be a non-empty string");
+const assertNonEmptyString = (value: string, label: string): string => {
+  if (typeof value !== "string" || !value.trim()) {
+    throw new Error(`${label} must be a non-empty string`);
   }
 
-  return name;
+  return value;
 };
 
-export const assertAndGetDocumentFormat = (name: string): "json" | "yaml" => {
-  let format: "yaml" | "json" | undefined = undefined;
-  const lowerCaseName = name.toLowerCase();
-
-  if (lowerCaseName.endsWith(".json")) {
-    format = "json";
-  } else if (
-    lowerCaseName.endsWith(".cwl") ||
-    lowerCaseName.endsWith(".yaml") ||
-    lowerCaseName.endsWith(".yml")
-  ) {
-    format = "yaml";
+const assertPresent = <T>(value: T, message: string): NonNullable<T> => {
+  if (!value) {
+    throw new Error(message);
   }
 
-  if (!format) {
+  return value;
+};
+
+const EXTENSION_FORMATS = {
+  ".json": "json",
+  ".cwl": "yaml",
+  ".yaml": "yaml",
+  ".yml": "yaml",
+  ".txt": "txt",
+} as const;
+
+type Extension = keyof typeof EXTENSION_FORMATS;
+
+const assertAndGetFormat = <E extends Extension>(
+  name: string,
+  label: string,
+  allowed: readonly E[],
+): (typeof EXTENSION_FORMATS)[E] => {
+  const dot = name.lastIndexOf(".");
+  const extension = dot === -1 ? "" : name.slice(dot).toLowerCase();
+  const match = allowed.find(
+    (allowedExtension) => allowedExtension === extension,
+  );
+
+  if (!match) {
     throw new Error(
-      `Document named ${name} has an unsupported format, allowed extensions are .json, .yaml, .yml and .cwl`,
+      `${label} named ${name} has an unsupported format, allowed extensions are ${allowed.join(", ")}`,
     );
   }
 
-  return format;
+  return EXTENSION_FORMATS[match];
 };
+
+export const assertAndGetDocumentName = (name: string): string =>
+  assertNonEmptyString(name, "Document `name`");
+
+export const assertAndGetDocumentFormat = (name: string) =>
+  assertAndGetFormat(name, "Document", [
+    ".json",
+    ".cwl",
+    ".yaml",
+    ".yml",
+  ] as const);
 
 export const assertAndGetDocumentContent = (
   content: CwlSourceDocumentContent<Shape.Raw>,
-) => {
-  if (!content) {
-    throw new Error("Document is missing the content");
-  }
+) => assertPresent(content, "Document is missing the content");
 
-  return content;
-};
+export const assertAndGetParameterName = (name: string): string =>
+  assertNonEmptyString(name, "Parameter `name`");
 
-export const assertAndGetParameterName = (name: string): string => {
-  if (typeof name !== "string" || !name.trim()) {
-    throw new Error("Parameter `name` must be a non-empty string");
-  }
-
-  return name;
-};
-
-export const assertAndGetParameterFormat = (
-  name: string,
-): "json" | "yaml" | "txt" => {
-  let format: "yaml" | "json" | "txt" | undefined = undefined;
-  const lowerCaseName = name.toLowerCase();
-
-  if (lowerCaseName.endsWith(".json")) {
-    format = "json";
-  } else if (
-    lowerCaseName.endsWith(".cwl") ||
-    lowerCaseName.endsWith(".yaml") ||
-    lowerCaseName.endsWith(".yml")
-  ) {
-    format = "yaml";
-  } else if (lowerCaseName.endsWith(".txt")) {
-    format = "txt";
-  }
-
-  if (!format) {
-    throw new Error(
-      `Parameter item named ${name} has an unsupported format, allowed extensions are .json, .yaml, .yml, .cwl and .txt`,
-    );
-  }
-
-  return format;
-};
+export const assertAndGetParameterFormat = (name: string) =>
+  assertAndGetFormat(name, "Parameter item", [
+    ".json",
+    ".cwl",
+    ".yaml",
+    ".yml",
+    ".txt",
+  ] as const);
 
 export const assertAndGetParameterContent = (
   content: string | File | undefined,
-) => {
-  if (!content) {
-    throw new Error("Parameter item is missing the content");
-  }
-
-  return content;
-};
+) => assertPresent(content, "Parameter item is missing the content");
 
 const PROCESS_CLASSES = [
   "Workflow",
   "CommandLineTool",
   "ExpressionTool",
   "Operation",
-];
+] as const;
 
-export const assertAndGetProcessClass = (cls: string) => {
+type ProcessClass = (typeof PROCESS_CLASSES)[number];
+
+const isProcessClass = (value: string): value is ProcessClass =>
+  PROCESS_CLASSES.some((processClass) => processClass === value);
+
+export const assertAndGetProcessClass = (cls: string): ProcessClass => {
   if (!cls || typeof cls !== "string" || cls.trim() === "") {
     throw new Error("A CWL process is missing the required `class` field");
   }
 
-  if (!(PROCESS_CLASSES as readonly string[]).includes(cls)) {
+  if (!isProcessClass(cls)) {
     throw new Error(
       `A CWL process has an unknown 'class' field "${cls}", expected one of ${PROCESS_CLASSES.join(", ")}`,
     );
   }
 
-  return cls as (typeof PROCESS_CLASSES)[number];
+  return cls;
 };
 
 export const assertAndGetStepRun = (
