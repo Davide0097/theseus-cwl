@@ -128,10 +128,14 @@ describe("normalizeInput", () => {
     });
   });
 
-  it("returns a non-string / non-object value unchanged (else branch)", () => {
-    // these are invalid Input shapes — they exercise the runtime fall-through
-    expect(normalizeInput(undefined as never, "x")).toBeUndefined();
-    expect(normalizeInput(42 as never, "x")).toBe(42);
+  it("throws on a value that is neither a type string, type list, nor object", () => {
+    // these are invalid Input shapes — the parser rejects rather than leaking them
+    expect(() => normalizeInput(undefined as never, "x")).toThrow(
+      /Input "x" has an invalid value/,
+    );
+    expect(() => normalizeInput(42 as never, "x")).toThrow(
+      /Input "x" has an invalid value/,
+    );
   });
 
   it("does not mutate the source object", () => {
@@ -209,9 +213,13 @@ describe("normalizeOutput", () => {
     });
   });
 
-  it("returns a non-string / non-object value unchanged (else branch)", () => {
-    expect(normalizeOutput(undefined as never, "x")).toBeUndefined();
-    expect(normalizeOutput(42 as never, "x")).toBe(42);
+  it("throws on a value that is neither a type string, type list, nor object", () => {
+    expect(() => normalizeOutput(undefined as never, "x")).toThrow(
+      /Output "x" has an invalid value/,
+    );
+    expect(() => normalizeOutput(42 as never, "x")).toThrow(
+      /Output "x" has an invalid value/,
+    );
   });
 
   it("does not mutate the source object", () => {
@@ -251,10 +259,16 @@ describe("normalizeStepIn", () => {
     });
   });
 
-  it("drops falsy entries (empty string / undefined / null)", () => {
-    expect(
-      normalizeStepIn({ a: "", b: "src", c: undefined, d: null } as never),
-    ).toEqual({ b: { source: "src" } });
+  it("throws on an invalid step-input value (empty string / undefined / null)", () => {
+    expect(() => normalizeStepIn({ a: "" } as never)).toThrow(
+      /Step input "a" has an invalid value/,
+    );
+    expect(() => normalizeStepIn({ c: undefined } as never)).toThrow(
+      /Step input "c" has an invalid value/,
+    );
+    expect(() => normalizeStepIn({ d: null } as never)).toThrow(
+      /Step input "d" has an invalid value/,
+    );
   });
 
   it("returns an empty record for an empty mapping", () => {

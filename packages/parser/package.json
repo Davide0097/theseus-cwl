@@ -1,9 +1,17 @@
 {
   "name": "@theseus-cwl/parser",
-  "description": "",
+  "description": "Parse and normalize raw CWL (Common Workflow Language) sources into a consistent, typed, sanitized shape.",
   "version": "0.0.2",
   "author": "davide giorgiutti",
   "license": "MIT",
+  "keywords": [
+    "cwl",
+    "common-workflow-language",
+    "parser",
+    "workflow",
+    "yaml",
+    "theseus-cwl"
+  ],
   "type": "module",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",

@@ -15,10 +15,10 @@ import {
  * string (`"string"`, `"File[]"`), or as a union-type list (`["null", "File"]`).
  * An object gets the id merged in (overwriting any authored id, since the
  * record key is canonical); a string/list is assigned to the `type` field.
- * Anything else is not a recognized parameter shape and is returned untouched
- * for a later validation step to reject.
+ * Anything else is not a recognized parameter shape and is rejected — `kind`
+ * ("Input"/"Output") names the offending field in the error.
  */
-const stampId = (value: unknown, id: string): unknown => {
+const stampId = (value: unknown, id: string, kind: string): unknown => {
   if (value && typeof value === "object" && !Array.isArray(value)) {
     return { ...value, id };
   }
@@ -27,7 +27,9 @@ const stampId = (value: unknown, id: string): unknown => {
     return { id, type: value };
   }
 
-  return value;
+  throw new Error(
+    `${kind} "${id}" has an invalid value: expected a type string, a type list, or an object`,
+  );
 };
 
 /**
@@ -40,7 +42,7 @@ const stampId = (value: unknown, id: string): unknown => {
  * @param id - the record key to stamp as the input's `id`.
  */
 export const normalizeInput = (input: Input<Shape.Raw>, id: string): Input =>
-  stampId(input, id) as Input;
+  stampId(input, id, "Input") as Input;
 
 /**
  * Normalizes a single raw output parameter into its sanitized, keyed form.
@@ -54,7 +56,7 @@ export const normalizeInput = (input: Input<Shape.Raw>, id: string): Input =>
 export const normalizeOutput = (
   output: Output | Type,
   id: string,
-): WorkflowOutput => stampId(output, id) as WorkflowOutput;
+): WorkflowOutput => stampId(output, id, "Output") as WorkflowOutput;
 
 /**
  * Normalizes a single step-input value.
@@ -66,7 +68,8 @@ export const normalizeOutput = (
  */
 const normalizeStepInValue = (
   value: unknown,
-): WorkflowStepInput | undefined => {
+  id: string,
+): WorkflowStepInput => {
   if (value && typeof value === "object" && !Array.isArray(value)) {
     const stepInput = { ...(value as WorkflowStepInput & { id?: string }) };
     delete stepInput.id;
@@ -77,7 +80,9 @@ const normalizeStepInValue = (
     return { source: value as string | string[] };
   }
 
-  return undefined;
+  throw new Error(
+    `Step input "${id}" has an invalid value: expected a source string, a source list, or an object`,
+  );
 };
 
 /**
@@ -125,7 +130,7 @@ const idOf = (entry: unknown): string => {
  */
 export const toRecordById = <In, Out>(
   field: Record<string, In> | In[] | undefined,
-  normalize: (entry: In, id: string) => Out | undefined,
+  normalize: (entry: In, id: string) => Out,
 ): Record<string, Out> => {
   const record: Record<string, Out> = {};
   if (!field) {
@@ -141,10 +146,7 @@ export const toRecordById = <In, Out>(
       throw new Error(`Found more than one entry with id "${id}"`);
     }
 
-    const normalized = normalize(entry, id);
-    if (normalized !== undefined) {
-      record[id] = normalized;
-    }
+    record[id] = normalize(entry, id);
   }
 
   return record;
