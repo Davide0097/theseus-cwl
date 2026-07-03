@@ -11,10 +11,12 @@ import type {
 } from "@theseus-cwl/types";
 
 import { isPackedDocument, isWorkflow } from "../src/guards";
+import { CWLSourceHolder } from "../src/index";
 import {
-  CWLSourceHolder,
-} from "../src/index";
-import { normalizeInput, normalizeOutput, normalizeStepIn } from "../src/normalize";
+  normalizeInput,
+  normalizeOutput,
+  normalizeStepIn,
+} from "../src/normalize";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -87,6 +89,16 @@ describe("normalizeInput", () => {
     });
   });
 
+  it("wraps a union-type list shorthand under `type` (mapPredicate), not spread", () => {
+    // `myinput: ["null", "File"]` is the map-form union-type shorthand: per
+    // Schema Salad a non-mapping value (here a list) is assigned to the
+    // `mapPredicate` field (`type`), it is not spread as if it were an entry.
+    expect(normalizeInput(["null", "File"] as never, "myinput")).toEqual({
+      id: "myinput",
+      type: ["null", "File"],
+    });
+  });
+
   it("stamps the key onto an object input and preserves every property", () => {
     expect(
       normalizeInput(
@@ -150,6 +162,13 @@ describe("normalizeOutput", () => {
     expect(normalizeOutput("File?", "maybe")).toEqual({
       id: "maybe",
       type: "File?",
+    });
+  });
+
+  it("wraps a union-type list shorthand under `type` (mapPredicate), not spread", () => {
+    expect(normalizeOutput(["null", "File"] as never, "out")).toEqual({
+      id: "out",
+      type: ["null", "File"],
     });
   });
 
@@ -222,6 +241,14 @@ describe("normalizeStepIn", () => {
       },
     };
     expect(normalizeStepIn(stepIn)).toEqual(stepIn);
+  });
+
+  it("wraps a list source shorthand under `source` (mapPredicate), not spread", () => {
+    // `x: ["a/out", "b/out"]` is the map-form multi-source shorthand: the list
+    // is assigned to `source`, not spread into an index-keyed object.
+    expect(normalizeStepIn({ x: ["a/out", "b/out"] } as never)).toEqual({
+      x: { source: ["a/out", "b/out"] },
+    });
   });
 
   it("drops falsy entries (empty string / undefined / null)", () => {
@@ -1039,6 +1066,46 @@ describe("CWLSourceHolder.create — packed $graph documents", () => {
     expect(packed.cwlVersion).toBe("v1.2");
     expect(packed.entryPoint).toBe("#main");
   });
+
+  it("re-stamps a record $graph entry's id from its graph key", async () => {
+    // `$graph` is a `mapSubject: id` field, so the record key is the canonical
+    // id and is stamped onto the entry even when it declares none.
+    const packed = (await activeFileOf("packed.cwl", {
+      class: "Workflow",
+      cwlVersion: "v1.2",
+      $graph: { main: { class: "Workflow", outputs: {}, steps: {} } as never },
+    })) as CWLPackedDocument;
+
+    expect(Object.keys(packed.$graph)).toEqual(["main"]);
+    expect(packed.$graph.main?.id).toBe("main");
+  });
+
+  it("rejects an array $graph entry that omits its required id", async () => {
+    await expect(
+      CWLSourceHolder.create(
+        singleDocSource("packed.cwl", {
+          class: "Workflow",
+          cwlVersion: "v1.2",
+          $graph: [{ class: "CommandLineTool", inputs: {} } as never],
+        }),
+      ),
+    ).rejects.toThrow(/missing its required `id`/);
+  });
+
+  it("rejects two array $graph entries that share an id", async () => {
+    await expect(
+      CWLSourceHolder.create(
+        singleDocSource("packed.cwl", {
+          class: "Workflow",
+          cwlVersion: "v1.2",
+          $graph: [
+            { id: "dup", class: "CommandLineTool", inputs: {} },
+            { id: "dup", class: "CommandLineTool", inputs: {} },
+          ] as never,
+        }),
+      ),
+    ).rejects.toThrow(/more than one entry with id/);
+  });
 });
 
 // ===========================================================================
@@ -1185,12 +1252,35 @@ describe("CWLSourceHolder.create — parameters", () => {
 // ===========================================================================
 
 describe("CWLSourceHolder.create — invalid input", () => {
-  it("rejects a document missing its name", async () => {
+  it("rejects an empty-string document name", async () => {
     await expect(
       CWLSourceHolder.create(
         makeSource([{ name: "", content: WORKFLOW_YAML }]),
       ),
-    ).rejects.toThrow(/missing the name/);
+    ).rejects.toThrow(/`name` must be a non-empty string/);
+  });
+
+  it("rejects a whitespace-only document name", async () => {
+    await expect(
+      CWLSourceHolder.create(
+        makeSource([{ name: "   ", content: WORKFLOW_YAML }]),
+      ),
+    ).rejects.toThrow(/`name` must be a non-empty string/);
+  });
+
+  it("rejects a non-string document name (null, number, object) without a TypeError", async () => {
+    for (const badName of [null, undefined, 42, { toString: () => "x.cwl" }]) {
+      await expect(
+        CWLSourceHolder.create(
+          makeSource([
+            {
+              name: badName as unknown as string,
+              content: WORKFLOW_YAML,
+            },
+          ]),
+        ),
+      ).rejects.toThrow(/`name` must be a non-empty string/);
+    }
   });
 
   it("rejects a document missing its content", async () => {
@@ -1250,6 +1340,18 @@ describe("CWLSourceHolder.create — invalid input", () => {
     ).rejects.toThrow(/missing the required `class`/);
   });
 
+  it("rejects a process whose `class` is not a known CWL process class", async () => {
+    await expect(
+      CWLSourceHolder.create(
+        singleDocSource("a.cwl", {
+          class: "Banana",
+          inputs: {},
+          outputs: {},
+        } as never),
+      ),
+    ).rejects.toThrow(/unknown 'class' field "Banana"/);
+  });
+
   it("rejects an inline step `run` process that is missing its `class`", async () => {
     await expect(
       CWLSourceHolder.create(
@@ -1276,7 +1378,7 @@ describe("CWLSourceHolder.create — invalid input", () => {
           [{ name: "", content: "{}" }],
         ),
       ),
-    ).rejects.toThrow(/Parameter item is missing the name/);
+    ).rejects.toThrow(/`name` must be a non-empty string/);
   });
 
   it("rejects a parameter missing its content", async () => {
@@ -1323,30 +1425,6 @@ describe("CWLSourceHolder.create — invalid input", () => {
 // ===========================================================================
 
 describe("CWLSourceHolder.create — known sharp edges", () => {
-  it("does NOT re-stamp a record $graph entry's id from its graph key", async () => {
-    // The entry is keyed "main" but declares no id, so its id is a generated
-    // fallback — it does not inherit "main" from the key.
-    const packed = (await activeFileOf("packed.cwl", {
-      class: "Workflow",
-      cwlVersion: "v1.2",
-      $graph: { main: { class: "Workflow", outputs: {}, steps: {} } as never },
-    })) as CWLPackedDocument;
-
-    expect(Object.keys(packed.$graph)).toEqual(["main"]);
-    expect(packed.$graph.main?.id).toMatch(/^workflow_/);
-    expect(packed.$graph.main?.id).not.toBe("main");
-  });
-
-  it("keys an id-less array $graph entry under the literal string 'undefined'", async () => {
-    const packed = (await activeFileOf("packed.cwl", {
-      class: "Workflow",
-      cwlVersion: "v1.2",
-      $graph: [{ class: "CommandLineTool", inputs: {} } as never],
-    })) as CWLPackedDocument;
-
-    expect(Object.keys(packed.$graph)).toEqual(["undefined"]);
-  });
-
   it("throws when a workflow step omits its required `in` mapping", async () => {
     // normalizeStepIn rejects a missing `in` with an explicit error.
     await expect(
@@ -1358,5 +1436,19 @@ describe("CWLSourceHolder.create — known sharp edges", () => {
         }),
       ),
     ).rejects.toThrow(/missing the required `in`/);
+  });
+
+  it("throws a clear error when a workflow step omits its required `run`", async () => {
+    // A missing `run` used to recurse into sanitizeProcess_(undefined) and die
+    // on `undefined.class`; it now fails with an explicit message.
+    await expect(
+      CWLSourceHolder.create(
+        singleDocSource("workflow.cwl", {
+          class: "Workflow",
+          outputs: {},
+          steps: { s: { in: {} } as never },
+        }),
+      ),
+    ).rejects.toThrow(/missing the required `run`/);
   });
 });

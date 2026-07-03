@@ -1,5 +1,6 @@
 import {
   CWLPackedDocument,
+  CwlSourceDocumentContent,
   Process,
   Shape,
   Workflow,
@@ -8,16 +9,12 @@ import {
 /**
  * Type guard for packed (`$graph`) CWL documents.
  *
- * A packed document bundles multiple processes under a top-level `$graph`
- * field instead of describing a single process at the root.
+ * @param {CwlSourceDocumentContent<Shape.Raw>} object
  *
- * @param object - a raw CWL document (packed, workflow, or process).
+ * @returns {boolean}
  */
 export const isPackedDocument = (
-  object:
-    | CWLPackedDocument<Shape.Raw>
-    | Workflow<Shape.Raw>
-    | Process<Shape.Raw>,
+  object: CwlSourceDocumentContent<Shape.Raw>,
 ): object is CWLPackedDocument<Shape.Raw> => {
   return typeof object === "object" && object !== null && "$graph" in object;
 };
@@ -25,7 +22,9 @@ export const isPackedDocument = (
 /**
  * Type guard distinguishing a `Workflow` from any other process.
  *
- * @param object - a raw workflow or process.
+ * @param {Workflow<Shape.Raw> | Process<Shape.Raw>} object
+ *
+ * @returns {boolean}
  */
 export const isWorkflow = (
   object: Workflow<Shape.Raw> | Process<Shape.Raw>,
