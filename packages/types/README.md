@@ -17,72 +17,64 @@ yarn add @theseus-cwl/types
 
 ## Usage
 
-```ts
-import { CwlSource } from "@theseus-cwl/types";
+```tsx
+import { CwlSource, Shape } from "@theseus-cwl/types";
 import { CwlViewer } from "@theseus-cwl/ui-react-viewer";
 
-const Example = () => {
-  const source: CwlSource = {
-          entrypoint: "main",
-          files: [
-            {
-              name: "main",
-              content: {
-                cwlVersion: "v1.2",
-                class: "Workflow",
-                label: "Theseus CWL",
-                inputs: {
-                  message: "string",
-                },
-                outputs: {
-                  output: {
-                    type: "File",
-                    outputSource: "echo_step/output",
-                  },
-                },
-                steps: {
-                  echo_step: {
-                    run: {
-                      class: "CommandLineTool",
-                      baseCommand: "echo",
-                      inputs: {
-                        message: {
-                          type: "string",
-                          inputBinding: {
-                            position: 1,
-                          },
-                        },
-                      },
-                      outputs: {
-                        output: {
-                          type: "File",
-                          outputBinding: {
-                            glob: "output.txt",
-                          },
-                        },
-                      },
-                      stdout: "output.txt",
-                    },
-                    in: {
-                      message: "message",
-                    },
-                    out: ["output"],
-                  },
+const source: CwlSource<Shape.Raw> = {
+  entrypoint: "main",
+  documents: [
+    {
+      name: "main",
+      content: {
+        cwlVersion: "v1.2",
+        class: "Workflow",
+        label: "Theseus CWL",
+        inputs: {
+          message: "string",
+        },
+        outputs: {
+          output: {
+            type: "File",
+            outputSource: "echo_step/output",
+          },
+        },
+        steps: {
+          echo_step: {
+            run: {
+              class: "CommandLineTool",
+              baseCommand: "echo",
+              inputs: {
+                message: {
+                  type: "string",
+                  inputBinding: { position: 1 },
                 },
               },
-            },
-          ],
-          parameters: [
-            {
-              name: "input",
-              content: {
-                message: "Hello from Theseus CWL !",
+              outputs: {
+                output: {
+                  type: "File",
+                  outputBinding: { glob: "output.txt" },
+                },
               },
+              stdout: "output.txt",
             },
-          ],
-        };
+            in: { message: "message" },
+            out: ["output"],
+          },
+        },
+      },
+    },
+  ],
+  // A parameter's `content` is a string | File | undefined (e.g. a job/params file body)
+  parameters: [
+    {
+      name: "input",
+      content: JSON.stringify({ message: "Hello from Theseus CWL !" }),
+    },
+  ],
+};
 
-  return <CwlViewer input={source} />;
+const Example = () => <CwlViewer input={source} />;
 ```
 
 The example above shows how this package can be used in a JSX component, as the internal UI package is based on React. However, the types provided by this package can also be used in plain TypeScript projects.
