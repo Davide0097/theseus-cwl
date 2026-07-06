@@ -53,6 +53,11 @@ export type WorkflowStepInput = {
    * If not specified, the default method is "merge_nested".
    */
   linkMerge?: "merge_nested" | "merge_flattened";
+
+  /**
+   * The method to use to pick non-null values among the sources (CWL v1.2).
+   */
+  pickValue?: "first_non_null" | "the_only_non_null" | "all_non_null";
 };
 
 /**
@@ -100,12 +105,16 @@ export type WorkflowStep<S extends Shape = Shape.Sanitized> =
     run: string | Process<Shape.Raw> | Process<Shape.Sanitized>;
 
     /**
+     * If defined, only run the step when the expression evaluates to `true`.
+     * Requires the source values named in the step `in` to be available to the expression.
+     */
+    when?: string | Expression;
+
+    /**
      * Declares requirements that apply to either the runtime environment or the
      * workflow engine that must be met in order to execute this workflow step.
      */
-    requirements?: {
-      class: string;
-    }[];
+    requirements?: Record<string, any>;
 
     /**
      * Declares hints applying to either the runtime environment or the

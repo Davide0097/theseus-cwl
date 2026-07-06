@@ -7,7 +7,7 @@ type PrimitiveType =
   | "double"
   | "null";
 
-type ComplexType = "array" | "record";
+type ComplexType = "array" | "record" | "enum";
 
 type SpecialType = "File" | "Directory" | "Any";
 

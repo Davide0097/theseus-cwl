@@ -1,7 +1,6 @@
+import { Output } from "./output";
 import { Process } from "./process";
 import { Shape } from "./workflow";
-import { WorkflowOutput } from "./workflow-output";
-import { WorkflowStep } from "./workflow-step";
 
 /**
  * # Expression tool
@@ -17,12 +16,7 @@ export type ExpressionTool<S extends Shape = Shape.Sanitized> = Process<
   expression: any;
 
   /**
-   * The record of parameters representing the steps that make up the workflow.
+   * The output parameters of the expression tool.
    */
-  steps?: Record<string, WorkflowStep<S>>;
-
-  /**
-   * The record of parameters representing the outputs that make up the workflow.
-   */
-  outputs: Record<string, WorkflowOutput<S>>;
+  outputs: Record<string, Output>;
 };

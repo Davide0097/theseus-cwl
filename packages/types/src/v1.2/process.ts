@@ -80,5 +80,9 @@ export type Process<
 
   baseCommand?: string | string[];
 
+  stdin?: string;
+
   stdout?: string;
+
+  stderr?: string;
 };
