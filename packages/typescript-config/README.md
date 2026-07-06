@@ -25,12 +25,12 @@ Extend one of the provided configurations in your tsconfig.json:
 
 // React config
 {
-  "extends": "@theseus-cwl/typescript-config/react-library.json"
+  "extends": "@theseus-cwl/typescript-config/react-library"
 }
 
 // Merge it with your settings
 {
-  "extends": "@theseus-cwl/typescript-config/react-library.json",
+  "extends": "@theseus-cwl/typescript-config/react-library",
   "compilerOptions": {
     "outDir": "dist"
   },
