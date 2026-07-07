@@ -43,14 +43,124 @@ export let CWL_FILE_KEYWORDS = [
 ];
 
 /**
- * The documentation shown when hovering CWL keywords
+ * Documentation for a single CWL keyword.
  */
-export let CWL_FILE_KEYWORDS_DOCUMENTATION: Record<string, string> = {
-  cwlVersion: "The CWL version (e.g., v1.0, v1.2)",
-  class: "Specifies the type: CommandLineTool, Workflow, ExpressionTool",
-  inputs: "Input parameters for this tool or workflow",
-  outputs: "Outputs produced by this tool or workflow",
-  steps: "Workflow steps, mapping names to tools",
+export type CwlKeywordDocumentation = {
+  /**
+   * Short summary of the keyword, suitable for inline display
+   */
+  documentation: string;
+  /**
+   * The keyword's description as given by the official CWL v1.2 specification
+   */
+  document: string;
+  /**
+   * Links to the official CWL specification and user guide sections covering
+   * the keyword
+   */
+  references: string[];
+};
+
+/**
+ * The documentation shown when hovering CWL keywords: a short summary, the
+ * official CWL v1.2 specification description and reference links
+ */
+export let CWL_FILE_KEYWORDS_DOCUMENTATION: Record<
+  string,
+  CwlKeywordDocumentation
+> = {
+  cwlVersion: {
+    documentation: "The CWL version (e.g., v1.0, v1.2)",
+    document:
+      "CWL document version. Always required at the document root. Not required for a Process embedded inside another Process.",
+    references: [
+      "https://www.commonwl.org/v1.2/Workflow.html#Workflow",
+      "https://www.commonwl.org/v1.2/CommandLineTool.html#CommandLineTool",
+      "https://www.commonwl.org/user_guide/",
+    ],
+  },
+  class: {
+    documentation:
+      "Specifies the type: CommandLineTool, Workflow, ExpressionTool",
+    document:
+      "Constant value identifying the process type. The CWL standards define four process classes: CommandLineTool, ExpressionTool, Workflow and Operation.",
+    references: [
+      "https://www.commonwl.org/v1.2/Workflow.html#Workflow",
+      "https://www.commonwl.org/v1.2/CommandLineTool.html#CommandLineTool",
+      "https://www.commonwl.org/v1.2/Workflow.html#ExpressionTool",
+    ],
+  },
+  inputs: {
+    documentation: "Input parameters for this tool or workflow",
+    document:
+      "Defines the input parameters of the process. The process is ready to run when all required input parameters are associated with concrete values. Input parameters include a schema for each parameter which is used to validate the input object.",
+    references: [
+      "https://www.commonwl.org/v1.2/Workflow.html#WorkflowInputParameter",
+      "https://www.commonwl.org/v1.2/CommandLineTool.html#CommandInputParameter",
+      "https://www.commonwl.org/user_guide/topics/inputs.html",
+    ],
+  },
+  outputs: {
+    documentation: "Outputs produced by this tool or workflow",
+    document:
+      "Defines the parameters representing the output of the process. May be used to generate and/or validate the output object.",
+    references: [
+      "https://www.commonwl.org/v1.2/Workflow.html#WorkflowOutputParameter",
+      "https://www.commonwl.org/v1.2/CommandLineTool.html#CommandOutputParameter",
+      "https://www.commonwl.org/user_guide/topics/outputs.html",
+    ],
+  },
+  steps: {
+    documentation: "Workflow steps, mapping names to tools",
+    document:
+      "The individual steps that make up the workflow. Each step is executed when all of its input data links are fulfilled. An implementation may choose to execute the steps in a different order than listed and/or execute steps concurrently, provided that dependencies between steps are met.",
+    references: [
+      "https://www.commonwl.org/v1.2/Workflow.html#WorkflowStep",
+      "https://www.commonwl.org/user_guide/topics/workflows.html",
+    ],
+  },
+  baseCommand: {
+    documentation:
+      "The program a CommandLineTool executes (optionally with fixed leading arguments)",
+    document:
+      "Specifies the program to execute. If an array, the first element of the array is the command to execute, and subsequent elements are mandatory command line arguments.",
+    references: [
+      "https://www.commonwl.org/v1.2/CommandLineTool.html#CommandLineTool",
+      "https://www.commonwl.org/user_guide/topics/command-line-tool.html",
+    ],
+  },
+  requirements: {
+    documentation:
+      "Requirements that must be satisfied by the workflow engine to run this process",
+    document:
+      "Declares requirements that apply to either the runtime environment or the workflow engine that must be met in order to execute this process. If an implementation cannot satisfy all requirements, or a requirement is listed which is not recognized by the implementation, it is a fatal error.",
+    references: [
+      "https://www.commonwl.org/v1.2/Workflow.html#Requirements_and_hints",
+      "https://www.commonwl.org/v1.2/CommandLineTool.html#Requirements_and_hints",
+      "https://www.commonwl.org/user_guide/topics/specifying-software-requirements.html",
+    ],
+  },
+  hints: {
+    documentation:
+      "Optional hints for the workflow engine; unmet hints are not fatal",
+    document:
+      "Declares hints applying to either the runtime environment or the workflow engine that may be helpful in executing this process. It is not an error if an implementation cannot satisfy all hints, however the implementation may report a warning.",
+    references: [
+      "https://www.commonwl.org/v1.2/Workflow.html#Requirements_and_hints",
+      "https://www.commonwl.org/v1.2/CommandLineTool.html#Requirements_and_hints",
+    ],
+  },
+  arguments: {
+    documentation:
+      "Additional command line arguments not tied to a specific input parameter",
+    document:
+      "Command line bindings which are not directly associated with input parameters. If the value is a string, it is used as a string literal argument. If it is an Expression, the result of the evaluation is used as an argument.",
+    references: [
+      "https://www.commonwl.org/v1.2/CommandLineTool.html#CommandLineTool",
+      "https://www.commonwl.org/v1.2/CommandLineTool.html#CommandLineBinding",
+      "https://www.commonwl.org/user_guide/topics/additional-arguments-and-parameters.html",
+    ],
+  },
 };
 
 /**
@@ -96,11 +206,9 @@ export let SUBWORKFLOW_NODE_SCALING_FACTOR = 0.8;
 export let VIEWER_PADDING = 20;
 
 /**
- * How long (ms) to wait after the last keystroke before emitting the updated
- * source. Debouncing avoids consumers re-parsing (and re-validating) on every
- * character and prevents error flicker on transient, half-typed YAML.
+ * How long (ms) to wait after the last keystroke before emitting the updated source.
  */
-export let CWL_EDITOR_ONCHANGE_DEBOUNCE_MS = 300
+export let CWL_EDITOR_ONCHANGE_DEBOUNCE_MS = 300;
 
 /**
  * Every value that can be overridden via {@link configureTheseusCwl}.
@@ -108,7 +216,7 @@ export let CWL_EDITOR_ONCHANGE_DEBOUNCE_MS = 300
 export type TheseusCwlConfiguration = {
   ANIMATION_TIME: number;
   CWL_FILE_KEYWORDS: string[];
-  CWL_FILE_KEYWORDS_DOCUMENTATION: Record<string, string>;
+  CWL_FILE_KEYWORDS_DOCUMENTATION: Record<string, CwlKeywordDocumentation>;
   INPUT_NODE_COLOR: string;
   STEP_NODE_COLOR: string;
   OUTPUT_NODE_COLOR: string;
@@ -127,7 +235,9 @@ export type TheseusCwlConfiguration = {
 const DEFAULTS: TheseusCwlConfiguration = {
   ANIMATION_TIME,
   CWL_FILE_KEYWORDS: [...CWL_FILE_KEYWORDS],
-  CWL_FILE_KEYWORDS_DOCUMENTATION: { ...CWL_FILE_KEYWORDS_DOCUMENTATION },
+  CWL_FILE_KEYWORDS_DOCUMENTATION: structuredClone(
+    CWL_FILE_KEYWORDS_DOCUMENTATION,
+  ),
   INPUT_NODE_COLOR,
   STEP_NODE_COLOR,
   OUTPUT_NODE_COLOR,
@@ -198,7 +308,7 @@ export const configureTheseusCwl = (
   if (overrides.CWL_FILE_KEYWORDS_DOCUMENTATION !== undefined) {
     CWL_FILE_KEYWORDS_DOCUMENTATION = overrides.CWL_FILE_KEYWORDS_DOCUMENTATION;
   }
-  
+
   if (overrides.CWL_EDITOR_ONCHANGE_DEBOUNCE_MS !== undefined) {
     CWL_EDITOR_ONCHANGE_DEBOUNCE_MS = overrides.CWL_EDITOR_ONCHANGE_DEBOUNCE_MS;
   }
@@ -211,8 +321,8 @@ export const resetTheseusCwlConfiguration = (): void => {
   configureTheseusCwl({
     ...DEFAULTS,
     CWL_FILE_KEYWORDS: [...DEFAULTS.CWL_FILE_KEYWORDS],
-    CWL_FILE_KEYWORDS_DOCUMENTATION: {
-      ...DEFAULTS.CWL_FILE_KEYWORDS_DOCUMENTATION,
-    },
+    CWL_FILE_KEYWORDS_DOCUMENTATION: structuredClone(
+      DEFAULTS.CWL_FILE_KEYWORDS_DOCUMENTATION,
+    ),
   });
 };
