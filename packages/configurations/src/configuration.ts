@@ -96,6 +96,13 @@ export let SUBWORKFLOW_NODE_SCALING_FACTOR = 0.8;
 export let VIEWER_PADDING = 20;
 
 /**
+ * How long (ms) to wait after the last keystroke before emitting the updated
+ * source. Debouncing avoids consumers re-parsing (and re-validating) on every
+ * character and prevents error flicker on transient, half-typed YAML.
+ */
+export let CWL_EDITOR_ONCHANGE_DEBOUNCE_MS = 300
+
+/**
  * Every value that can be overridden via {@link configureTheseusCwl}.
  */
 export type TheseusCwlConfiguration = {
@@ -110,6 +117,7 @@ export type TheseusCwlConfiguration = {
   NODE_MARGIN: number;
   SUBWORKFLOW_NODE_SCALING_FACTOR: number;
   VIEWER_PADDING: number;
+  CWL_EDITOR_ONCHANGE_DEBOUNCE_MS: number;
 };
 
 /**
@@ -128,6 +136,7 @@ const DEFAULTS: TheseusCwlConfiguration = {
   NODE_MARGIN,
   SUBWORKFLOW_NODE_SCALING_FACTOR,
   VIEWER_PADDING,
+  CWL_EDITOR_ONCHANGE_DEBOUNCE_MS,
 };
 
 /**
@@ -188,6 +197,10 @@ export const configureTheseusCwl = (
 
   if (overrides.CWL_FILE_KEYWORDS_DOCUMENTATION !== undefined) {
     CWL_FILE_KEYWORDS_DOCUMENTATION = overrides.CWL_FILE_KEYWORDS_DOCUMENTATION;
+  }
+  
+  if (overrides.CWL_EDITOR_ONCHANGE_DEBOUNCE_MS !== undefined) {
+    CWL_EDITOR_ONCHANGE_DEBOUNCE_MS = overrides.CWL_EDITOR_ONCHANGE_DEBOUNCE_MS;
   }
 };
 

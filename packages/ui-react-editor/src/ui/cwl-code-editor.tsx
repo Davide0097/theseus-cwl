@@ -1,235 +1,152 @@
-import { autocompletion, CompletionContext } from "@codemirror/autocomplete";
-import { yaml } from "@codemirror/lang-yaml";
-import { hoverTooltip } from "@codemirror/view";
-import CodeMirror, {
-  EditorView,
-  lineNumbers,
-  ReactCodeMirrorProps,
-} from "@uiw/react-codemirror";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import YAML from "yaml";
 
+import { CWL_EDITOR_ONCHANGE_DEBOUNCE_MS } from "@theseus-cwl/configurations";
 import {
-  CWL_FILE_KEYWORDS,
-  CWL_FILE_KEYWORDS_DOCUMENTATION,
-} from "@theseus-cwl/configurations";
-import { CwlSource, Shape } from "@theseus-cwl/types";
+  CwlSource,
+  CwlSourceDocument,
+  CwlSourceParameter,
+  Shape,
+} from "@theseus-cwl/types";
+
+import { useExtensions } from "../hooks";
+import { CwlCodeEditorCode } from "./cwl-code-editor-code";
+import { CwlCodeEditorTabs } from "./cwl-code-editor-tabs";
 
 import "./style.css";
 
-export const cwlCompletion = () => {
-  return autocompletion({
-    override: [
-      (ctx: CompletionContext) => {
-        const word = ctx.matchBefore(/\w*/);
-        if (!word) {
-          return null;
-        }
+const getFileText = (
+  file: CwlSourceDocument<Shape.Raw> | CwlSourceParameter | undefined,
+  blobText: string,
+): string => {
+  if (!file || file.content === undefined) {
+    return "";
+  }
 
-        return {
-          from: word.from,
-          options: CWL_FILE_KEYWORDS.filter((keyword) =>
-            keyword.startsWith(word.text),
-          ).map((keyword) => ({ label: keyword, type: "keyword" })),
-        };
-      },
-    ],
-  });
+  if (typeof file.content === "string") {
+    return file.content;
+  }
+
+  if (file.content instanceof File) {
+    return blobText;
+  }
+
+  return YAML.stringify(file.content);
 };
-
-export const cwlHover = () => {
-  return hoverTooltip((view, pos) => {
-    const word = view.state.doc
-      .sliceString(pos - 20, pos + 20)
-      .match(/\b\w+\b/);
-
-    if (!word) {
-      return null;
-    }
-
-    const key = word[0] as keyof typeof CWL_FILE_KEYWORDS_DOCUMENTATION;
-    const info = CWL_FILE_KEYWORDS_DOCUMENTATION[key];
-
-    if (!info) {
-      return null;
-    }
-
-    return {
-      pos: pos,
-      end: pos,
-      create: () => {
-        const dom = document.createElement("div");
-        dom.textContent = info;
-        dom.style.padding = "4px";
-        dom.style.backgroundColor = "#222";
-        dom.style.color = "white";
-        dom.style.borderRadius = "4px";
-        return { dom };
-      },
-    };
-  });
-};
-
-const CodeMirror_ = CodeMirror as unknown as React.MemoExoticComponent<
-  React.ForwardRefExoticComponent<
-    ReactCodeMirrorProps & React.RefAttributes<Element>
-  >
->;
 
 /**
  * Props for the CwlCodeEditor component.
  */
 export type CwlCodeEditorProps = {
-  /** CWL source to be loaded into the editor */
-  input?: CwlSource<Shape.Raw | Shape.Sanitized>;
+  /** CWL source whose documents and parameters are rendered as file tabs */
+  input?: CwlSource<Shape.Raw>;
 
-  activeFileId?: string;
-
-  /** Callback triggered when the cwl file changes, default is a function that logs in the console the changes */
-  onChange?: (value: CwlSource<Shape.Sanitized>) => void;
-
-  /** If true, the editor lines will be wrapped */
-  wrap?: boolean;
+  /**
+   * Callback triggered (debounced) when the edited text changes. The edited
+   * text replaces the active file's content as a raw string.
+   */
+  onChange?: (value: CwlSource<Shape.Raw | Shape.Sanitized>) => void;
 
   /** If true, the editor will be rendered in read only mode */
   readOnly?: boolean;
 
-  fontSize?: number;
+  /** If true, the editor lines will be wrapped */
+  wrap?: boolean;
 };
 
 export const CwlCodeEditor = (props: CwlCodeEditorProps) => {
-  const {
-    input = undefined,
-    activeFileId = undefined,
-    readOnly = false,
-    // onChange = (value) => console.log(value),
-    // fontSize = "24px",
-    wrap = true,
-  } = props;
+  const { input, onChange, readOnly = false, wrap = true } = props;
 
-  const [cwlOrInputFile, setCwlOrInputFile] = useState<string | undefined>(
+  const { extensions } = useExtensions(wrap);
+  const [selectedFileName, setSelectedFileName] = useState<string | undefined>(
     undefined,
   );
-  const [selectedFileId, setSelectedFileId] = useState<string | undefined>(
-    input?.entrypoint,
+  /** Text of the active file's content when it is a `File` (read async). */
+  const [blobText, setBlobText] = useState<string>("");
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
   );
 
+  const files: (CwlSourceParameter | CwlSourceDocument<Shape.Raw>)[] = input
+    ? [...input.parameters, ...input.documents]
+    : [];
+
+  const defaultFileName =
+    input?.documents.find((file) => file.name === input.entrypoint)?.name ??
+    files[0]?.name;
+
+  const activeFileName =
+    selectedFileName && files.some((file) => file.name === selectedFileName)
+      ? selectedFileName
+      : defaultFileName;
+
+  const activeFile = files.find((file) => file.name === activeFileName);
+
   useEffect(() => {
-    if (!input || !selectedFileId) {
-      setCwlOrInputFile(undefined);
+    setBlobText("");
+
+    const content = activeFile?.content;
+
+    if (!(content instanceof File)) {
       return;
     }
 
-    (async () => {
-      const cwlFile = input.documents.find(
-        (file) => file.name === selectedFileId,
-      );
+    let cancelled = false;
 
-      if (cwlFile) {
-        setCwlOrInputFile(
-          typeof cwlFile.content === "string"
-            ? cwlFile.content
-            : YAML.stringify(cwlFile.content),
-        );
+    content.text().then((text) => {
+      if (!cancelled) {
+        setBlobText(text);
       }
+    });
 
-      const inputFile = input.parameters.find(
-        (file) => file.name === selectedFileId,
-      );
-
-      if (inputFile) {
-        setCwlOrInputFile(inputFile.content as string);
-      }
-      // const cwlFile = input.documents.find(
-      //   (file: any) => file.id === selectedFileId,
-      // );
-      // if (cwlFile) {
-      //   const workflow = await CWLSourceHolder.create(input as any);
-      //   setCwlOrInputFile(YAML.stringify(workflow.activeFile));
-      // }
-      // const inputFile = input.inputs.find(
-      //   (file: any) => file.id === selectedFileId,
-      // );
-      // if (inputFile) {
-      //   setCwlOrInputFile(inputFile.content as any);
-      // }
-    })();
-  }, [input, selectedFileId]);
-
-  useEffect(() => {
-    if (activeFileId) {
-      setSelectedFileId(activeFileId);
-    }
-  }, [activeFileId]);
-
-  const extensions = useMemo(() => {
-    return [
-      yaml(),
-      lineNumbers(),
-      cwlCompletion(),
-      cwlHover(),
-      wrap ? EditorView.lineWrapping : [],
-    ];
-  }, [wrap]);
-
-  const onValueChange = async (value: string) => {
-    if (!input || !selectedFileId) {
-      return;
-    }
-
-    const updatedSource = {
-      ...input,
-      documents: input.documents.map((file) => ({ ...file })),
-      parameters: input.parameters.map((file) => ({ ...file })),
+    return () => {
+      cancelled = true;
     };
+  }, [activeFile]);
 
-    // Check if worflow file and not input
-    const fileIndex = updatedSource.documents.findIndex(
-      (file) => file.name === selectedFileId,
-    );
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, []);
 
-    if (fileIndex !== -1) {
-      updatedSource.documents[fileIndex]!.content = value;
+  const handleChange = (value: string) => {
+    if (!onChange || !input || !activeFileName) {
+      return;
     }
 
-    // Or if it's an input file
-    const inputIndex = updatedSource.parameters.findIndex(
-      (i) => i.name === selectedFileId,
-    );
-
-    if (inputIndex !== -1) {
-      updatedSource.parameters[inputIndex]!.content = value;
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
     }
 
-    // onChange?.(updatedSource);
+    debounceRef.current = setTimeout(() => {
+      onChange({
+        ...input,
+        documents: input.documents.map((document) =>
+          document.name === activeFileName
+            ? { ...document, content: value }
+            : document,
+        ),
+        parameters: input.parameters.map((parameter) =>
+          parameter.name === activeFileName
+            ? { ...parameter, content: value }
+            : parameter,
+        ),
+      });
+    }, CWL_EDITOR_ONCHANGE_DEBOUNCE_MS);
   };
 
-  if (!cwlOrInputFile || !input) {
-    return null;
-  }
-
   return (
-    <div className="cwl-code-editor">
-      <div className="cwl-tabs">
-        {[...input.parameters, ...input.documents].map((file) => (
-          <button
-            key={file.name}
-            className={file.name === selectedFileId ? "active" : ""}
-            onClick={() => setSelectedFileId(file.name)}
-          >
-            {file.name}
-          </button>
-        ))}
-      </div>
-      <div className="scrollable">
-        <CodeMirror_
-          theme="dark"
-          editable={!readOnly}
-          extensions={extensions}
-          onChange={onValueChange}
-          value={cwlOrInputFile}
-        />
-      </div>
+    <div className="cwl-code-editor-wrapper">
+      <CwlCodeEditorTabs files={files} setSelectedFile={setSelectedFileName} />
+      <CwlCodeEditorCode
+        value={getFileText(activeFile, blobText)}
+        onChange={handleChange}
+        readOnly={readOnly}
+        extensions={extensions}
+      />
     </div>
   );
 };

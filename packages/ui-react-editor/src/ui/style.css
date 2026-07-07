@@ -1,14 +1,17 @@
-.cwl-code-editor {
+.cwl-code-editor-wrapper {
     margin: 0;
     padding: 0;
-}
-
-.cwl-code-editor .cwl-tabs {
     display: flex;
-    border-bottom: 1px solid #333;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
 }
 
-.cwl-code-editor .cwl-tabs button {
+.cwl-code-editor-wrapper .cwl-code-editor-tabs {
+    display: flex;
+}
+
+.cwl-code-editor-wrapper .cwl-code-editor-tabs button {
     background: none;
     border: none;
     padding: 8px 16px;
@@ -16,34 +19,27 @@
     color: #aaa;
 }
 
-.cwl-code-editor .cwl-tabs button.active {
+.cwl-code-editor-wrapper .cwl-code-editor-tabs button.active {
     color: white;
     border-bottom: 2px solid white;
 }
 
-.cwl-code-editor {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    min-height: 0;
-}
-
-.cwl-tabs {
+.cwl-code-editor-tabs {
     flex-shrink: 0;
     display: flex;
     border-bottom: 1px solid #333;
 }
 
-.scrollable {
+.cwl-code-editor {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
 }
 
-.scrollable .cm-editor {
+.cwl-code-editor .cm-editor {
     height: 100%;
 }
 
-.scrollable .cm-scroller {
+.cwl-code-editor .cm-scroller {
     overflow: auto;
 }
