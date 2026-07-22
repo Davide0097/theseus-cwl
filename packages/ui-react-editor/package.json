@@ -16,10 +16,11 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "dev": "tsup src/index.ts --format esm --dts --loader .css=copy --watch",
-    "build": "tsup src/index.ts --format esm --dts --loader .css=copy",
+    "dev": "tsup src/index.ts --format esm --dts --loader .css=copy --clean --watch",
+    "build": "tsup src/index.ts --format esm --dts --loader .css=copy --clean",
     "lint": "eslint . --max-warnings 0",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "test": "echo 'No test needed'"
   },
   "publishConfig": {
     "access": "public"

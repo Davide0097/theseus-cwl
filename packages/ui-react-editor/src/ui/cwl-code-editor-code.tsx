@@ -22,6 +22,7 @@ export const CwlCodeEditorCode = (props: CwlCodeEditorCodeProps) => {
   return (
     <div className="cwl-code-editor">
       <CodeMirror_
+        basicSetup={false}
         theme="dark"
         value={value}
         onChange={onChange}

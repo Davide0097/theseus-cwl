@@ -9,7 +9,7 @@ import {
   Shape,
 } from "@theseus-cwl/types";
 
-import { useExtensions } from "../hooks";
+import { useExtensions, UseExtensionsProps } from "../hooks";
 import { CwlCodeEditorCode } from "./cwl-code-editor-code";
 import { CwlCodeEditorTabs } from "./cwl-code-editor-tabs";
 
@@ -37,27 +37,20 @@ const getFileText = (
 /**
  * Props for the CwlCodeEditor component.
  */
-export type CwlCodeEditorProps = {
+export type CwlCodeEditorProps = UseExtensionsProps & {
   /** CWL source whose documents and parameters are rendered as file tabs */
   input?: CwlSource<Shape.Raw>;
 
-  /**
-   * Callback triggered (debounced) when the edited text changes. The edited
-   * text replaces the active file's content as a raw string.
-   */
+  /** Callback triggered (debounced) when the edited text changes. */
   onChange?: (value: CwlSource<Shape.Raw | Shape.Sanitized>) => void;
 
   /** If true, the editor will be rendered in read only mode */
   readOnly?: boolean;
-
-  /** If true, the editor lines will be wrapped */
-  wrap?: boolean;
 };
 
 export const CwlCodeEditor = (props: CwlCodeEditorProps) => {
-  const { input, onChange, readOnly = false, wrap = true } = props;
+  const { input, onChange, readOnly = false, ...extensionOptions } = props;
 
-  const { extensions } = useExtensions(wrap);
   const [selectedFileName, setSelectedFileName] = useState<string | undefined>(
     undefined,
   );
@@ -81,6 +74,20 @@ export const CwlCodeEditor = (props: CwlCodeEditorProps) => {
       : defaultFileName;
 
   const activeFile = files.find((file) => file.name === activeFileName);
+
+  const activeFileIsCwlDocument =
+    input?.documents.some((document) => document.name === activeFileName) ??
+    false;
+
+  const { extensions } = useExtensions({
+    ...extensionOptions,
+    enableCwlAutoCompletion:
+      activeFileIsCwlDocument &&
+      (extensionOptions.enableCwlAutoCompletion ?? true),
+    enableCwlHoverTooltip:
+      activeFileIsCwlDocument &&
+      (extensionOptions.enableCwlHoverTooltip ?? true),
+  });
 
   useEffect(() => {
     setBlobText("");
@@ -140,7 +147,11 @@ export const CwlCodeEditor = (props: CwlCodeEditorProps) => {
 
   return (
     <div className="cwl-code-editor-wrapper">
-      <CwlCodeEditorTabs files={files} setSelectedFile={setSelectedFileName} />
+      <CwlCodeEditorTabs
+        files={files}
+        activeFileName={activeFileName}
+        setSelectedFile={setSelectedFileName}
+      />
       <CwlCodeEditorCode
         value={getFileText(activeFile, blobText)}
         onChange={handleChange}

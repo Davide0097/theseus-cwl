@@ -1,45 +1,100 @@
 .cwl-code-editor-wrapper {
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    min-height: 0;
-}
+  /* Tabs */
+  --cwl-code-editor-tabs-bg: #21252b;
+  --cwl-code-editor-tabs-border-color: #181a1f;
+  --cwl-code-editor-tab-padding: 8px 16px;
+  --cwl-code-editor-tab-font-size: 13px;
+  --cwl-code-editor-tab-text-color: #7d8799;
+  --cwl-code-editor-tab-hover-text-color: #abb2bf;
+  --cwl-code-editor-tab-hover-bg: #2c313a;
+  --cwl-code-editor-tab-active-text-color: #ffffff;
+  --cwl-code-editor-tab-active-bg: #282c34;
+  --cwl-code-editor-tab-active-indicator-color: #61afef;
 
-.cwl-code-editor-wrapper .cwl-code-editor-tabs {
-    display: flex;
-}
+  /* Tooltip */
+  --cwl-code-editor-tooltip-bg: #222;
+  --cwl-code-editor-tooltip-text-color: #ffffff;
+  --cwl-code-editor-tooltip-link-color: #8ab4f8;
+  --cwl-code-editor-tooltip-max-width: 400px;
 
-.cwl-code-editor-wrapper .cwl-code-editor-tabs button {
-    background: none;
-    border: none;
-    padding: 8px 16px;
-    cursor: pointer;
-    color: #aaa;
-}
-
-.cwl-code-editor-wrapper .cwl-code-editor-tabs button.active {
-    color: white;
-    border-bottom: 2px solid white;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
 }
 
 .cwl-code-editor-tabs {
-    flex-shrink: 0;
-    display: flex;
-    border-bottom: 1px solid #333;
+  flex-shrink: 0;
+  display: flex;
+  overflow-x: auto;
+  background-color: var(--cwl-code-editor-tabs-bg);
+  border-bottom: 1px solid var(--cwl-code-editor-tabs-border-color);
+}
+
+.cwl-code-editor-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: var(--cwl-code-editor-tab-padding);
+  font-size: var(--cwl-code-editor-tab-font-size);
+  font-family: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+  color: var(--cwl-code-editor-tab-text-color);
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.cwl-code-editor-tab:hover {
+  color: var(--cwl-code-editor-tab-hover-text-color);
+  background-color: var(--cwl-code-editor-tab-hover-bg);
+}
+
+.cwl-code-editor-tab.active {
+  color: var(--cwl-code-editor-tab-active-text-color);
+  background-color: var(--cwl-code-editor-tab-active-bg);
+  border-bottom-color: var(--cwl-code-editor-tab-active-indicator-color);
 }
 
 .cwl-code-editor {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .cwl-code-editor .cm-editor {
-    height: 100%;
+  height: 100%;
 }
 
 .cwl-code-editor .cm-scroller {
-    overflow: auto;
+  overflow: auto;
+}
+
+.cwl-code-editor-tooltip {
+  padding: 4px;
+  background-color: var(--cwl-code-editor-tooltip-bg);
+  color: var(--cwl-code-editor-tooltip-text-color);
+  border-radius: 4px;
+  max-width: var(--cwl-code-editor-tooltip-max-width);
+}
+
+.cwl-code-editor-tooltip-title {
+  overflow: hidden;
+  font-weight: bold;
+}
+
+.cwl-code-editor-tooltip-description {
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.cwl-code-editor-tooltip-link {
+  overflow: hidden;
+  word-wrap: break-word;
+  margin-top: 4px;
+  font-size: smaller;
+  color: var(--cwl-code-editor-tooltip-link-color);
 }
