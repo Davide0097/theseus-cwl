@@ -112,7 +112,10 @@ export const CwlVisualMap = (props: CwlVisualMapProps) => {
             <MiniMap
               zoomable={true}
               pannable={true}
-              nodeColor={(node) => node.style?.backgroundColor as string}
+              nodeColor={(node) =>
+                (node.style?.background ??
+                  node.style?.backgroundColor) as string
+              }
             />
           )}
           {background && <Backgorund_ {...background} />}

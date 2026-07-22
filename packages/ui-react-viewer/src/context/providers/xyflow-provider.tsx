@@ -1,9 +1,9 @@
 import { ReactFlowProvider } from "@xyflow/react";
 
-import { CwlVisualMap, CwlVisualMapProps } from "../../ui";
+export type XyflowContextProviderProps = {
+  children: React.ReactNode;
+};
 
-export const XyflowContextProvider = (props: CwlVisualMapProps) => (
-  <ReactFlowProvider>
-    <CwlVisualMap {...props} />
-  </ReactFlowProvider>
+export const XyflowContextProvider = (props: XyflowContextProviderProps) => (
+  <ReactFlowProvider>{props.children}</ReactFlowProvider>
 );

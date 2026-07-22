@@ -12,11 +12,16 @@ export type ColorState = {
   output: string;
 };
 
-const defaultColors: ColorState = {
+/**
+ * Reads the current default node colors. Computed on demand (not at module
+ * load) so that a `configureTheseus({ INPUT_NODE_COLOR, ... })` override made
+ * during app startup is reflected here.
+ */
+const getDefaultColors = (): ColorState => ({
   input: INPUT_NODE_COLOR,
   step: STEP_NODE_COLOR,
   output: OUTPUT_NODE_COLOR,
-};
+});
 
 export type UserColorStateProps = {
   initialColorState?: ColorState;
@@ -26,7 +31,7 @@ export const useColorState = (props: UserColorStateProps) => {
   const { initialColorState } = props;
 
   const [colors, setColors] = useState<ColorState>(
-    initialColorState || defaultColors,
+    () => initialColorState || getDefaultColors(),
   );
 
   const setColorForType = (type: keyof ColorState, color: string) => {
@@ -34,7 +39,7 @@ export const useColorState = (props: UserColorStateProps) => {
   };
 
   const resetColors = () => {
-    const reset = initialColorState || defaultColors;
+    const reset = initialColorState || getDefaultColors();
     setColors(reset);
   };
 

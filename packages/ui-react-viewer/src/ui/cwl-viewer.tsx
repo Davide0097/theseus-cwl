@@ -18,6 +18,7 @@ import {
 import { CwlFileProvider, XyflowContextProvider } from "../context";
 import { ColorState } from "../hooks";
 import { CwlViewerNodeInspector } from "./cwl-viewer-node-inspector";
+import { CwlVisualMap } from "./cwl-viewer-visual-map";
 
 import "../style.css";
 
@@ -26,7 +27,7 @@ import "../style.css";
  */
 export type CwlViewerProps = {
   /** CWL source to be loaded into the viewer */
-  input?: CwlSource<Shape.Raw>;
+  input?: CwlSource<Shape.Raw> | CwlSource<Shape.Sanitized>;
 
   /** Callback triggered when the cwl file changes, default is a function that logs in the console the changes */
   onChange?: (value: object) => void;
@@ -104,7 +105,9 @@ export const CwlViewer = (props: CwlViewerProps) => {
 
     (async () => {
       try {
-        const holder = await CWLSourceHolder.create(input);
+        const holder = await CWLSourceHolder.create(
+          input as CwlSource<Shape.Raw>,
+        );
         setSourceHolder(holder);
         setSelectedNode(undefined);
         setError(undefined);
@@ -135,27 +138,31 @@ export const CwlViewer = (props: CwlViewerProps) => {
     );
   }
 
-  if (!sourceHolder) {
+  const activeFile = sourceHolder?.activeFile;
+
+  if (!activeFile) {
     return <div className="cwl-viewer-empty">No workflow loaded</div>;
   }
 
   return (
     <CwlFileProvider
-      initialCwlFile={sourceHolder.activeFile}
+      initialCwlFile={activeFile}
       initialColorState={initialColorState}
     >
       <div className="cwl-viewer">
-        <XyflowContextProvider
-          minimap={minimap}
-          labels={labels}
-          onChange={onChange}
-          setSelectedNode={setSelectedNode}
-          wrappers={wrappers}
-          readOnly={readOnly}
-          background={background}
-          colorEditor={colorEditor}
-          subWorkflowScalingFactor={subWorkflowScalingFactor}
-        />
+        <XyflowContextProvider>
+          <CwlVisualMap
+            minimap={minimap}
+            labels={labels}
+            onChange={onChange}
+            setSelectedNode={setSelectedNode}
+            wrappers={wrappers}
+            readOnly={readOnly}
+            background={background}
+            colorEditor={colorEditor}
+            subWorkflowScalingFactor={subWorkflowScalingFactor}
+          />
+        </XyflowContextProvider>
         {selectedNode && (
           <CwlViewerNodeInspector
             readOnly={readOnly}
