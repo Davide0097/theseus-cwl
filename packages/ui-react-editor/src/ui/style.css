@@ -17,6 +17,39 @@
   --cwl-code-editor-tooltip-link-color: #8ab4f8;
   --cwl-code-editor-tooltip-max-width: 400px;
 
+  /* Editor */
+  --cwl-code-editor-bg: #282c34;
+  --cwl-code-editor-text-color: #abb2bf;
+  --cwl-code-editor-caret-color: #528bff;
+  --cwl-code-editor-selection-bg: #3e4451;
+  --cwl-code-editor-active-line-bg: #6699ff0b;
+  --cwl-code-editor-selection-match-bg: #aafe661a;
+  --cwl-code-editor-search-match-bg: #72a1ff59;
+  --cwl-code-editor-search-match-outline-color: #457dff;
+  --cwl-code-editor-search-match-selected-bg: #6199ff2f;
+  --cwl-code-editor-matching-bracket-bg: #bad0f847;
+  --cwl-code-editor-gutter-bg: #282c34;
+  --cwl-code-editor-gutter-text-color: #7d8799;
+  --cwl-code-editor-gutter-active-line-bg: #2c313a;
+  --cwl-code-editor-fold-placeholder-text-color: #dddddd;
+  --cwl-code-editor-panels-bg: #21252b;
+  --cwl-code-editor-panels-text-color: #abb2bf;
+  --cwl-code-editor-panels-border-color: #000000;
+  --cwl-code-editor-autocomplete-bg: #353a42;
+  --cwl-code-editor-autocomplete-selected-bg: #2c313a;
+  --cwl-code-editor-autocomplete-selected-text-color: #abb2bf;
+
+  /* Syntax highlighting */
+  --cwl-code-editor-syntax-property-color: #e06c75;
+  --cwl-code-editor-syntax-string-color: #98c379;
+  --cwl-code-editor-syntax-string-special-color: #56b6c2;
+  --cwl-code-editor-syntax-comment-color: #7d8799;
+  --cwl-code-editor-syntax-meta-color: #7d8799;
+  --cwl-code-editor-syntax-keyword-color: #c678dd;
+  --cwl-code-editor-syntax-type-color: #e5c07b;
+  --cwl-code-editor-syntax-label-color: #61afef;
+  --cwl-code-editor-syntax-punctuation-color: #abb2bf;
+
   margin: 0;
   padding: 0;
   display: flex;
@@ -71,6 +104,45 @@
 
 .cwl-code-editor .cm-scroller {
   overflow: auto;
+}
+
+/* Syntax token colors. Tokens carry stable `tok-*` classes (the
+   classHighlighter extension); the editor chrome reads the same variables
+   through the CodeMirror theme extension in use-extensions.ts. */
+.cwl-code-editor .tok-propertyName {
+  color: var(--cwl-code-editor-syntax-property-color);
+}
+
+.cwl-code-editor .tok-string {
+  color: var(--cwl-code-editor-syntax-string-color);
+}
+
+.cwl-code-editor .tok-string2 {
+  color: var(--cwl-code-editor-syntax-string-special-color);
+}
+
+.cwl-code-editor .tok-comment {
+  color: var(--cwl-code-editor-syntax-comment-color);
+}
+
+.cwl-code-editor .tok-meta {
+  color: var(--cwl-code-editor-syntax-meta-color);
+}
+
+.cwl-code-editor .tok-keyword {
+  color: var(--cwl-code-editor-syntax-keyword-color);
+}
+
+.cwl-code-editor .tok-typeName {
+  color: var(--cwl-code-editor-syntax-type-color);
+}
+
+.cwl-code-editor .tok-labelName {
+  color: var(--cwl-code-editor-syntax-label-color);
+}
+
+.cwl-code-editor .tok-punctuation {
+  color: var(--cwl-code-editor-syntax-punctuation-color);
 }
 
 .cwl-code-editor-tooltip {

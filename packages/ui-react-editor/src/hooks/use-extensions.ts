@@ -1,5 +1,7 @@
 import { autocompletion, CompletionContext } from "@codemirror/autocomplete";
 import { yaml } from "@codemirror/lang-yaml";
+import { syntaxHighlighting } from "@codemirror/language";
+import { classHighlighter } from "@lezer/highlight";
 import {
   basicSetup,
   EditorView,
@@ -12,6 +14,92 @@ import {
   CWL_FILE_KEYWORDS,
   CWL_FILE_KEYWORDS_DOCUMENTATION,
 } from "@theseus-cwl/configurations";
+
+/**
+ * Package-owned editor theme reproducing `@codemirror/theme-one-dark`. Every
+ * color is read from a `--cwl-code-editor-*` CSS variable, so consumers
+ * re-theme the editor purely through CSS variables. `classHighlighter` tags
+ * syntax tokens with stable `tok-*` classes.
+ */
+const cwlCodeEditorTheme: Extension = [
+  EditorView.theme(
+    {
+      "&": {
+        color: "var(--cwl-code-editor-text-color)",
+        backgroundColor: "var(--cwl-code-editor-bg)",
+      },
+      ".cm-content": {
+        caretColor: "var(--cwl-code-editor-caret-color)",
+      },
+      ".cm-cursor, .cm-dropCursor": {
+        borderLeftColor: "var(--cwl-code-editor-caret-color)",
+      },
+      "&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection":
+        {
+          backgroundColor: "var(--cwl-code-editor-selection-bg)",
+        },
+      ".cm-panels": {
+        backgroundColor: "var(--cwl-code-editor-panels-bg)",
+        color: "var(--cwl-code-editor-panels-text-color)",
+      },
+      ".cm-panels.cm-panels-top": {
+        borderBottom: "2px solid var(--cwl-code-editor-panels-border-color)",
+      },
+      ".cm-panels.cm-panels-bottom": {
+        borderTop: "2px solid var(--cwl-code-editor-panels-border-color)",
+      },
+      ".cm-searchMatch": {
+        backgroundColor: "var(--cwl-code-editor-search-match-bg)",
+        outline: "1px solid var(--cwl-code-editor-search-match-outline-color)",
+      },
+      ".cm-searchMatch.cm-searchMatch-selected": {
+        backgroundColor: "var(--cwl-code-editor-search-match-selected-bg)",
+      },
+      ".cm-activeLine": {
+        backgroundColor: "var(--cwl-code-editor-active-line-bg)",
+      },
+      ".cm-selectionMatch": {
+        backgroundColor: "var(--cwl-code-editor-selection-match-bg)",
+      },
+      "&.cm-focused .cm-matchingBracket, &.cm-focused .cm-nonmatchingBracket": {
+        backgroundColor: "var(--cwl-code-editor-matching-bracket-bg)",
+      },
+      ".cm-gutters": {
+        backgroundColor: "var(--cwl-code-editor-gutter-bg)",
+        color: "var(--cwl-code-editor-gutter-text-color)",
+        border: "none",
+      },
+      ".cm-activeLineGutter": {
+        backgroundColor: "var(--cwl-code-editor-gutter-active-line-bg)",
+      },
+      ".cm-foldPlaceholder": {
+        backgroundColor: "transparent",
+        border: "none",
+        color: "var(--cwl-code-editor-fold-placeholder-text-color)",
+      },
+      ".cm-tooltip": {
+        border: "none",
+        backgroundColor: "var(--cwl-code-editor-autocomplete-bg)",
+      },
+      ".cm-tooltip .cm-tooltip-arrow:before": {
+        borderTopColor: "transparent",
+        borderBottomColor: "transparent",
+      },
+      ".cm-tooltip .cm-tooltip-arrow:after": {
+        borderTopColor: "var(--cwl-code-editor-autocomplete-bg)",
+        borderBottomColor: "var(--cwl-code-editor-autocomplete-bg)",
+      },
+      ".cm-tooltip-autocomplete": {
+        "& > ul > li[aria-selected]": {
+          backgroundColor: "var(--cwl-code-editor-autocomplete-selected-bg)",
+          color: "var(--cwl-code-editor-autocomplete-selected-text-color)",
+        },
+      },
+    },
+    { dark: true },
+  ),
+  syntaxHighlighting(classHighlighter),
+];
 
 const cwlDocumentAutocompletion = (): Extension => {
   return autocompletion({
@@ -172,6 +260,7 @@ export const useExtensions = (props: UseExtensionsProps) => {
 
   return useMemo(() => {
     const extensions: Extension[] = [
+      cwlCodeEditorTheme,
       basicSetup({
         lineNumbers: enableLineNumbers,
         foldGutter: enableCodeFolding,
