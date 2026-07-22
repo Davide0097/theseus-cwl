@@ -106,7 +106,7 @@ const cwlDocumentAutocompletion = (): Extension => {
     override: [
       (ctx: CompletionContext) => {
         const word = ctx.matchBefore(/\w*/);
-        if (!word) {
+        if (!word || (word.from === word.to && !ctx.explicit)) {
           return null;
         }
 
@@ -130,8 +130,7 @@ const cwlDocumentHover = (): Extension => {
     }
 
     const word = view.state.sliceDoc(range.from, range.to);
-    const key: keyof typeof CWL_FILE_KEYWORDS_DOCUMENTATION | string = word;
-    const info = CWL_FILE_KEYWORDS_DOCUMENTATION[key];
+    const info = CWL_FILE_KEYWORDS_DOCUMENTATION[word];
 
     if (!info) {
       return null;

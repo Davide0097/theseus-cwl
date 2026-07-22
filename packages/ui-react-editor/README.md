@@ -109,7 +109,7 @@ Props:
 | `input`                     | `CwlSource`                  | —       | CWL source whose documents and parameters are rendered as file tabs                                |
 | `onChange`                  | `(value: CwlSource) => void` | —       | Debounced callback fired with the updated source (edited text replaces the active file's content)  |
 | `readOnly`                  | `boolean`                    | `false` | Render the editor in read-only mode                                                                |
-| `wrap`                      | `boolean`                    | `true`  | Wrap long lines                                                                                    |
+| `enableLineWrapping`        | `boolean`                    | `true`  | Wrap long lines                                                                                    |
 | `enableCwlAutoCompletion`   | `boolean`                    | `true`  | CWL keyword autocompletion (only active on CWL document tabs, not parameter files)                 |
 | `enableCwlHoverTooltip`     | `boolean`                    | `true`  | Hover documentation for CWL keywords (only active on CWL document tabs, not parameter files)       |
 | `enableLineNumbers`         | `boolean`                    | `true`  | Show the line number gutter                                                                        |

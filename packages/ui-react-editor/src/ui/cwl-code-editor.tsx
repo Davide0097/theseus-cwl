@@ -89,27 +89,32 @@ export const CwlCodeEditor = (props: CwlCodeEditorProps) => {
       (extensionOptions.enableCwlHoverTooltip ?? true),
   });
 
+  const activeFileContent = activeFile?.content;
+
   useEffect(() => {
     setBlobText("");
 
-    const content = activeFile?.content;
-
-    if (!(content instanceof File)) {
+    if (!(activeFileContent instanceof File)) {
       return;
     }
 
     let cancelled = false;
 
-    content.text().then((text) => {
-      if (!cancelled) {
-        setBlobText(text);
-      }
-    });
+    activeFileContent
+      .text()
+      .then((text) => {
+        if (!cancelled) {
+          setBlobText(text);
+        }
+      })
+      .catch(() => {
+        // Unreadable File: leave the editor empty.
+      });
 
     return () => {
       cancelled = true;
     };
-  }, [activeFile]);
+  }, [activeFileContent]);
 
   useEffect(() => {
     return () => {
