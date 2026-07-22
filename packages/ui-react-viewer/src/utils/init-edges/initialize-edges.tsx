@@ -47,17 +47,14 @@ export const initializeEdges = (
   } else {
     const allEdges: Edge[] = [];
 
-    let mainWorkflow: undefined | Process | Workflow = getMainWorkflow(cwlFile);
+    const mainWorkflow: undefined | Process | Workflow =
+      getMainWorkflow(cwlFile);
 
     if (!mainWorkflow) {
       console.warn(
         "CWLViewer: Could not find a process with class workflow in the CWL packed document. " +
           "Ensure that the packed CWL document has a valid entrypoint or main process with class workflow defined.",
       );
-      mainWorkflow = Object.values(cwlFile.$graph)[0];
-    }
-
-    if (!mainWorkflow) {
       return [];
     }
 

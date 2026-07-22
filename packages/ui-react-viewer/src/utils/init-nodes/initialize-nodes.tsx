@@ -21,6 +21,7 @@ import {
   getMainWorkflow,
   getMaxRight,
   getWrapperNode,
+  stripFragment,
 } from "../general";
 import {
   initializeInputNodes,
@@ -225,7 +226,9 @@ export const initializeNodes = (
     // Initialize subworkflows and apply an x offset based on the previous worflow width
     workflows?.slice(1)?.forEach((workflow) => {
       const mainWorkflowNode = mainWorkflowNodes.find(
-        (n) => n.data?.step?.run === workflow.id,
+        (n) =>
+          typeof n.data?.step?.run === "string" &&
+          stripFragment(n.data.step.run) === stripFragment(workflow.id ?? ""),
       );
 
       if (!mainWorkflowNode) {
@@ -240,26 +243,29 @@ export const initializeNodes = (
         mainWorkflowNode: mainWorkflowNode,
       });
 
-      const scaledNodes = nodes.map((node) => {
-        node.style = {
-          ...node?.style,
-          width:
-            Number(node.style?.width) *
-            (props.subWorkflowScalingFactor || SUBWORKFLOW_NODE_SCALING_FACTOR),
-          height:
-            Number(node.style?.height) *
-            (props.subWorkflowScalingFactor || SUBWORKFLOW_NODE_SCALING_FACTOR),
-        };
+      const scalingFactor =
+        props.subWorkflowScalingFactor || SUBWORKFLOW_NODE_SCALING_FACTOR;
 
-        node.position = {
-          x:
-            node?.position?.x *
-            (props.subWorkflowScalingFactor || SUBWORKFLOW_NODE_SCALING_FACTOR),
-          y:
-            node?.position?.y *
-            (props.subWorkflowScalingFactor || SUBWORKFLOW_NODE_SCALING_FACTOR),
+      const scaledNodes = nodes.map((node) => {
+        const width = Number(node.style?.width);
+        const height = Number(node.style?.height);
+
+        return {
+          ...node,
+          style: {
+            ...node.style,
+            width: Number.isNaN(width)
+              ? node.style?.width
+              : width * scalingFactor,
+            height: Number.isNaN(height)
+              ? node.style?.height
+              : height * scalingFactor,
+          },
+          position: {
+            x: node.position.x * scalingFactor,
+            y: node.position.y * scalingFactor,
+          },
         };
-        return node;
       });
 
       let shiftedNodes = applyOffset(scaledNodes, currentOffsetX, 0);

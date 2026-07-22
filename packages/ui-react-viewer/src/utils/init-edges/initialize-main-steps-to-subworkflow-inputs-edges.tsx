@@ -1,7 +1,7 @@
 import { Process, Workflow } from "@theseus-cwl/types";
 import { Edge } from "@xyflow/react";
 
-import { getEdge } from "../general";
+import { getEdge, stripFragment } from "../general";
 
 export const initializeMainStepToSubworkflowInputEdges = (
   mainWorkflow: Workflow,
@@ -11,16 +11,21 @@ export const initializeMainStepToSubworkflowInputEdges = (
   const edges: Edge[] = [];
 
   Object.entries(mainWorkflow.steps || {}).forEach(([stepKey, step]) => {
-    const subWorkflowId = typeof step.run === "string" ? step.run : undefined;
+    const runReference =
+      typeof step.run === "string" ? stripFragment(step.run) : undefined;
 
-    if (!subWorkflowId || !allWorkflows[subWorkflowId]) {
+    const subWorkflow = runReference
+      ? Object.values(allWorkflows).find(
+          (process) => stripFragment(process.id ?? "") === runReference,
+        )
+      : undefined;
+
+    if (!subWorkflow) {
       console.warn(
         `Step "${stepKey}" in workflow "${mainWorkflow.id}" references a missing or invalid subworkflow: "${step.run}"`,
       );
       return;
     }
-
-    const subWorkflow = allWorkflows[subWorkflowId];
 
     const subworkflowInputId = Object.values(subWorkflow.inputs || {})[0]?.id;
 

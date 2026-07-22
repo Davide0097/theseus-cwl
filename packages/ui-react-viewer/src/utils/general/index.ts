@@ -5,5 +5,4 @@ export * from "./get-main-workflow";
 export * from "./get-max-bottom";
 export * from "./get-max-right";
 export * from "./get-wrapper-node";
-export * from "./normalize-inputs";
-export * from "./normalize-steps-in";
+export * from "./strip-fragment";
