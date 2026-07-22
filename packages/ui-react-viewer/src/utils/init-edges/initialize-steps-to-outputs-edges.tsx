@@ -10,8 +10,11 @@ export const initializeStepToOutputEdges = (
 ): Edge[] => {
   const edges: Edge[] = [];
 
-  Object.entries(cwlFile.outputs).forEach(([outputKey, output]) => {
-    const source = output.outputSource?.split("/")[0];
+  Object.entries(cwlFile.outputs || {}).forEach(([outputKey, output]) => {
+    const firstSource = Array.isArray(output.outputSource)
+      ? output.outputSource[0]
+      : output.outputSource;
+    const source = firstSource?.split("/")[0];
 
     Object.keys(cwlFile.steps || {}).forEach((stepKey) => {
       if (stepKey === source) {

@@ -51,17 +51,17 @@ export const initializeProcessInputToOutputEdges = (
 ): Edge[] => {
   const edges: Edge[] = [];
 
-  Object.keys(cwlFile.outputs || {}).forEach((inputKey) => {
-    Object.keys(cwlFile.inputs || {}).forEach((outputKey) => {
+  Object.keys(cwlFile.outputs || {}).forEach((outputKey) => {
+    Object.keys(cwlFile.inputs || {}).forEach((inputKey) => {
       edges.push(
         getEdge({
           source: {
             workflowId: cwlFile.id,
-            key: outputKey,
+            key: inputKey,
           },
           target: {
             workflowId: cwlFile.id,
-            key: inputKey,
+            key: outputKey,
           },
           type: "input_to_output",
           hasLabel: labels,

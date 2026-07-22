@@ -23,7 +23,7 @@ export const initializeStepToStepEdges = (
       sources.forEach((src) => {
         const sourcePrefix = src?.split("/")[0];
 
-        if (sourcePrefix) {
+        if (sourcePrefix && cwlFile.steps?.[sourcePrefix]) {
           edges.push(
             getEdge({
               source: {

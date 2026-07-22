@@ -56,6 +56,10 @@ export const initializeOutputNodes = (
       | xyFlowNode<{ label?: ReactNode; output?: WorkflowOutput }>
       | undefined;
 
+    const firstSource = Array.isArray(output.outputSource)
+      ? output.outputSource[0]
+      : output.outputSource;
+
     for (const stepNode of sortedStepNodes) {
       const step: WorkflowStep | undefined = stepNode.data.step;
 
@@ -64,7 +68,7 @@ export const initializeOutputNodes = (
         return;
       }
 
-      if (output.outputSource?.split("/")[0] === step.id) {
+      if (firstSource?.split("/")[0] === step.id) {
         matchedStepNode = stepNode;
         break;
       }
