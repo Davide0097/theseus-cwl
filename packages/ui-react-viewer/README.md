@@ -10,7 +10,9 @@ A React toolkit for displaying [CWL (Common Workflow Language)](https://www.comm
 
 ## ✨ Features
 
-![viewer-preview](../../.github/viewer-preview.png)
+<div align="center">
+  <img src="../../.github/viewer-preview.png" alt="Theseus CWL viewer" width="800" />
+</div>
 
 - 🔍 Visualize CWL workflows as interactive graphs
 - 📂 Flexible API: Supports JSON, YAML, or parsed objects
@@ -118,6 +120,10 @@ const Example = () => {
 | `initialColorState`        | `ColorState`                                                                             | `undefined`                                                 | Initial configuration for node colors.                                                                |
 | `background`               | `Pick<BackgroundProps, "variant" \| "color" \| "bgColor" \| "style" \| "gap" \| "size">` | `{ color: "transparent", variant: BackgroundVariant.Dots }` | Configuration for the graph background.                                                               |
 | `subWorkflowScalingFactor` | `number`                                                                                 | `0.8`                                                       | Scaling factor applied when rendering subworkflows.                                                   |
+
+- [Common Workflow Language (CWL)](https://www.commonwl.org/)
+
+## 📘 Learn More about CWL
 
 - [Common Workflow Language (CWL)](https://www.commonwl.org/)
 
