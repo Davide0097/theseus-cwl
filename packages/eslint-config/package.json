@@ -5,8 +5,11 @@
   "author": "davide giorgiutti",
   "license": "MIT",
   "scripts": {
+    "dev": "echo 'No dev needed'",
     "build": "echo 'No build needed'",
-    "dev": "echo 'No dev needed'"
+    "lint": "echo 'No lint checking needed'",
+    "check-types": "echo 'No type checking needed'",
+    "test": "echo 'No test needed'" 
   },
   "publishConfig": {
     "access": "public"

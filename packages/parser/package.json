@@ -20,8 +20,7 @@
     "build": "tsup src/index.ts --format esm --dts",
     "lint": "eslint . --max-warnings 0",
     "check-types": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "test": "vitest run"
   },
   "publishConfig": {
     "access": "public"

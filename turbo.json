@@ -3,6 +3,10 @@
   "concurrency": "13",
   "ui": "tui",
   "tasks": {
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
     "build": {
       "dependsOn": [
         "^build"
@@ -25,9 +29,10 @@
         "^check-types"
       ]
     },
-    "dev": {
-      "cache": false,
-      "persistent": true
+    "test": {
+      "dependsOn": [
+        "^test"
+      ]
     },
     "clean": {
       "dependsOn": [
