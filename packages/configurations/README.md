@@ -61,3 +61,15 @@ resetTheseusCwlConfiguration();
 
 When you need access to default values or internal constants used across
 `@theseus-cwl` packages, or when you want to customize them globally at runtime.
+
+## 📘 Learn More about CWL
+
+- [Common Workflow Language (CWL)](https://www.commonwl.org/)
+
+## 📣 Contributing
+
+We welcome contributions! If you’d like to improve Theseus or suggest new features.
+
+## 📄 License
+
+MIT License © 2026 [Davide Giorgiutti]

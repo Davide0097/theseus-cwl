@@ -33,6 +33,10 @@ const holder = await CWLSourceHolder.create(source);
 console.log(holder.activeFile);
 ```
 
+## 📘 Learn More about CWL
+
+- [Common Workflow Language (CWL)](https://www.commonwl.org/)
+
 ## 📣 Contributing
 
 We welcome contributions! If you’d like to improve Theseus or suggest new features.

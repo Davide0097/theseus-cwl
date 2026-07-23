@@ -121,8 +121,6 @@ const Example = () => {
 | `background`               | `Pick<BackgroundProps, "variant" \| "color" \| "bgColor" \| "style" \| "gap" \| "size">` | `{ color: "transparent", variant: BackgroundVariant.Dots }` | Configuration for the graph background.                                                               |
 | `subWorkflowScalingFactor` | `number`                                                                                 | `0.8`                                                       | Scaling factor applied when rendering subworkflows.                                                   |
 
-- [Common Workflow Language (CWL)](https://www.commonwl.org/)
-
 ## 📘 Learn More about CWL
 
 - [Common Workflow Language (CWL)](https://www.commonwl.org/)

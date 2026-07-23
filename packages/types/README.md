@@ -82,3 +82,15 @@ The example above shows how this package can be used in a JSX component, as the 
 ## When to Use
 
 When you need access to shared type definitions used across @theseus-cwl packages.
+
+## 📘 Learn More about CWL
+
+- [Common Workflow Language (CWL)](https://www.commonwl.org/)
+
+## 📣 Contributing
+
+We welcome contributions! If you’d like to improve Theseus or suggest new features.
+
+## 📄 License
+
+MIT License © 2026 [Davide Giorgiutti]
