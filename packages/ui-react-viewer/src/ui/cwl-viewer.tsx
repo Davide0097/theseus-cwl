@@ -29,9 +29,6 @@ export type CwlViewerProps = {
   /** CWL source to be loaded into the viewer */
   input?: CwlSource<Shape.Raw> | CwlSource<Shape.Sanitized>;
 
-  /** Callback triggered when the cwl file changes, default is a function that logs in the console the changes */
-  onChange?: (value: object) => void;
-
   /** If true, enables wrapper nodes in the graph view, default is false */
   wrappers?: boolean;
 
@@ -60,7 +57,6 @@ export type CwlViewerProps = {
 export const CwlViewer = (props: CwlViewerProps) => {
   const {
     input = undefined,
-    onChange = (changed) => console.log(changed),
     wrappers = false,
     minimap = false,
     labels = false,
@@ -154,7 +150,6 @@ export const CwlViewer = (props: CwlViewerProps) => {
           <CwlVisualMap
             minimap={minimap}
             labels={labels}
-            onChange={onChange}
             setSelectedNode={setSelectedNode}
             wrappers={wrappers}
             readOnly={readOnly}

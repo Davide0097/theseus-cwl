@@ -85,6 +85,9 @@ export type CwlFileContextType = {
 
   /** Reset the colors to the default state */
   resetColors: () => void;
+
+  /** The colors that `resetColors` restores (initialColorState or the configuration defaults) */
+  initialColors: ColorState;
 };
 
 export const CwlFileContext = createContext<CwlFileContextType | undefined>(

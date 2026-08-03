@@ -1,12 +1,9 @@
-import { ReactNode } from "react";
-
 import { Input, WorkflowOutput, WorkflowStep } from "@theseus-cwl/types";
 
 import { InputNodeForm, OutputNodeForm, StepNodeForm } from "./components";
 
 export type CwlViewerNodeInspectorProps = {
   nodeProps: {
-    label?: ReactNode;
     input?: Input;
     step?: WorkflowStep;
     output?: WorkflowOutput;

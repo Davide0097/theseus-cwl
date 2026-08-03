@@ -22,7 +22,6 @@ const Backgorund_ = B as React.MemoExoticComponent<
 >;
 
 export type CwlVisualMapProps = {
-  onChange: (value: object) => void;
   setSelectedNode: (
     node: xyFlowNode<{
       label?: ReactNode;
@@ -42,18 +41,17 @@ export type CwlVisualMapProps = {
 
 export const CwlVisualMap = (props: CwlVisualMapProps) => {
   const {
-    onChange,
     setSelectedNode,
     wrappers,
     minimap,
     labels,
-    background,
     readOnly,
+    background,
     colorEditor,
     subWorkflowScalingFactor,
   } = props;
 
-  const { cwlFile } = useCwlFileState();
+  const { cwlFile, colors } = useCwlFileState();
   const { nodes, edges, onNodesChange, onEdgesChange } =
     useCwlFileNodesAndEdges({
       wrappers,
@@ -68,10 +66,6 @@ export const CwlVisualMap = (props: CwlVisualMapProps) => {
   }, [nodes]);
 
   useEffect(() => {
-    if (onChange) {
-      onChange(cwlFile);
-    }
-
     const timer = setTimeout(() => {
       fitView({
         padding: 0.2,
@@ -81,7 +75,6 @@ export const CwlVisualMap = (props: CwlVisualMapProps) => {
     }, 100);
 
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cwlFile, fitView, subWorkflowScalingFactor]);
 
   return (
@@ -92,11 +85,11 @@ export const CwlVisualMap = (props: CwlVisualMapProps) => {
           attributionPosition="bottom-right"
           nodes={nodes}
           edges={edges}
-          nodesDraggable={true}
-          nodesConnectable={false}
-          elementsSelectable={true}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
+          nodesDraggable={false}
+          nodesConnectable={false}
+          elementsSelectable={true}
           onNodeClick={(_event, node) => {
             if (node) {
               setSelectedNode(node);
@@ -112,17 +105,30 @@ export const CwlVisualMap = (props: CwlVisualMapProps) => {
             <MiniMap
               zoomable={true}
               pannable={true}
-              nodeColor={(node) =>
-                (node.style?.background ??
-                  node.style?.backgroundColor) as string
-              }
+              nodeColor={(node) => {
+                if (node.data?.input) {
+                  return colors.input;
+                }
+                if (node.data?.step) {
+                  return colors.step;
+                }
+                if (node.data?.output) {
+                  return colors.output;
+                }
+                return (node.style?.background ??
+                  node.style?.backgroundColor) as string;
+              }}
             />
           )}
           {background && <Backgorund_ {...background} />}
           {colorEditor && <CwlViewerColorEditor />}
         </ReactFlow>
       )}
-      {!hasNodes && "Unable to create a valid workflow from the source"}
+      {!hasNodes && (
+        <div className="cwl-visual-map-empty">
+          Unable to create a valid workflow from the source
+        </div>
+      )}
     </div>
   );
 };

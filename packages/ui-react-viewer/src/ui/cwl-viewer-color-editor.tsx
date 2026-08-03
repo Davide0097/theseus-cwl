@@ -1,15 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 
-import {
-  INPUT_NODE_COLOR,
-  OUTPUT_NODE_COLOR,
-  STEP_NODE_COLOR,
-} from "@theseus-cwl/configurations";
-
 import { useCwlFileState } from "../hooks";
 
 export const CwlViewerColorEditor = () => {
-  const { colors, setColors, resetColors } = useCwlFileState();
+  const { colors, setColors, resetColors, initialColors } = useCwlFileState();
   const [localColors, setLocalColors] = useState(colors);
 
   useEffect(() => {
@@ -36,6 +30,11 @@ export const CwlViewerColorEditor = () => {
     return JSON.stringify(localColors) !== JSON.stringify(colors);
   }, [localColors, colors]);
 
+  const canReset =
+    colors.input !== initialColors.input ||
+    colors.step !== initialColors.step ||
+    colors.output !== initialColors.output;
+
   return (
     <div className="cwl-viewer-color-editor">
       {(["input", "step", "output"] as const).map((type) => (
@@ -46,15 +45,15 @@ export const CwlViewerColorEditor = () => {
           onChange={(event) => handleLocalColorChange(type, event.target.value)}
         />
       ))}
-      {hasChanges && (
+      {(hasChanges || canReset) && (
         <div className="cwl-viewer-color-editor-buttons">
-          <button onClick={applyColors}>Apply</button>
-          <button onClick={handleCancel}>Cancel</button>
-          {(colors.input !== INPUT_NODE_COLOR ||
-            colors.step !== STEP_NODE_COLOR ||
-            colors.output !== OUTPUT_NODE_COLOR) && (
-            <button onClick={resetColors}>Reset to initial</button>
+          {hasChanges && (
+            <>
+              <button onClick={applyColors}>Apply</button>
+              <button onClick={handleCancel}>Cancel</button>
+            </>
           )}
+          {canReset && <button onClick={resetColors}>Reset to initial</button>}
         </div>
       )}
     </div>

@@ -23,7 +23,7 @@ export const CwlFileProvider = (props: CwlFileProviderProps) => {
   const [cwlFile, setCwlFile] = useState<
     Workflow | CWLPackedDocument | Process
   >(props.initialCwlFile);
-  const { colors, setColors, resetColors } = useColorState({
+  const { colors, setColors, resetColors, initialColors } = useColorState({
     initialColorState: props.initialColorState,
   });
 
@@ -153,6 +153,7 @@ export const CwlFileProvider = (props: CwlFileProviderProps) => {
         colors,
         setColors,
         resetColors,
+        initialColors,
       }}
     >
       {props.children}

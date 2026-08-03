@@ -34,19 +34,17 @@ export const useColorState = (props: UserColorStateProps) => {
     () => initialColorState || getDefaultColors(),
   );
 
-  const setColorForType = (type: keyof ColorState, color: string) => {
-    setColors((prev) => ({ ...prev, [type]: color }));
-  };
+  // Computed per render (not memoized) so `configureTheseusCwl` overrides stay live
+  const initialColors = initialColorState || getDefaultColors();
 
   const resetColors = () => {
-    const reset = initialColorState || getDefaultColors();
-    setColors(reset);
+    setColors(initialColors);
   };
 
   return {
     colors,
     setColors,
-    setColorForType,
     resetColors,
+    initialColors,
   };
 };
