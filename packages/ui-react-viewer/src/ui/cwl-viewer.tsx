@@ -123,21 +123,17 @@ export const CwlViewer = (props: CwlViewerProps) => {
   }, [input]);
 
   if (loading) {
-    return <div className="cwl-viewer-loading">Loading workflow...</div>;
+    return <p className="cwl-viewer-error">Loading workflow...</p>;
   }
 
   if (error) {
-    return (
-      <div className="cwl-viewer-error">
-        <strong>Error:</strong> {error}
-      </div>
-    );
+    return <p className="cwl-viewer-error">Parsing error: {error}</p>;
   }
 
   const activeFile = sourceHolder?.activeFile;
 
   if (!activeFile) {
-    return <div className="cwl-viewer-empty">No workflow loaded</div>;
+    return <p className="cwl-viewer-error">Active file not found</p>;
   }
 
   return (

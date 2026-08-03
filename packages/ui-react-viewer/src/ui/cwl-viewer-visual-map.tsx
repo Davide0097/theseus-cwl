@@ -124,11 +124,7 @@ export const CwlVisualMap = (props: CwlVisualMapProps) => {
           {colorEditor && <CwlViewerColorEditor />}
         </ReactFlow>
       )}
-      {!hasNodes && (
-        <div className="cwl-visual-map-empty">
-          Unable to create a valid workflow from the source
-        </div>
-      )}
+      {!hasNodes && <p>Unable to create a valid workflow from the source</p>}
     </div>
   );
 };

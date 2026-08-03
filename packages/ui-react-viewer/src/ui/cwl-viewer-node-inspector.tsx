@@ -1,9 +1,12 @@
+import { ReactNode } from "react";
+
 import { Input, WorkflowOutput, WorkflowStep } from "@theseus-cwl/types";
 
 import { InputNodeForm, OutputNodeForm, StepNodeForm } from "./components";
 
 export type CwlViewerNodeInspectorProps = {
   nodeProps: {
+    label?: ReactNode;
     input?: Input;
     step?: WorkflowStep;
     output?: WorkflowOutput;
@@ -18,15 +21,17 @@ export const CwlViewerNodeInspector = (props: CwlViewerNodeInspectorProps) => {
     return null;
   }
 
-  const renderComponent = () => {
-    if (nodeProps.input) {
-      return <InputNodeForm input={nodeProps.input} readOnly={readOnly} />;
-    } else if (nodeProps.step) {
-      return <StepNodeForm step={nodeProps.step} readOnly={readOnly} />;
-    } else if (nodeProps.output) {
-      return <OutputNodeForm output={nodeProps.output} readOnly={readOnly} />;
-    }
-  };
+  const Form = nodeProps.input ? (
+    <InputNodeForm input={nodeProps.input} readOnly={readOnly} />
+  ) : nodeProps.step ? (
+    <StepNodeForm step={nodeProps.step} readOnly={readOnly} />
+  ) : nodeProps.output ? (
+    <OutputNodeForm output={nodeProps.output} readOnly={readOnly} />
+  ) : null;
 
-  return <div className="cwl-viewer-node-inspector">{renderComponent()}</div>;
+  if (!Form) {
+    return null;
+  }
+
+  return <div className="cwl-viewer-node-inspector">{Form}</div>;
 };
