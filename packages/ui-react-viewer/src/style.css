@@ -10,6 +10,7 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
+  background-color: white;
 }
 
 .cwl-viewer .cwl-visual-map {
@@ -129,9 +130,13 @@
 .input-node-card-info,
 .step-node-card-info,
 .output-node-card-info {
+  max-width: 100%;
   margin-top: 6px;
   color: #6b7280;
   font-size: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .node-component-placeholder {
@@ -171,7 +176,7 @@
 .output-node-form .output-node-form-header svg {
   width: 30px;
   height: 30px;
-  color: #6b7280;
+  color: #000000;
   background: rgba(255, 255, 255, 0.356);
   border-radius: 4px;
 }

@@ -1,6 +1,7 @@
 import { WorkflowOutput } from "@theseus-cwl/types";
 
 import { useCwlFileState } from "../../hooks";
+import { OutputIcon } from "./icons";
 
 export type OutputNodeComponentProps =
   | { mode: "placeholder"; isSubWorkflow?: boolean }
@@ -12,6 +13,7 @@ export type OutputNodeComponentProps =
 
 export const OutputNodeComponent = (props: OutputNodeComponentProps) => {
   const { mode, isSubWorkflow } = props;
+
   const { colors, addOutput } = useCwlFileState();
 
   if (mode === "output") {
@@ -20,19 +22,7 @@ export const OutputNodeComponent = (props: OutputNodeComponentProps) => {
     return (
       <div className="output-node-card">
         <div className="output-node-card-header">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            style={{ backgroundColor: colors.output }}
-          >
-            <circle cx="12" cy="12" r="10"></circle>
-            <circle cx="12" cy="12" r="6"></circle>
-            <circle cx="12" cy="12" r="2"></circle>
-          </svg>
+          <OutputIcon color={colors.output} />
           <h1>{output.id}</h1>
         </div>
         {!isSubWorkflow && (

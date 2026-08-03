@@ -1,12 +1,13 @@
-import { Handle as H, HandleProps, Position } from "@xyflow/react";
+import { Position } from "@xyflow/react";
 
-import { Input } from "@theseus-cwl/types";
+import { Input, Type } from "@theseus-cwl/types";
 
 import { useCwlFileState } from "../../hooks";
+import { Handle_ } from "./handle";
+import { InputIcon } from "./icons";
 
-const Handle_ = H as React.MemoExoticComponent<
-  React.ForwardRefExoticComponent<HandleProps & React.RefAttributes<Element>>
->;
+const isFileType = (type: Type) =>
+  type.startsWith("File") || type.startsWith("Directory");
 
 export type InputNodeComponentProps =
   | { mode: "placeholder"; isSubWorkflow?: boolean }
@@ -19,31 +20,18 @@ export type InputNodeComponentProps =
 export const InputNodeComponent = (props: InputNodeComponentProps) => {
   const { mode, isSubWorkflow } = props;
 
-  const { addInput, colors } = useCwlFileState();
+  const { colors, addInput } = useCwlFileState();
 
   if (mode === "input") {
     const { input } = props;
-    const refeerToFile =
-      (input && input.type === "File") || input.type === "Directory";
+    const refersToFile = Array.isArray(input.type)
+      ? input.type.some(isFileType)
+      : isFileType(input.type);
 
     return (
       <div className="input-node-card">
         <div className="input-node-card-header">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            style={{ backgroundColor: colors.input }}
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M5 12h14"></path>
-            <path d="m12 5 7 7-7 7"></path>
-          </svg>
+          <InputIcon color={colors.input} />
           <h1>{input.id}</h1>
         </div>
         {!isSubWorkflow && (
@@ -57,7 +45,7 @@ export const InputNodeComponent = (props: InputNodeComponentProps) => {
         {!isSubWorkflow && (
           <div className="input-node-card-info">Input Parameter</div>
         )}
-        {refeerToFile && (
+        {refersToFile && (
           <div
             className="input-node-card-file-badge"
             style={{ backgroundColor: colors.input }}
