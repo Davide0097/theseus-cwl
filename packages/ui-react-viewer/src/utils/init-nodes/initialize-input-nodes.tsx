@@ -9,12 +9,7 @@ import {
 import { Input, Process, Workflow } from "@theseus-cwl/types";
 
 import { CwlNodeData, CwlNodeType } from "../../ui";
-import {
-  getId,
-  getNodeStyle,
-  getPlaceholderNodeStyle,
-  getSourceKeys,
-} from "../general";
+import { getId, getNodeStyle, getPlaceholderNodeStyle } from "../general";
 
 /**
  * Props common to all node initialization functions.

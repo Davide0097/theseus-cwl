@@ -109,29 +109,21 @@ const initializeSingleWorkflowNodes = (
 
   if (wrappers) {
     const maxRight = getMaxRight(nodes);
-    const wrapperNodes: xyFlowNode<{
-      label?: ReactNode;
-      input?: Input;
-      step?: WorkflowStep;
-      output?: WorkflowOutput;
-    }>[] = [
+    const wrapperNodes: xyFlowNode<CwlNodeData>[] = [
       getWrapperNode({
         nodes: inputNodes,
         maxRight: maxRight,
         label: labels && workflow.id ? workflow.id : undefined,
-        isSubWorkflow: isSubWorkflow,
       }),
       getWrapperNode({
         nodes: stepNodes,
         maxRight: maxRight,
         label: undefined,
-        isSubWorkflow: isSubWorkflow,
       }),
       getWrapperNode({
         nodes: outputNodes,
         maxRight: maxRight,
         label: undefined,
-        isSubWorkflow: isSubWorkflow,
       }),
     ];
     nodes.push(...wrapperNodes);
@@ -250,6 +242,7 @@ export const initializeNodes = (
       shiftedNodes = applyOffsetBasedOnLinkedNode(
         shiftedNodes,
         mainWorkflowNode,
+        scalingFactor,
       );
       allNodes.push(...shiftedNodes);
 
