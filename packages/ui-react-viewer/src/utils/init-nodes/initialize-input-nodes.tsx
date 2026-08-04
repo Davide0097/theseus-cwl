@@ -9,7 +9,12 @@ import {
 import { Input, Process, Workflow } from "@theseus-cwl/types";
 
 import { CwlNodeData, CwlNodeType } from "../../ui";
-import { getId, getNodeStyle, getPlaceholderNodeStyle } from "../general";
+import {
+  getId,
+  getNodeStyle,
+  getPlaceholderNodeStyle,
+  getSourceKeys,
+} from "../general";
 
 /**
  * Props common to all node initialization functions.
@@ -59,38 +64,22 @@ export const initializeInputNodes = (
     }
 
     Object.entries(step.in).forEach(([stepInputKey, stepInput]) => {
-      const source = stepInput?.source;
-      if (!source) {
+      if (!stepInput?.source) {
         console.warn(
           `Step ${step.id} input ${stepInputKey} doesn't contain a valid source`,
         );
         return;
       }
 
-      if (Array.isArray(source)) {
-        source.forEach((sourceString) => {
-          const [sourceKey] = sourceString.split("/");
-          if (
-            sourceKey &&
-            // Other sourcekey could come from other steps and not form an input
-            sourceKey in nodesInfo &&
-            !usedInputKeysInOrder.includes(sourceKey)
-          ) {
-            usedInputKeysInOrder.push(sourceKey);
-          }
-        });
-      } else {
-        const [sourceKey] = source.split("/");
-
+      getSourceKeys(stepInput.source).forEach((sourceKey) => {
+        // Source keys can also reference other steps, not just workflow inputs
         if (
-          sourceKey &&
-          // Other sourcekey could come from other steps and not form an input
           sourceKey in nodesInfo &&
           !usedInputKeysInOrder.includes(sourceKey)
         ) {
           usedInputKeysInOrder.push(sourceKey);
         }
-      }
+      });
     });
   });
 
