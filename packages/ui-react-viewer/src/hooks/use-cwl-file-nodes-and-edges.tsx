@@ -73,7 +73,10 @@ export const useCwlFileNodesAndEdges = (
     labels,
     subWorkflowScalingFactor,
   });
-  const initialEdges = initializeEdges(cwlFile, labels);
+  const initialEdges = initializeEdges({
+    cwlFile,
+    labels,
+  });
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
@@ -88,7 +91,12 @@ export const useCwlFileNodesAndEdges = (
         subWorkflowScalingFactor,
       }),
     );
-    setEdges(initializeEdges(cwlFile, labels));
+    setEdges(
+      initializeEdges({
+        cwlFile,
+        labels,
+      }),
+    );
   }, [
     wrappers,
     labels,

@@ -32,16 +32,23 @@ export const intializeSingleWorkflowEdges = (
 };
 
 /**
+ * The config for {@link initializeEdges}.
+ */
+export type InitializeEdgesProps = {
+  cwlFile: Workflow | CWLPackedDocument | Process;
+  labels: boolean;
+};
+
+/**
  * Initialize all the edges from the CWLFile object
  *
- * @param {Workflow | CWLPackedDocument} cwlFile
+ * @param {InitializeEdgesProps} props
  *
  * @returns {Edge[]}
  */
-export const initializeEdges = (
-  cwlFile: Workflow | CWLPackedDocument | Process,
-  labels: boolean,
-): Edge[] => {
+export const initializeEdges = (props: InitializeEdgesProps): Edge[] => {
+  const { cwlFile, labels } = props;
+
   if (!isPackedDocument(cwlFile)) {
     return intializeSingleWorkflowEdges(cwlFile, labels);
   } else {
