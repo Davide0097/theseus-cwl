@@ -239,6 +239,7 @@ configureTheseusCwl({
 | Package                                                                                      | Purpose                                                                     |
 | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
 | [`@theseus-cwl/ui-react-viewer`](https://www.npmjs.com/package/@theseus-cwl/ui-react-viewer) | The visualization half of the toolkit - CWL rendered as interactive graphs. |
+| [`@theseus-cwl/parser`](https://www.npmjs.com/package/@theseus-cwl/parser)                   | Parses and normalizes raw CWL sources into typed, sanitized objects.        |
 | [`@theseus-cwl/types`](https://www.npmjs.com/package/@theseus-cwl/types)                     | CWL v1.2 TypeScript type definitions and the `CwlSource` input model.       |
 | [`@theseus-cwl/configurations`](https://www.npmjs.com/package/@theseus-cwl/configurations)   | Shared runtime configuration (`configureTheseusCwl`).                       |
 

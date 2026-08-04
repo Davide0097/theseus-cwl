@@ -279,6 +279,7 @@ configureTheseusCwl({
 | Package                                                                                      | Purpose                                                                 |
 | -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
 | [`@theseus-cwl/ui-react-editor`](https://www.npmjs.com/package/@theseus-cwl/ui-react-editor) | The editing half of the toolkit - a CodeMirror-based CWL source editor. |
+| [`@theseus-cwl/parser`](https://www.npmjs.com/package/@theseus-cwl/parser)                   | Parses and normalizes raw CWL sources into typed, sanitized objects.    |
 | [`@theseus-cwl/types`](https://www.npmjs.com/package/@theseus-cwl/types)                     | CWL v1.2 TypeScript type definitions and the `CwlSource` input model.   |
 | [`@theseus-cwl/configurations`](https://www.npmjs.com/package/@theseus-cwl/configurations)   | Shared runtime configuration (`configureTheseusCwl`).                   |
 

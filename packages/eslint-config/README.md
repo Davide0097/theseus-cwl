@@ -38,7 +38,3 @@ export default {
   },
 };
 ```
-
-## When to Use
-
-When you need a shared ESLint setup for multiple packages in the @theseus-cwl monorepo.
