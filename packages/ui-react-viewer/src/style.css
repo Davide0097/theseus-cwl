@@ -13,6 +13,12 @@
   background-color: white;
 }
 
+.cwl-viewer-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .cwl-viewer .cwl-visual-map {
   width: 100%;
   height: 100%;
@@ -91,6 +97,7 @@
   align-items: center;
   gap: 0.3rem;
   margin-bottom: 0.4rem;
+  max-width: 100%;
 }
 
 .input-node-card-header svg,
@@ -102,6 +109,7 @@
   background: rgba(255, 255, 255, 0.356);
   border-radius: 6px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
 }
 
 .input-node-card-header h1,
@@ -110,6 +118,10 @@
   font-weight: 600;
   font-size: 9px;
   color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .input-node-card-badge,
@@ -223,10 +235,15 @@
   cursor: pointer;
 }
 
+.react-flow__node-cwl-wrapper {
+  padding: 10px;
+  font-size: 12px;
+  text-align: center;
+}
+
 .wrapper-label {
   margin-top: -20px;
   font-size: 10px;
-
 }
 
 .input-node-card-file-badge {
@@ -245,5 +262,4 @@
 .input-node-card-file-badge svg {
   width: 17px;
   height: 17px;
-
 }

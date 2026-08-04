@@ -46,29 +46,21 @@ export const initializeOutputNodes = (
     cwlFile,
   } = props;
 
-  const outputNodes: xyFlowNode<{
-    label: ReactNode;
-    output?: WorkflowOutput;
-  }>[] = [];
+  const outputNodes: xyFlowNode<CwlNodeData>[] = [];
 
   Object.entries(nodesInfo).forEach(([key, output]) => {
-    let matchedStepNode:
-      | xyFlowNode<{ label?: ReactNode; output?: WorkflowOutput }>
-      | undefined;
+    let matchedStepNode: xyFlowNode<CwlNodeData> | undefined;
 
-    const firstSource = Array.isArray(output.outputSource)
-      ? output.outputSource[0]
-      : output.outputSource;
+    const sourceStepKey = getSourceKeys(output.outputSource)[0];
 
     for (const stepNode of sortedStepNodes) {
-      const step: WorkflowStep | undefined = stepNode.data.step;
+      const step = stepNode.data.step;
 
       if (!step) {
-        console.warn("");
         return;
       }
 
-      if (firstSource?.split("/")[0] === step.id) {
+      if (sourceStepKey === step.id) {
         matchedStepNode = stepNode;
         break;
       }
@@ -85,30 +77,13 @@ export const initializeOutputNodes = (
         };
 
     outputNodes.push({
-      id: getId(cwlFile?.id, key),
+      id: getId(cwlFile.id, key),
+      type: CwlNodeType.OUTPUT,
       extent: "parent",
-      data: {
-        output: output,
-        label: (
-          <OutputNodeComponent
-            isSubWorkflow={isSubWorkflow}
-            output={{ ...output }}
-            mode="output"
-          />
-        ),
-      },
+      data: { output, isSubWorkflow },
       draggable: !readOnly,
       position,
-      style: {
-        width: NODE_WIDTH,
-        height: NODE_HEIGHT,
-        margin: "0px",
-        borderRadius: "6px",
-        padding: "0px",
-        border: "1px solid rgba(0, 0, 0, 0.60)",
-        boxShadow: "4px 4px 16px rgba(0, 0, 0, 0.05)",
-        background: hexToRgba(color, 0.3),
-      },
+      style: getNodeStyle(color),
     });
   });
 

@@ -1,7 +1,7 @@
 import { Process, Workflow } from "@theseus-cwl/types";
 import { Edge } from "@xyflow/react";
 
-import { getEdge, stripFragment } from "../general";
+import { getEdge, isRunReferenceTo } from "../general";
 
 export const initializeMainStepToSubworkflowInputEdges = (
   mainWorkflow: Workflow,
@@ -10,15 +10,14 @@ export const initializeMainStepToSubworkflowInputEdges = (
 ): Edge[] => {
   const edges: Edge[] = [];
 
-  Object.entries(mainWorkflow.steps || {}).forEach(([stepKey, step]) => {
-    const runReference =
-      typeof step.run === "string" ? stripFragment(step.run) : undefined;
+  Object.entries(mainWorkflow.steps).forEach(([stepKey, step]) => {
+    if (typeof step.run !== "string") {
+      return;
+    }
 
-    const subWorkflow = runReference
-      ? Object.values(allWorkflows).find(
-          (process) => stripFragment(process.id ?? "") === runReference,
-        )
-      : undefined;
+    const subWorkflow = Object.values(allWorkflows).find((process) =>
+      isRunReferenceTo(step.run, process.id),
+    );
 
     if (!subWorkflow) {
       console.warn(

@@ -4,5 +4,8 @@ export * from "./get-edge";
 export * from "./get-main-workflow";
 export * from "./get-max-bottom";
 export * from "./get-max-right";
+export * from "./get-node-style";
+export * from "./get-source-keys";
 export * from "./get-wrapper-node";
+export * from "./is-run-reference-to";
 export * from "./strip-fragment";

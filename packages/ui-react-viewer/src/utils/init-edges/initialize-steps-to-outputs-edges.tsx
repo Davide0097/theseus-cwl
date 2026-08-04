@@ -2,7 +2,7 @@ import { Edge } from "@xyflow/react";
 
 import { Workflow } from "@theseus-cwl/types";
 
-import { getEdge } from "../general";
+import { getEdge, getSourceKeys } from "../general";
 
 export const initializeStepToOutputEdges = (
   cwlFile: Workflow,
@@ -10,14 +10,12 @@ export const initializeStepToOutputEdges = (
 ): Edge[] => {
   const edges: Edge[] = [];
 
-  Object.entries(cwlFile.outputs || {}).forEach(([outputKey, output]) => {
-    const firstSource = Array.isArray(output.outputSource)
-      ? output.outputSource[0]
-      : output.outputSource;
-    const source = firstSource?.split("/")[0];
-
-    Object.keys(cwlFile.steps || {}).forEach((stepKey) => {
-      if (stepKey === source) {
+  Object.entries(cwlFile.outputs).forEach(([outputKey, output]) => {
+    // An outputSource can reference several steps (MultipleInputFeatureRequirement,
+    // e.g. with linkMerge/pickValue) — draw one edge per referenced step.
+    getSourceKeys(output.outputSource)
+      .filter((sourceKey) => cwlFile.steps[sourceKey])
+      .forEach((stepKey) => {
         edges.push(
           getEdge({
             source: {
@@ -32,8 +30,7 @@ export const initializeStepToOutputEdges = (
             hasLabel: labels,
           }),
         );
-      }
-    });
+      });
   });
 
   return edges;
