@@ -47,6 +47,12 @@ export type CwlViewerProps = {
 
   /** Set the scaling factor for subworkflows, default is 0.8 */
   subWorkflowScalingFactor?: number;
+
+  /**
+   * If true, hovering or selecting a node highlights it and its connected
+   * edges while dimming the rest of the graph, default is true
+   */
+  highlights?: boolean;
 };
 
 export const CwlViewer = (props: CwlViewerProps) => {
@@ -59,6 +65,7 @@ export const CwlViewer = (props: CwlViewerProps) => {
     initialColorState = undefined,
     background = { color: "transparent", variant: BackgroundVariant.Dots },
     subWorkflowScalingFactor = SUBWORKFLOW_NODE_SCALING_FACTOR,
+    highlights = true,
   } = props;
 
   /**
@@ -141,6 +148,7 @@ export const CwlViewer = (props: CwlViewerProps) => {
             background={background}
             colorEditor={colorEditor}
             subWorkflowScalingFactor={subWorkflowScalingFactor}
+            highlights={highlights}
           />
         </XyflowContextProvider>
         {selectedNode && (

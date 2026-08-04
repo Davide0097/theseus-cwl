@@ -49,8 +49,6 @@ export const getEdge = (props: GetEdgeProps): Edge => {
     },
     markerEnd: {
       type: MarkerType.ArrowClosed,
-      width: 16,
-      height: 16,
       color: "var(--cwl-viewer-edge-color)",
     },
     style: {

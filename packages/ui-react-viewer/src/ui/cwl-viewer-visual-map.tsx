@@ -11,7 +11,11 @@ import React, { useEffect, useMemo } from "react";
 
 import { ANIMATION_TIME } from "@theseus-cwl/configurations";
 
-import { useCwlFileNodesAndEdges, useCwlFileState } from "../hooks";
+import {
+  useCwlFileNodesAndEdges,
+  useCwlFileState,
+  useNodesAndEdgesHighlight,
+} from "../hooks";
 import { CwlNodeData, cwlNodeTypes } from "./components";
 import { CwlViewerColorEditor } from "./cwl-viewer-color-editor";
 
@@ -22,7 +26,7 @@ const Background_ = B as React.MemoExoticComponent<
 >;
 
 export type CwlVisualMapProps = {
-  setSelectedNode: (node: xyFlowNode<CwlNodeData>) => void;
+  setSelectedNode: (node: xyFlowNode<CwlNodeData> | undefined) => void;
   wrappers: boolean;
   minimap: boolean;
   labels: boolean;
@@ -30,6 +34,7 @@ export type CwlVisualMapProps = {
   background: BackgroundProps;
   colorEditor: boolean;
   subWorkflowScalingFactor: number;
+  highlights: boolean;
 };
 
 export const CwlVisualMap = (props: CwlVisualMapProps) => {
@@ -42,6 +47,7 @@ export const CwlVisualMap = (props: CwlVisualMapProps) => {
     background,
     colorEditor,
     subWorkflowScalingFactor,
+    highlights,
   } = props;
 
   const { cwlFile, colors } = useCwlFileState();
@@ -52,6 +58,7 @@ export const CwlVisualMap = (props: CwlVisualMapProps) => {
       labels,
       subWorkflowScalingFactor,
     });
+  const highlight = useNodesAndEdgesHighlight({ nodes, edges, enabled: highlights });
   const { fitView } = useReactFlow();
 
   const hasNodes = useMemo(() => {
@@ -71,14 +78,14 @@ export const CwlVisualMap = (props: CwlVisualMapProps) => {
   }, [cwlFile, fitView, subWorkflowScalingFactor]);
 
   return (
-    <div className="cwl-visual-map">
+    <div className={`cwl-visual-map${highlights ? " cwl-highlights" : ""}`}>
       {hasNodes && (
         <ReactFlow
           fitView={true}
           attributionPosition="bottom-right"
           nodeTypes={cwlNodeTypes}
-          nodes={nodes}
-          edges={edges}
+          nodes={highlight.nodes}
+          edges={highlight.edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           nodesDraggable={false}
@@ -94,11 +101,21 @@ export const CwlVisualMap = (props: CwlVisualMapProps) => {
               });
             }
           }}
+          onNodeMouseEnter={highlight.onNodeMouseEnter}
+          onNodeMouseLeave={highlight.onNodeMouseLeave}
+          onEdgeMouseEnter={highlight.onEdgeMouseEnter}
+          onEdgeMouseLeave={highlight.onEdgeMouseLeave}
+          onPaneClick={() => setSelectedNode(undefined)}
         >
           {minimap && (
             <MiniMap
               zoomable={true}
               pannable={true}
+              nodeClassName={(node) =>
+                highlight.activeNodeIds.has(node.id)
+                  ? "cwl-minimap-node-highlighted"
+                  : ""
+              }
               nodeColor={(node) => {
                 if (node.data?.input) {
                   return colors.input;

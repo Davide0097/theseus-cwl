@@ -5,7 +5,7 @@
 }
 
 .cwl-viewer {
-   /* Viewer */
+  /* Viewer */
   --cwl-viewer-bg: #fafafa;
 
   /* Node cards */
@@ -31,6 +31,11 @@
   --cwl-viewer-edge-label-bg: #eaeaeb;
   --cwl-viewer-edge-label-text-color: #383a42;
   --cwl-viewer-edge-label-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+
+  /* Hover / selection highlighting */
+  --cwl-viewer-node-highlight-color: #4078f2;
+  --cwl-viewer-edge-highlight-color: #4078f2;
+  --cwl-viewer-dimmed-opacity: 0.25;
 
   /* Node inspector */
   --cwl-viewer-inspector-bg: #f0f0f1;
@@ -279,6 +284,44 @@
   border: 1px solid var(--cwl-viewer-form-button-border-color);
   border-radius: 4px;
   cursor: pointer;
+}
+
+
+.cwl-viewer .react-flow__node-input,
+.cwl-viewer .react-flow__node-step,
+.cwl-viewer .react-flow__node-output {
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.cwl-viewer .cwl-highlights .react-flow__node-input:hover,
+.cwl-viewer .cwl-highlights .react-flow__node-step:hover,
+.cwl-viewer .cwl-highlights .react-flow__node-output:hover {
+  outline: 1px solid var(--cwl-viewer-node-highlight-color);
+  outline-offset: 2px;
+}
+
+.cwl-viewer .cwl-highlights .react-flow__node-input.selected,
+.cwl-viewer .cwl-highlights .react-flow__node-step.selected,
+.cwl-viewer .cwl-highlights .react-flow__node-output.selected {
+  outline: 2px solid var(--cwl-viewer-node-highlight-color);
+  outline-offset: 2px;
+}
+
+.cwl-viewer .react-flow__node.cwl-node-dimmed {
+  opacity: var(--cwl-viewer-dimmed-opacity);
+}
+
+.cwl-viewer .react-flow__edge {
+  transition: opacity 0.2s ease;
+}
+
+.cwl-viewer .react-flow__edge.cwl-edge-dimmed {
+  opacity: var(--cwl-viewer-dimmed-opacity);
+}
+
+.cwl-viewer .react-flow__minimap-node.cwl-minimap-node-highlighted {
+  fill: var(--cwl-viewer-node-highlight-color);
 }
 
 .react-flow__node-cwl-wrapper {

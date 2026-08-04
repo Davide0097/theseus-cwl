@@ -1,3 +1,4 @@
+export * from "./apply-highlight";
 export * from "./apply-offset";
 export * from "./colors";
 export * from "./get-edge";

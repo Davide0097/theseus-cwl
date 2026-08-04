@@ -120,6 +120,7 @@ const Example = () => {
 | `initialColorState`        | `ColorState`                                                                             | `undefined`                                                 | Initial configuration for node colors.                                                                |
 | `background`               | `Pick<BackgroundProps, "variant" \| "color" \| "bgColor" \| "style" \| "gap" \| "size">` | `{ color: "transparent", variant: BackgroundVariant.Dots }` | Configuration for the graph background.                                                               |
 | `subWorkflowScalingFactor` | `number`                                                                                 | `0.8`                                                       | Scaling factor applied when rendering subworkflows.                                                   |
+| `highlights`               | `boolean`                                                                                | `true`                                                      | Highlights the hovered/selected node and its connections while dimming the rest of the graph.         |
 
 ## 🎨 Styling
 
@@ -164,6 +165,16 @@ root `.cwl-viewer` element:
 | `--cwl-viewer-edge-label-bg`         | `#eaeaeb`                      | Edge label background     |
 | `--cwl-viewer-edge-label-text-color` | `#383a42`                      | Edge label text           |
 | `--cwl-viewer-edge-label-shadow`     | `0 1px 2px rgba(0, 0, 0, 0.5)` | Edge label shadow         |
+
+### Hover / selection highlighting
+
+Active when the `highlights` prop is enabled (the default):
+
+| Variable                            | Default   | Purpose                                                                 |
+| ----------------------------------- | --------- | ----------------------------------------------------------------------- |
+| `--cwl-viewer-node-highlight-color` | `#4078f2` | Outline of the hovered/selected node; minimap tint of highlighted nodes |
+| `--cwl-viewer-edge-highlight-color` | `#4078f2` | Stroke and arrowhead of highlighted edges (edges can be hovered too)    |
+| `--cwl-viewer-dimmed-opacity`       | `0.25`    | Opacity of nodes/edges unrelated to the active node                     |
 
 ### Node inspector
 
