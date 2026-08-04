@@ -5,18 +5,50 @@ A React toolkit for displaying [CWL (Common Workflow Language)](https://www.comm
 [![UI](https://img.shields.io/npm/v/@theseus-cwl/ui-react-viewer.png?label=@theseus-cwl/ui-react-viewer&style=flat-square)](https://www.npmjs.com/package/@theseus-cwl/ui-react-viewer)
 
 <div align="center">
-  <img src="../../.github/theseus-cwl.svg" alt="Theseus CWL logo" width="100" />
+  <img src="https://raw.githubusercontent.com/Davide0097/theseus-cwl/main/.github/theseus-cwl.svg" alt="Theseus CWL logo" width="100" />
 </div>
 
 ## ✨ Features
 
-<div align="center">
-  <img src="../../.github/viewer-preview.png" alt="Theseus CWL viewer" width="800" />
-</div>
+### 📊 Interactive workflow graphs
 
-- 🔍 Visualize CWL workflows as interactive graphs
-- 📂 Flexible API: Supports JSON, YAML, or parsed objects
-- Can be used as a standalone package
+Any CWL file is rendered as interactive DAG graphs automatically (steps are topologically sorted by their data dependencies). Packed documents render the main workflow plus each subworkflow side by side.
+Optional extras: a minimap, edge labels, and dashed wrapper boxes grouping inputs, steps, and outputs, dynamic coloring widget and subworkflow scaling.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Davide0097/theseus-cwl/main/.github/cwl-viewer-preview.png" alt="A packed CWL document rendered as a graph: the main workflow with three subworkflows laid out side by side, with wrapper boxes and a minimap" width="800" />
+</p>
+<p align="center">
+  <em>A packed <code>$graph</code> document: the main workflow and its subworkflows, with wrappers, edge labels, and the minimap enabled.</em>
+</p>
+
+### 🔦 Hover & selection highlighting
+
+Hovering or selecting a node emphasizes it and its connected edges while the rest of the graph is dimmed. Edges can be hovered too, revealing their label and highlighting both endpoints.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Davide0097/theseus-cwl/main/.github/cwl-viewer-hover-preview.png" alt="A hovered step node with its connected edges highlighted in blue while unrelated nodes are dimmed" width="800" />
+</p>
+<p align="center">
+  <em>Hovering <code>ensemble_run</code>: its edges light up, everything unrelated fades out.</em>
+</p>
+
+### 🔍 Node inspector
+
+Clicking a node zooms to it and opens a side panel showing its CWL definition properties.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Davide0097/theseus-cwl/main/.github/cwl-viewer-inspector-preview.png" alt="A selected step node with the inspector panel open on the right, showing the step's run, in, out, and id fields" width="800" />
+</p>
+<p align="center">
+  <em>The inspector panel for a selected step, showing its <code>run</code>, <code>in</code>, <code>out</code>, and <code>id</code>.</em>
+</p>
+
+### And more
+
+- 📂 **Flexible input** - accepts a parsed CWL object, a raw JSON/YAML string, or a `File`; single and multi-document sources are supported.
+- 🎨 **Fully themeable** - node fill colors via `initialColorState`, an optional built-in color editor panel, and every other visual (background, borders, edges, inspector) via `--cwl-viewer-*` CSS variables (see [Styling](#-styling)).
+- 📦 **Standalone** - a single React component with React as the only peer dependency.
 
 ## 🚀 Installation
 
@@ -24,6 +56,12 @@ A React toolkit for displaying [CWL (Common Workflow Language)](https://www.comm
 npm install @theseus-cwl/ui-react-viewer
 # or
 yarn add @theseus-cwl/ui-react-viewer
+```
+
+The component's stylesheet ships with the package. Bundlers that handle CSS imports (Vite, webpack, …) load it automatically when you import `CwlViewer`; otherwise import it explicitly:
+
+```tsx
+import "@theseus-cwl/ui-react-viewer/style.css";
 ```
 
 ## 🛠 Example Usage
@@ -35,6 +73,8 @@ The CwlViewer component accepts CWL data in three forms:
 - File
 
 - String (raw JSON or YAML string)
+
+The viewer fills its parent element (`width`/`height: 100%`), so make sure to render it inside an explicitly sized container - an unsized parent results in an empty view.
 
 ```tsx
 import { CwlSource } from "@theseus-cwl/types";
@@ -102,7 +142,9 @@ const Example = () => {
   };
 
   return (
-    <CwlViewer input={source} minimap={true} wrappers={true} labels={true} />
+    <div style={{ height: "600px" }}>
+      <CwlViewer input={source} minimap={true} wrappers={true} labels={true} />
+    </div>
   );
 };
 ```
@@ -124,11 +166,9 @@ const Example = () => {
 
 ## 🎨 Styling
 
-The viewer ships its own stylesheet and owns its whole look — the graph pane,
-node cards, edges, the node inspector, and the color editor overlay.
+The viewer ships its own stylesheet and owns its whole look - the graph pane, node cards, edges, the node inspector, and the color editor overlay.
 
-The look can be customized through **CSS variables**, declared on the viewer's
-root `.cwl-viewer` element:
+The look can be customized through **CSS variables**, declared on the viewer's root `.cwl-viewer` element:
 
 ### Viewer
 
@@ -204,9 +244,7 @@ Active when the `highlights` prop is enabled (the default):
 | `--cwl-viewer-color-editor-primary-button-bg`         | `#4078f2`     | Primary (Apply) button background |
 | `--cwl-viewer-color-editor-primary-button-text-color` | `white`       | Primary (Apply) button text       |
 
-Override them from your own CSS, on `.cwl-viewer` itself or any ancestor —
-for example a dark theme matching the default One Dark look of
-[`@theseus-cwl/ui-react-editor`](https://www.npmjs.com/package/@theseus-cwl/ui-react-editor):
+Override them from your own CSS, on `.cwl-viewer` itself or any ancestor - for example a dark theme matching the default One Dark look of [`@theseus-cwl/ui-react-editor`](https://www.npmjs.com/package/@theseus-cwl/ui-react-editor):
 
 ```css
 .my-app .cwl-viewer {
@@ -220,10 +258,32 @@ for example a dark theme matching the default One Dark look of
 }
 ```
 
-Note: the **fill colors** of input/step/output nodes are not CSS variables —
-they are controlled at runtime via the `initialColorState` prop, the
-`colorEditor` panel, or `configureTheseusCwl` from
-`@theseus-cwl/configurations`.
+Note: the **fill colors** of input/step/output nodes are not CSS variables - they are controlled at runtime via the `initialColorState` prop, the `colorEditor` panel, or `configureTheseusCwl` (see below).
+
+### Global configuration
+
+Layout and default-color constants - node size and spacing, animation timing, default node fill colors, subworkflow scaling - live in [`@theseus-cwl/configurations`](https://www.npmjs.com/package/@theseus-cwl/configurations) and can be overridden once at app startup, before the viewer first renders:
+
+```ts
+import { configureTheseusCwl } from "@theseus-cwl/configurations";
+
+configureTheseusCwl({
+  NODE_WIDTH: 180,
+  NODE_HEIGHT: 90,
+  INPUT_NODE_COLOR: "#98c379",
+});
+```
+
+## 📦 Related packages
+
+| Package                                                                                      | Purpose                                                                 |
+| -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| [`@theseus-cwl/ui-react-editor`](https://www.npmjs.com/package/@theseus-cwl/ui-react-editor) | The editing half of the toolkit - a CodeMirror-based CWL source editor. |
+| [`@theseus-cwl/types`](https://www.npmjs.com/package/@theseus-cwl/types)                     | CWL v1.2 TypeScript type definitions and the `CwlSource` input model.   |
+| [`@theseus-cwl/configurations`](https://www.npmjs.com/package/@theseus-cwl/configurations)   | Shared runtime configuration (`configureTheseusCwl`).                   |
+
+All packages are developed in the
+[theseus-cwl monorepo](https://github.com/Davide0097/theseus-cwl).
 
 ## 📘 Learn More about CWL
 
@@ -231,8 +291,8 @@ they are controlled at runtime via the `initialColorState` prop, the
 
 ## 📣 Contributing
 
-We welcome contributions! If you’d like to improve Theseus or suggest new features.
+We welcome contributions! If you’d like to improve Theseus or suggest new features, open an issue or a pull request on [GitHub](https://github.com/Davide0097/theseus-cwl).
 
 ## 📄 License
 
-MIT License © 2026 [Davide Giorgiutti]
+MIT License © 2026 [Davide Giorgiutti](https://github.com/Davide0097)
