@@ -12,7 +12,7 @@ import { CwlSource } from "@theseus-cwl/types";
  *
  * @returns
  */
-const gerRunDirectoryPath = (runId: crypto.UUID): string | undefined => {
+const getRunDirectoryPath = (runId: crypto.UUID): string | undefined => {
   const currentDir = process.cwd();
   return path.join(currentDir, "runs", runId);
 };
@@ -94,8 +94,8 @@ export async function writeCwlSourceToTempDir(
  *
  * @returns
  */
-const gerOutputDirectoryPath = (runId: crypto.UUID): string | undefined => {
-  const runDirectoryPath = gerRunDirectoryPath(runId);
+const getOutputDirectoryPath = (runId: crypto.UUID): string | undefined => {
+  const runDirectoryPath = getRunDirectoryPath(runId);
 
   if (runDirectoryPath) {
     return path.join(runDirectoryPath, "outputs");
@@ -125,7 +125,7 @@ const shouldUseWsl = () => {
  */
 export const runCwlService = async (source: CwlSource) => {
   const runId = crypto.randomUUID();
-  const runDirectoryPath = gerRunDirectoryPath(runId);
+  const runDirectoryPath = getRunDirectoryPath(runId);
 
   if (!runDirectoryPath) {
     throw new Error("");
@@ -149,7 +149,7 @@ export const runCwlService = async (source: CwlSource) => {
     throw new Error("");
   }
 
-  const outputDirectoryPath = gerOutputDirectoryPath(runId);
+  const outputDirectoryPath = getOutputDirectoryPath(runId);
 
   if (!outputDirectoryPath) {
     throw new Error("");
