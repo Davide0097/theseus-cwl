@@ -1,27 +1,20 @@
 import { Node as xyFlowNode } from "@xyflow/react";
-import { ReactElement, ReactNode } from "react";
 
 import {
   VIEWER_PADDING,
   SUBWORKFLOW_NODE_SCALING_FACTOR,
 } from "@theseus-cwl/configurations";
-import {
-  CWLPackedDocument,
-  Input,
-  Process,
-  Workflow,
-  WorkflowOutput,
-  WorkflowStep,
-} from "@theseus-cwl/types";
+import { isPackedDocument, isWorkflow } from "@theseus-cwl/parser";
+import { CWLPackedDocument, Process, Workflow } from "@theseus-cwl/types";
 
-import { ColorState } from "../../hooks";
+import { ColorState, CwlNodeData } from "../../types";
 import {
   applyOffset,
-  applyoffsetBasedOnLinkedNode,
+  applyOffsetBasedOnLinkedNode,
   getMainWorkflow,
   getMaxRight,
   getWrapperNode,
-  stripFragment,
+  isRunReferenceTo,
 } from "../general";
 import {
   initializeInputNodes,
@@ -32,7 +25,6 @@ import {
   initializeProcessOutputNodes,
 } from "./initialize-output-nodes";
 import { initializeStepNodes } from "./initialize-step-nodes";
-import { isPackedDocument, isWorkflow } from "@theseus-cwl/parser";
 
 /**
  * The config for {@link initializeSingleWorkflowNodes}.
@@ -53,12 +45,7 @@ export type initializeSingleWorkflowNodesConfig = {
  */
 const initializeSingleWorkflowNodes = (
   props: initializeSingleWorkflowNodesConfig,
-): xyFlowNode<{
-  label?: ReactNode;
-  input?: Input;
-  step?: WorkflowStep;
-  output?: WorkflowOutput;
-}>[] => {
+): xyFlowNode<CwlNodeData>[] => {
   const {
     cwlFile: workflow,
     colors,
@@ -68,10 +55,10 @@ const initializeSingleWorkflowNodes = (
     isSubWorkflow,
   } = props;
 
-  let nodes: xyFlowNode[] = [];
-  let inputNodes = [],
-    outputNodes = [],
-    stepNodes: xyFlowNode<{ label?: ReactElement; step?: WorkflowStep }>[] = [];
+  let nodes: xyFlowNode<CwlNodeData>[] = [];
+  let inputNodes: xyFlowNode<CwlNodeData>[] = [];
+  let outputNodes: xyFlowNode<CwlNodeData>[] = [];
+  let stepNodes: xyFlowNode<CwlNodeData>[] = [];
 
   if (!isWorkflow(workflow)) {
     inputNodes = initializeProcessInputNodes({
@@ -170,17 +157,11 @@ export type InitializeNodesProps = {
  *
  * @param {InitializeNodesProps} props
  *
- * @returns {xyFlowNode<{label: React.ReactNode; input?: Input;step?: WorkflowStep;output?: WorkflowOutput;}>[]} returns
- * the corresponding array of {@link xyFlowNode} representing the visual map.
+ * @returns {xyFlowNode<CwlNodeData>[]} the corresponding array of {@link xyFlowNode} representing the visual map.
  */
 export const initializeNodes = (
   props: InitializeNodesProps,
-): xyFlowNode<{
-  label?: React.ReactNode;
-  input?: Input;
-  step?: WorkflowStep;
-  output?: WorkflowOutput;
-}>[] => {
+): xyFlowNode<CwlNodeData>[] => {
   const { cwlFile } = props;
 
   if (!isPackedDocument(cwlFile)) {
@@ -191,12 +172,7 @@ export const initializeNodes = (
       mainWorkflowNode: undefined,
     });
   } else {
-    const allNodes: xyFlowNode<{
-      label?: React.ReactNode;
-      input?: Input;
-      step?: WorkflowStep;
-      output?: WorkflowOutput;
-    }>[] = [];
+    const allNodes: xyFlowNode<CwlNodeData>[] = [];
 
     const mainWorkflow = getMainWorkflow(cwlFile);
 

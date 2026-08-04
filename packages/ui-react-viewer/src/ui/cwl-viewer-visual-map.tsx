@@ -7,29 +7,22 @@ import {
   Node as xyFlowNode,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import React, { ReactNode, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 
 import { ANIMATION_TIME } from "@theseus-cwl/configurations";
-import { Input, WorkflowOutput, WorkflowStep } from "@theseus-cwl/types";
 
 import { useCwlFileNodesAndEdges, useCwlFileState } from "../hooks";
+import { CwlNodeData, cwlNodeTypes } from "./components";
 import { CwlViewerColorEditor } from "./cwl-viewer-color-editor";
 
-const Backgorund_ = B as React.MemoExoticComponent<
+const Background_ = B as React.MemoExoticComponent<
   React.ForwardRefExoticComponent<
     BackgroundProps & React.RefAttributes<Element>
   >
 >;
 
 export type CwlVisualMapProps = {
-  setSelectedNode: (
-    node: xyFlowNode<{
-      label?: ReactNode;
-      input?: Input;
-      step?: WorkflowStep;
-      output?: WorkflowOutput;
-    }>,
-  ) => void;
+  setSelectedNode: (node: xyFlowNode<CwlNodeData>) => void;
   wrappers: boolean;
   minimap: boolean;
   labels: boolean;
@@ -83,6 +76,7 @@ export const CwlVisualMap = (props: CwlVisualMapProps) => {
         <ReactFlow
           fitView={true}
           attributionPosition="bottom-right"
+          nodeTypes={cwlNodeTypes}
           nodes={nodes}
           edges={edges}
           onNodesChange={onNodesChange}
@@ -120,7 +114,7 @@ export const CwlVisualMap = (props: CwlVisualMapProps) => {
               }}
             />
           )}
-          {background && <Backgorund_ {...background} />}
+          {background && <Background_ {...background} />}
           {colorEditor && <CwlViewerColorEditor />}
         </ReactFlow>
       )}

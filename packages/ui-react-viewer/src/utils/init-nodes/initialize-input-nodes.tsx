@@ -1,16 +1,20 @@
 import { Position, Node as xyFlowNode } from "@xyflow/react";
-import { ReactElement } from "react";
 
 import {
-  VIEWER_PADDING,
   NODE_HEIGHT,
   NODE_MARGIN,
   NODE_WIDTH,
+  VIEWER_PADDING,
 } from "@theseus-cwl/configurations";
-import { Input, Process, Workflow, WorkflowStep } from "@theseus-cwl/types";
+import { Input, Process, Workflow } from "@theseus-cwl/types";
 
-import { InputNodeComponent } from "../../ui";
-import { getId, hexToRgba } from "../general";
+import { CwlNodeData, CwlNodeType } from "../../ui";
+import {
+  getId,
+  getNodeStyle,
+  getPlaceholderNodeStyle,
+  getSourceKeys,
+} from "../general";
 
 /**
  * Props common to all node initialization functions.
@@ -27,23 +31,18 @@ export type BaseInitializeNodeProps = {
  */
 export type InitializeInputNodesProps = BaseInitializeNodeProps & {
   nodesInfo: Record<string, Input>;
-  sortedStepNodes: Array<
-    xyFlowNode<{
-      label?: ReactElement;
-      step?: WorkflowStep;
-    }>
-  >;
+  sortedStepNodes: xyFlowNode<CwlNodeData>[];
 };
 
 /**
  * Initializes input nodes.
  *
- * Takes CWL input information as {@link Inputs} and the already initialized {@link xyFlowNode[]} representing steps.
- * Returns an array of {@link xyFlowNode} objects that xyFlow uses to render the input nodes.
+ * Takes CWL input information and the already initialized step nodes, and
+ * returns the {@link xyFlowNode} objects that xyFlow uses to render the input nodes.
  */
 export const initializeInputNodes = (
   props: InitializeInputNodesProps,
-): xyFlowNode<{ label?: ReactElement; input?: Input }>[] => {
+): xyFlowNode<CwlNodeData>[] => {
   const {
     nodesInfo,
     color,
@@ -57,7 +56,7 @@ export const initializeInputNodes = (
 
   /** Calculates the positions of input nodes based on the already initialized step nodes. */
   sortedStepNodes.forEach((stepNode) => {
-    const step: WorkflowStep | undefined = stepNode.data.step;
+    const step = stepNode.data.step;
 
     if (!step?.in) {
       console.warn(`Step with id ${step?.id} doesn't contain 'in' field`);
@@ -107,53 +106,32 @@ export const initializeInputNodes = (
 
   const sortedInputKeys = [...usedInputKeysInOrder, ...unusedInputs];
 
-  const inputNodes: xyFlowNode<{ label?: ReactElement; input?: Input }>[] =
-    sortedInputKeys.map((key, index) => {
+  const inputNodes: xyFlowNode<CwlNodeData>[] = sortedInputKeys.map(
+    (key, index) => {
       const input = nodesInfo[key]!;
 
       return {
         id: getId(cwlFile.id, key),
+        type: CwlNodeType.INPUT,
         targetPosition: isSubWorkflow ? Position.Left : Position.Bottom,
         sourcePosition: Position.Bottom,
-        data: {
-          input: input,
-          label: (
-            <InputNodeComponent
-              isSubWorkflow={isSubWorkflow}
-              mode="input"
-              input={{ ...input }}
-            />
-          ),
-        },
+        data: { input, isSubWorkflow },
         extent: "parent",
         position: {
           x: NODE_MARGIN + index * (NODE_WIDTH + NODE_MARGIN) + VIEWER_PADDING,
           y: NODE_MARGIN + VIEWER_PADDING,
         },
         draggable: !readOnly,
-        style: {
-          width: NODE_WIDTH,
-          height: NODE_HEIGHT,
-          boxShadow: "4px 4px 16px rgba(0, 0, 0, 0.05)",
-          background: hexToRgba(color, 0.3),
-          margin: "0px",
-          padding: "0px",
-          border: "1px solid rgba(0, 0, 0, 0.60)",
-          borderRadius: "6px",
-        },
+        style: getNodeStyle(color),
       };
-    });
+    },
+  );
 
   if (!readOnly) {
-    const placeholderNode: xyFlowNode<{
-      label?: ReactElement;
-      input?: Input;
-    }> = {
-      id: "__new_input_placeholder__",
-      type: "input",
-      data: {
-        label: <InputNodeComponent mode="placeholder" />,
-      },
+    inputNodes.push({
+      id: getId(cwlFile.id, "__new_input_placeholder__"),
+      type: CwlNodeType.INPUT,
+      data: { isSubWorkflow },
       extent: "parent",
       position: {
         x:
@@ -162,18 +140,8 @@ export const initializeInputNodes = (
           VIEWER_PADDING,
         y: NODE_MARGIN + VIEWER_PADDING,
       },
-      style: {
-        width: NODE_WIDTH,
-        height: NODE_HEIGHT,
-        backgroundColor: hexToRgba(color, 0.2),
-        borderStyle: "dashed",
-        cursor: "pointer",
-        margin: "0px",
-        padding: "0px",
-      },
-    };
-
-    inputNodes.push(placeholderNode);
+      style: getPlaceholderNodeStyle(color),
+    });
   }
 
   return inputNodes;
@@ -187,67 +155,39 @@ export const initializeProcessInputNodes = (props: {
   color: string;
   readOnly: boolean;
   cwlFile: Process;
-}): xyFlowNode<{ label?: ReactElement; input?: Input }>[] => {
+}): xyFlowNode<CwlNodeData>[] => {
   const { nodesInfo, color, readOnly, cwlFile } = props;
 
   const inputKeys = Object.keys(nodesInfo);
 
-  const inputNodes: xyFlowNode<{ label?: ReactElement; input?: Input }>[] =
-    inputKeys.map((key, index) => {
-      const input = nodesInfo[key]!;
+  const inputNodes: xyFlowNode<CwlNodeData>[] = inputKeys.map((key, index) => {
+    const input = nodesInfo[key]!;
 
-      return {
-        id: getId(cwlFile.id, key),
-        targetPosition: Position.Left,
-        sourcePosition: Position.Right,
-        data: {
-          input,
-          label: (
-            <InputNodeComponent
-              mode="input"
-              input={{ ...input }}
-              isSubWorkflow={false}
-            />
-          ),
-        },
-        position: {
-          y: VIEWER_PADDING,
-          x: VIEWER_PADDING + index * (NODE_WIDTH + NODE_MARGIN),
-        },
-        draggable: !readOnly,
-        style: {
-          width: NODE_WIDTH,
-          height: NODE_HEIGHT,
-          boxShadow: "4px 4px 16px rgba(0, 0, 0, 0.05)",
-          background: hexToRgba(color, 0.3),
-          margin: "0px",
-          padding: "0px",
-          border: "1px solid rgba(0, 0, 0, 0.60)",
-          borderRadius: "6px",
-        },
-      };
-    });
+    return {
+      id: getId(cwlFile.id, key),
+      type: CwlNodeType.INPUT,
+      targetPosition: Position.Left,
+      sourcePosition: Position.Right,
+      data: { input, isSubWorkflow: false },
+      position: {
+        y: VIEWER_PADDING,
+        x: VIEWER_PADDING + index * (NODE_WIDTH + NODE_MARGIN),
+      },
+      draggable: !readOnly,
+      style: getNodeStyle(color),
+    };
+  });
 
   if (!readOnly) {
     inputNodes.push({
-      id: "__new_input_placeholder__",
-      type: "input",
-      data: {
-        label: <InputNodeComponent mode="placeholder" />,
-      },
+      id: getId(cwlFile.id, "__new_input_placeholder__"),
+      type: CwlNodeType.INPUT,
+      data: { isSubWorkflow: false },
       position: {
         x: VIEWER_PADDING,
         y: VIEWER_PADDING + inputKeys.length * (NODE_HEIGHT + NODE_MARGIN),
       },
-      style: {
-        width: NODE_WIDTH,
-        height: NODE_HEIGHT,
-        backgroundColor: hexToRgba(color, 0.2),
-        borderStyle: "dashed",
-        cursor: "pointer",
-        margin: "0px",
-        padding: "0px",
-      },
+      style: getPlaceholderNodeStyle(color),
     });
   }
 

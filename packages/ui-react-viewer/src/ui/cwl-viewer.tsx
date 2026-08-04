@@ -3,20 +3,15 @@ import {
   BackgroundVariant,
   Node as xyFlowNode,
 } from "@xyflow/react";
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { SUBWORKFLOW_NODE_SCALING_FACTOR } from "@theseus-cwl/configurations";
 import { CWLSourceHolder } from "@theseus-cwl/parser";
-import {
-  CwlSource,
-  Input,
-  Shape,
-  WorkflowOutput,
-  WorkflowStep,
-} from "@theseus-cwl/types";
+import { CwlSource, Shape } from "@theseus-cwl/types";
 
 import { CwlFileProvider, XyflowContextProvider } from "../context";
 import { ColorState } from "../hooks";
+import { CwlNodeData } from "./components";
 import { CwlViewerNodeInspector } from "./cwl-viewer-node-inspector";
 import { CwlVisualMap } from "./cwl-viewer-visual-map";
 
@@ -74,13 +69,7 @@ export const CwlViewer = (props: CwlViewerProps) => {
   const readOnly = true;
 
   const [selectedNode, setSelectedNode] = useState<
-    | xyFlowNode<{
-        label?: ReactNode;
-        input?: Input;
-        step?: WorkflowStep;
-        output?: WorkflowOutput;
-      }>
-    | undefined
+    xyFlowNode<CwlNodeData> | undefined
   >(undefined);
   const [sourceHolder, setSourceHolder] = useState<CWLSourceHolder | undefined>(
     undefined,

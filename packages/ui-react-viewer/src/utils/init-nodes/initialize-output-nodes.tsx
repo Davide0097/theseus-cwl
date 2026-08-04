@@ -149,7 +149,7 @@ export const initializeOutputNodes = (
 };
 
 /**
- * Props for {@link initializeOutputNodes}.
+ * Props for {@link initializeProcessOutputNodes}.
  */
 export type InitializeProcessOutputNodesProps = {
   color: string;
@@ -157,18 +157,18 @@ export type InitializeProcessOutputNodesProps = {
   isSubWorkflow: boolean;
   cwlFile: Process;
   nodesInfo: Record<string, Output>;
-  sortedInputNodes: xyFlowNode<{ label?: ReactNode; step?: Input }>[];
+  sortedInputNodes: xyFlowNode<CwlNodeData>[];
 };
 
 /**
  * Initializes Process output nodes.
  *
- * Takes CWL output information as {@link Outputs} and the already initialized {@link xyFlowNode[]} representing the steps.
- * Returns an array of {@link xyFlowNode} objects that xyFlow uses to render the output nodes.
+ * Takes CWL output information and the already initialized input nodes, and
+ * returns the {@link xyFlowNode} objects that xyFlow uses to render the output nodes.
  */
 export const initializeProcessOutputNodes = (
   props: InitializeProcessOutputNodesProps,
-): xyFlowNode<{ label?: ReactNode; output?: Output }>[] => {
+): xyFlowNode<CwlNodeData>[] => {
   const {
     nodesInfo,
     color,

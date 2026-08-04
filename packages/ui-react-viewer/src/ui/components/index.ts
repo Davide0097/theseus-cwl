@@ -1,3 +1,4 @@
+export * from "./cwl-node-types";
 export * from "./handle";
 export * from "./icons";
 export * from "./input-node";
