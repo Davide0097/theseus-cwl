@@ -5,7 +5,7 @@ The main parsing and normalization utility for working with documents inside the
 [![UI](https://img.shields.io/npm/v/@theseus-cwl/parser.png?label=@theseus-cwl/parser&style=flat-square)](https://www.npmjs.com/package/@theseus-cwl/parser)
 
 <div align="center">
-  <img src="../../apps/landing-page/public/theseus-cwl.svg" alt="Theseus CWL logo" width="100" />
+  <img src="../../.github/theseus-cwl.svg" alt="Theseus CWL logo" width="100" />
 </div>
 
 - 📝 Parse and normalize raw sources into a consistent internal shape

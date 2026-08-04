@@ -5,7 +5,7 @@ A React toolkit for displaying [CWL (Common Workflow Language)](https://www.comm
 [![UI](https://img.shields.io/npm/v/@theseus-cwl/ui-react-editor.png?label=@theseus-cwl/ui-react-editor&style=flat-square)](https://www.npmjs.com/package/@theseus-cwl/ui-react-editor)
 
 <div align="center">
-  <img src="../../apps/landing-page/public/theseus-cwl.svg" alt="Theseus CWL logo" width="100" />
+  <img src="../../.github/theseus-cwl.svg" alt="Theseus CWL logo" width="100" />
 </div>
 
 ## ✨ Features

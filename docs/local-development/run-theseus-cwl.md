@@ -31,7 +31,6 @@ kind create cluster --name theseus-cluster
 | theseus-cwl-ide       | 3002     | 3002            |
 | theseus-cwl-validator | 3003     | 3003            |
 | theseus-cwl-runner    | 3004     | 3004            |
-| landing page          | 3011     | —               |
 | test                  | 3010     | —               |
 
 ## Run `theseus-cwl-ide`

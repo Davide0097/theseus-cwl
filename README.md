@@ -7,7 +7,7 @@ A React based toolkit for working with [CWL (Common Workflow Language)](https://
 [![Types](https://img.shields.io/npm/v/@theseus-cwl/types.png?label=@theseus-cwl/types&style=flat-square)](https://www.npmjs.com/package/@theseus-cwl/types)
 
 <div align="center">
-  <img src="./apps/landing-page/public/theseus-cwl.svg" alt="Theseus CWL logo" width="100" />
+  <img src="./.github/theseus-cwl.svg" alt="Theseus CWL logo" width="100" />
 </div>
 
 ## ✨ Features
@@ -124,7 +124,6 @@ This repository includes:
 ### Apps
 
 - `test`: Testing application
-- `landing-page`: The project landing page
 
 ### Packages
 
