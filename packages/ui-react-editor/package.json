@@ -16,8 +16,8 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "dev": "tsup src/index.ts --format esm --dts --loader .css=copy --clean --watch",
-    "build": "tsup src/index.ts --format esm --dts --loader .css=copy --clean",
+    "dev": "tsup src/index.ts src/style.css --format esm --dts --loader .css=copy --clean --watch",
+    "build": "tsup src/index.ts src/style.css --format esm --dts --loader .css=copy --clean",
     "lint": "eslint . --max-warnings 0",
     "check-types": "tsc --noEmit",
     "test": "echo 'No test needed'"
@@ -34,7 +34,8 @@
       "types": "./dist/index.d.ts",
       "style": "./dist/style.css",
       "import": "./dist/index.js"
-    }
+    },
+    "./style.css": "./dist/style.css"
   },
   "devDependencies": {
     "@theseus-cwl/eslint-config": "*",
@@ -58,7 +59,7 @@
     "@codemirror/language": "^6.12.2",
     "@lezer/highlight": "^1.2.3",
     "@theseus-cwl/configurations": "*",
-    "@theseus-cwl/types": "^1.1.2",
+    "@theseus-cwl/types": "*",
     "@uiw/react-codemirror": "^4.25.4",
     "yaml": "^2.8.1"
   }

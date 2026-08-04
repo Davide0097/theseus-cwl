@@ -13,7 +13,7 @@ import { useExtensions, UseExtensionsProps } from "../hooks";
 import { CwlCodeEditorCode } from "./cwl-code-editor-code";
 import { CwlCodeEditorTabs } from "./cwl-code-editor-tabs";
 
-import "./style.css";
+import "../style.css";
 
 const getFileText = (
   file: CwlSourceDocument<Shape.Raw> | CwlSourceParameter | undefined,

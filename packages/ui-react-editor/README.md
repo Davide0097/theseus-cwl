@@ -5,17 +5,32 @@ A React toolkit for displaying [CWL (Common Workflow Language)](https://www.comm
 [![UI](https://img.shields.io/npm/v/@theseus-cwl/ui-react-editor.png?label=@theseus-cwl/ui-react-editor&style=flat-square)](https://www.npmjs.com/package/@theseus-cwl/ui-react-editor)
 
 <div align="center">
-  <img src="../../.github/theseus-cwl.svg" alt="Theseus CWL logo" width="100" />
+  <img src="https://raw.githubusercontent.com/Davide0097/theseus-cwl/main/.github/theseus-cwl.svg" alt="Theseus CWL logo" width="100" />
 </div>
 
 ## ✨ Features
 
-<div align="center">
-  <img src="../../.github/code-editor-preview.png" alt="Theseus CWL code editor preview" width="400" />
-</div>
+### 📝 Multi-file editing with tabs
 
-- 📝 Edit CWL definitions in a code editor interface with YAML syntax highlighting, CWL keyword autocompletion, and hover documentation
-- 📂 Renders every file of a `CwlSource` - documents and input parameters - as switchable tabs
+Every file of a `CwlSource` - documents and input parameters - is rendered as a switchable tab, with the active file's content shown in a CodeMirror editor with YAML syntax highlighting.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Davide0097/theseus-cwl/main/.github/code-editor-preview.png" alt="The CWL code editor showing a workflow document in a tab, with YAML syntax highlighting and line numbers" width="800" />
+</p>
+<p align="center">
+  <em>A CWL document open in the editor: file tabs on top, One Dark syntax highlighting below.</em>
+</p>
+
+### 💡 CWL-aware editing
+
+CWL document tabs get keyword autocompletion and hover documentation (summary, official CWL spec description, and reference links for each keyword); parameter tabs get plain YAML editing. Line numbers, code folding, search, bracket matching, and active-line highlighting are all built in and individually toggleable.
+
+### And more
+
+- 📂 **Flexible input** - string content is displayed verbatim (comments and formatting preserved - invalid documents remain editable), parsed objects are serialized to YAML, and `File` contents are read asynchronously.
+- ✏️ **Edits flow back as a `CwlSource`** - changes are emitted (debounced) as an updated source in which the edited text replaces the active file's content.
+- 🎨 **Fully themeable** - every visual (tabs, editor chrome, syntax colors, tooltips) via `--cwl-code-editor-*` CSS variables (see [Styling](#-styling)).
+- 📦 **Standalone** - a single React component with React as the only peer dependency.
 
 ## 🚀 Installation
 
@@ -25,13 +40,19 @@ npm install @theseus-cwl/ui-react-editor
 yarn add @theseus-cwl/ui-react-editor
 ```
 
+The component's stylesheet ships with the package. Bundlers that handle CSS imports (Vite, webpack, …) load it automatically when you import `CwlCodeEditor`; otherwise import it explicitly:
+
+```tsx
+import "@theseus-cwl/ui-react-editor/style.css";
+```
+
 ## 🛠 Example Usage
 
 The editor receives a `CwlSource` and renders each of its files - documents and parameters - as a tab.
 
 File content is shown as text: **strings** pass through verbatim, **parsed JSON objects** are serialized to YAML, and **File** contents are read asynchronously.
 
-The editor does **no** parsing or validation — those are the consuming application's responsibility (see `@theseus-cwl/parser`).
+The editor fills its parent element (`height: 100%`), so make sure to render it inside an explicitly sized container - an unsized parent results in an empty view.
 
 ```tsx
 import { CwlSource, Shape } from "@theseus-cwl/types";
@@ -97,12 +118,14 @@ const Example = () => {
   };
 
   return (
-    <CwlCodeEditor input={source} onChange={(value) => console.log(value)} />
+    <div style={{ height: "600px" }}>
+      <CwlCodeEditor input={source} onChange={(value) => console.log(value)} />
+    </div>
   );
 };
 ```
 
-Props:
+## 🛠 API
 
 | Prop                        | Type                         | Default | Description                                                                                        |
 | --------------------------- | ---------------------------- | ------- | -------------------------------------------------------------------------------------------------- |
@@ -122,11 +145,9 @@ Props:
 
 ## 🎨 Styling
 
-The editor ships its own stylesheet and owns its whole look — tabs, the
-CodeMirror editor chrome, and syntax highlighting.
+The editor ships its own stylesheet and owns its whole look - tabs, the CodeMirror editor chrome, and syntax highlighting.
 
-The look can be customized through **CSS variables**, declared on the editor's
-root `.cwl-code-editor-wrapper` element:
+The look can be customized through **CSS variables**, declared on the editor's root `.cwl-code-editor-wrapper` element:
 
 ### Tabs
 
@@ -191,8 +212,7 @@ root `.cwl-code-editor-wrapper` element:
 | `--cwl-code-editor-tooltip-link-color` | `#8ab4f8` | Reference links    |
 | `--cwl-code-editor-tooltip-max-width`  | `400px`   | Tooltip max width  |
 
-Override them from your own CSS, on `.cwl-code-editor-wrapper` itself or any
-ancestor:
+Override them from your own CSS, on `.cwl-code-editor-wrapper` itself or any ancestor:
 
 ```css
 .my-app .cwl-code-editor-wrapper {
@@ -202,14 +222,37 @@ ancestor:
 }
 ```
 
+### Global configuration
+
+Editing behavior constants - the CWL keyword list used for autocompletion, the keyword hover documentation, the `onChange` debounce interval - live in [`@theseus-cwl/configurations`](https://www.npmjs.com/package/@theseus-cwl/configurations) and can be overridden once at app startup, before the editor first renders:
+
+```ts
+import { configureTheseusCwl } from "@theseus-cwl/configurations";
+
+configureTheseusCwl({
+  CWL_EDITOR_ONCHANGE_DEBOUNCE_MS: 500,
+});
+```
+
+## 📦 Related packages
+
+| Package                                                                                      | Purpose                                                                     |
+| -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| [`@theseus-cwl/ui-react-viewer`](https://www.npmjs.com/package/@theseus-cwl/ui-react-viewer) | The visualization half of the toolkit - CWL rendered as interactive graphs. |
+| [`@theseus-cwl/types`](https://www.npmjs.com/package/@theseus-cwl/types)                     | CWL v1.2 TypeScript type definitions and the `CwlSource` input model.       |
+| [`@theseus-cwl/configurations`](https://www.npmjs.com/package/@theseus-cwl/configurations)   | Shared runtime configuration (`configureTheseusCwl`).                       |
+
+All packages are developed in the
+[theseus-cwl monorepo](https://github.com/Davide0097/theseus-cwl).
+
 ## 📘 Learn More about CWL
 
 - [Common Workflow Language (CWL)](https://www.commonwl.org/)
 
 ## 📣 Contributing
 
-We welcome contributions! If you’d like to improve Theseus or suggest new features.
+We welcome contributions! If you’d like to improve Theseus or suggest new features, open an issue or a pull request on [GitHub](https://github.com/Davide0097/theseus-cwl).
 
 ## 📄 License
 
-MIT License © 2026 [Davide Giorgiutti]
+MIT License © 2026 [Davide Giorgiutti](https://github.com/Davide0097)
