@@ -1,4 +1,4 @@
-import { CwlSource } from "@theseus-cwl/types";
+import type { CwlSource } from "@theseus-cwl/types";
 
 import { validateCwl } from "../validate.js";
 
