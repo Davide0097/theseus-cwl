@@ -99,7 +99,7 @@ export const ExampleComponent = () => {
           labels={labels}
           subWorkflowScalingFactor={scalingFactor}
         />
-        <CwlCodeEditor activeFileId={undefined} input={currentSource} />
+        <CwlCodeEditor input={currentSource} />
       </div>
     </div>
   );
