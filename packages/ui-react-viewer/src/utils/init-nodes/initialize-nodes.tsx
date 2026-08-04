@@ -1,13 +1,14 @@
 import { Node as xyFlowNode } from "@xyflow/react";
 
 import {
-  VIEWER_PADDING,
   SUBWORKFLOW_NODE_SCALING_FACTOR,
+  VIEWER_PADDING,
 } from "@theseus-cwl/configurations";
 import { isPackedDocument, isWorkflow } from "@theseus-cwl/parser";
 import { CWLPackedDocument, Process, Workflow } from "@theseus-cwl/types";
 
-import { ColorState, CwlNodeData } from "../../types";
+import { ColorState } from "../../hooks";
+import { CwlNodeData } from "../../ui";
 import {
   applyOffset,
   applyOffsetBasedOnLinkedNode,
