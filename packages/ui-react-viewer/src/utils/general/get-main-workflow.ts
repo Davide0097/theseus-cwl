@@ -20,14 +20,19 @@ import { stripFragment } from "./strip-fragment";
 export const getMainWorkflow = (
   packedDocument: CWLPackedDocument,
 ): Workflow | undefined => {
-  const graph = Object.values(packedDocument.$graph) || [];
+  const graph = Object.values(packedDocument.$graph);
   const workflows = graph.filter((process): process is Workflow =>
     isWorkflow(process),
   );
 
+  const entryPointId = packedDocument.entryPoint
+    ? stripFragment(packedDocument.entryPoint)
+    : undefined;
+
   const byEntryPoint = workflows.find(
     (workflow) =>
-      workflow.id === packedDocument.entryPoint ||
+      (entryPointId !== undefined &&
+        stripFragment(workflow.id ?? "") === entryPointId) ||
       stripFragment(workflow.id ?? "")
         .trim()
         .toLowerCase() === "main",
