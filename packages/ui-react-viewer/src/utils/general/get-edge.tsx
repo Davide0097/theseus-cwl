@@ -39,23 +39,23 @@ export const getEdge = (props: GetEdgeProps): Edge => {
     animated: true,
     label: hasLabel ? `${sourceId} → ${targetId}` : undefined,
     labelStyle: {
-      background: "#f0f0f0",
+      background: "var(--cwl-viewer-edge-label-bg)",
       padding: "2px 6px",
       borderRadius: "8px",
       fontSize: "6px",
       fontWeight: 500,
-      color: "#333",
-      boxShadow: "0 1px 2px rgba(0,0,0,0.5)",
+      color: "var(--cwl-viewer-edge-label-text-color)",
+      boxShadow: "var(--cwl-viewer-edge-label-shadow)",
     },
     markerEnd: {
       type: MarkerType.ArrowClosed,
       width: 16,
       height: 16,
-      color: "rgba(0, 0, 0, 0.77)",
+      color: "var(--cwl-viewer-edge-color)",
     },
     style: {
       strokeWidth: type !== "workflow_to_workflow" ? 1.8 : 0.5,
-      stroke: "rgba(0, 0, 0, 0.77)",
+      stroke: "var(--cwl-viewer-edge-color)",
     },
   };
 };

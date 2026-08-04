@@ -30,7 +30,7 @@ export const getWrapperNode = (
       pointerEvents: "none",
       borderRadius: "6px",
       background: "transparent",
-      border: `1px dashed gray`,
+      border: "1px dashed var(--cwl-viewer-wrapper-border-color)",
     },
     zIndex: -1,
   };

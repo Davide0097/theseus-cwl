@@ -5,12 +5,58 @@
 }
 
 .cwl-viewer {
+   /* Viewer */
+  --cwl-viewer-bg: #fafafa;
+
+  /* Node cards */
+  --cwl-viewer-node-border-color: #181a1faf;
+  --cwl-viewer-node-border-radius: 2px;
+  --cwl-viewer-node-shadow: 4px 4px 16px rgba(0, 0, 0, 0.171);
+  --cwl-viewer-node-title-text-color: #383a42;
+  --cwl-viewer-node-info-text-color: #696c77;
+  --cwl-viewer-node-icon-color: #383a42;
+  --cwl-viewer-node-icon-bg: rgba(255, 255, 255, 0.356);
+  --cwl-viewer-node-icon-border-radius: 2px;
+  --cwl-viewer-node-icon-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  --cwl-viewer-node-badge-bg: rgba(255, 255, 255, 0.356);
+  --cwl-viewer-node-badge-text-color: #383a42;
+  --cwl-viewer-node-badge-border-color: rgba(0, 0, 0, 0.062);
+  --cwl-viewer-node-badge-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  --cwl-viewer-node-placeholder-text-color: #383a42;
+  --cwl-viewer-node-placeholder-border-color: #696c77;
+  --cwl-viewer-wrapper-border-color: #a0a1a7;
+
+  /* Edges */
+  --cwl-viewer-edge-color: #696c77;
+  --cwl-viewer-edge-label-bg: #eaeaeb;
+  --cwl-viewer-edge-label-text-color: #383a42;
+  --cwl-viewer-edge-label-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+
+  /* Node inspector */
+  --cwl-viewer-inspector-bg: #f0f0f1;
+  --cwl-viewer-inspector-shadow: -3px 0 8px rgba(0, 0, 0, 0.08);
+
+  /* Inspector forms */
+  --cwl-viewer-form-header-text-color: #383a42;
+  --cwl-viewer-form-icon-color: #383a42;
+  --cwl-viewer-form-icon-bg: rgba(255, 255, 255, 0.356);
+  --cwl-viewer-form-label-text-color: #696c77;
+  --cwl-viewer-form-input-border-color: #dbdbdc;
+  --cwl-viewer-form-button-border-color: #383a42;
+
+  /* Color editor */
+  --cwl-viewer-color-editor-input-border-color: transparent;
+  --cwl-viewer-color-editor-button-bg: #f0f0f1;
+  --cwl-viewer-color-editor-button-border-color: transparent;
+  --cwl-viewer-color-editor-primary-button-bg: #4078f2;
+  --cwl-viewer-color-editor-primary-button-text-color: white;
+
   display: flex;
   flex-direction: row;
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background-color: white;
+  background-color: var(--cwl-viewer-bg);
 }
 
 .cwl-viewer-error {
@@ -33,8 +79,8 @@
   width: 40%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0, 0, 0, 0.01);
-  box-shadow: -3px 0 8px rgba(0, 0, 0, 0.08);
+  background-color: var(--cwl-viewer-inspector-bg);
+  box-shadow: var(--cwl-viewer-inspector-shadow);
 }
 
 .cwl-viewer .cwl-viewer-color-editor {
@@ -52,7 +98,7 @@
 .cwl-viewer .cwl-viewer-color-editor input {
   height: 20px;
   width: 20px;
-  border: 1px solid transparent;
+  border: 1px solid var(--cwl-viewer-color-editor-input-border-color);
   border-radius: 6px;
   cursor: pointer;
   padding: 0px;
@@ -65,17 +111,17 @@
 }
 
 .cwl-viewer .cwl-viewer-color-editor .cwl-viewer-color-editor-buttons :first-child {
-  background-color: #000000;
-  color: white;
+  background-color: var(--cwl-viewer-color-editor-primary-button-bg);
+  color: var(--cwl-viewer-color-editor-primary-button-text-color);
 }
 
 .cwl-viewer .cwl-viewer-color-editor .cwl-viewer-color-editor-buttons button {
   height: 22px;
   padding: 4px 8px;
-  border: 1px solid transparent;
+  border: 1px solid var(--cwl-viewer-color-editor-button-border-color);
   border-radius: 6px;
   cursor: pointer;
-  background-color: #f9f9f9;
+  background-color: var(--cwl-viewer-color-editor-button-bg);
   font-size: 8px;
 }
 
@@ -105,10 +151,10 @@
 .output-node-card-header svg {
   width: 16px;
   height: 16px;
-  color: #000000;
-  background: rgba(255, 255, 255, 0.356);
-  border-radius: 6px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  color: var(--cwl-viewer-node-icon-color);
+  background: var(--cwl-viewer-node-icon-bg);
+  border-radius: var(--cwl-viewer-node-icon-border-radius);
+  box-shadow: var(--cwl-viewer-node-icon-shadow);
   flex-shrink: 0;
 }
 
@@ -117,7 +163,7 @@
 .output-node-card-header h1 {
   font-weight: 600;
   font-size: 9px;
-  color: #111827;
+  color: var(--cwl-viewer-node-title-text-color);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -128,15 +174,15 @@
 .step-node-card-badge,
 .output-node-card-badge {
   display: inline-block;
-  background: rgba(255, 255, 255, 0.356);
-  color: black;
+  background: var(--cwl-viewer-node-badge-bg);
+  color: var(--cwl-viewer-node-badge-text-color);
   font-family: monospace;
   padding: 2px 7px;
   font-weight: bolder;
   border-radius: 12px;
   font-size: 9px;
-  border: 1px solid rgba(0, 0, 0, 0.062);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--cwl-viewer-node-badge-border-color);
+  box-shadow: var(--cwl-viewer-node-badge-shadow);
 }
 
 .input-node-card-info,
@@ -144,7 +190,7 @@
 .output-node-card-info {
   max-width: 100%;
   margin-top: 6px;
-  color: #6b7280;
+  color: var(--cwl-viewer-node-info-text-color);
   font-size: 8px;
   white-space: nowrap;
   overflow: hidden;
@@ -158,7 +204,7 @@
   height: 100%;
   width: 100%;
   cursor: pointer;
-  color: #000000;
+  color: var(--cwl-viewer-node-placeholder-text-color);
   font-size: 8px;
 }
 
@@ -177,7 +223,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #6b7280;
+  color: var(--cwl-viewer-form-header-text-color);
   font-weight: bolder;
   font-family: monospace;
   margin-bottom: 20px;
@@ -188,8 +234,8 @@
 .output-node-form .output-node-form-header svg {
   width: 30px;
   height: 30px;
-  color: #000000;
-  background: rgba(255, 255, 255, 0.356);
+  color: var(--cwl-viewer-form-icon-color);
+  background: var(--cwl-viewer-form-icon-bg);
   border-radius: 4px;
 }
 
@@ -207,7 +253,7 @@
   margin-bottom: 5px;
   font-weight: bolder;
   font-size: 15px;
-  color: #6b7280;
+  color: var(--cwl-viewer-form-label-text-color);
 }
 
 .input-node-form .input-node-form-form-field input,
@@ -216,7 +262,7 @@
   padding: 3px 6px;
   font-size: 14px;
   border-radius: 3px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--cwl-viewer-form-input-border-color);
 }
 
 .input-node-form .input-node-form-save-button,
@@ -230,7 +276,7 @@
 .step-node-form button,
 .output-node-form button {
   padding: 10px 15px;
-  border: 1px solid black;
+  border: 1px solid var(--cwl-viewer-form-button-border-color);
   border-radius: 4px;
   cursor: pointer;
 }

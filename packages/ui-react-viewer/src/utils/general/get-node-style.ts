@@ -13,9 +13,9 @@ export const getNodeStyle = (color: string): CSSProperties => ({
   height: NODE_HEIGHT,
   margin: "0px",
   padding: "0px",
-  borderRadius: "6px",
-  border: "1px solid rgba(0, 0, 0, 0.60)",
-  boxShadow: "4px 4px 16px rgba(0, 0, 0, 0.05)",
+  borderRadius: "var(--cwl-viewer-node-border-radius)",
+  border: "1px solid var(--cwl-viewer-node-border-color)",
+  boxShadow: "var(--cwl-viewer-node-shadow)",
   background: hexToRgba(color, 0.3),
 });
 
@@ -26,7 +26,8 @@ export const getPlaceholderNodeStyle = (color: string): CSSProperties => ({
   width: NODE_WIDTH,
   height: NODE_HEIGHT,
   backgroundColor: hexToRgba(color, 0.2),
-  border: "1px dashed #1a192b",
+  borderRadius: "var(--cwl-viewer-node-border-radius)",
+  border: "1px dashed var(--cwl-viewer-node-placeholder-border-color)",
   cursor: "pointer",
   margin: "0px",
   padding: "0px",
