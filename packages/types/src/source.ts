@@ -2,18 +2,16 @@ import { CWLPackedDocument, Process, Shape, Workflow } from "./v1.2";
 
 export type CwlSourceDocumentContent<S extends Shape = Shape.Sanitized> =
   S extends Shape.Sanitized
-    ?
-        | Workflow<Shape.Sanitized>
-        | CWLPackedDocument<Shape.Sanitized>
-        | Process<Shape.Sanitized>
+    ? | Workflow<Shape.Sanitized>
+      | CWLPackedDocument<Shape.Sanitized>
+      | Process<Shape.Sanitized>
     : S extends Shape.Raw
-      ?
-          | Workflow<Shape.Raw>
-          | CWLPackedDocument<Shape.Raw>
-          | Process<Shape.Raw>
-          | string
-          | File
-          | undefined
+      ? | Workflow<Shape.Raw>
+        | CWLPackedDocument<Shape.Raw>
+        | Process<Shape.Raw>
+        | string
+        | File
+        | undefined
       : never;
 
 export type CwlSourceDocument<S extends Shape = Shape.Sanitized> = {

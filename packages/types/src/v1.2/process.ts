@@ -19,10 +19,7 @@ import { Shape } from "./workflow";
 export type Process<
   S extends Shape = Shape.Sanitized,
   T extends "Workflow" | "ExpressionTool" | "CommandLineTool" | "Operation" =
-    | "Workflow"
-    | "ExpressionTool"
-    | "CommandLineTool"
-    | "Operation",
+    "Workflow" | "ExpressionTool" | "CommandLineTool" | "Operation",
 > = (S extends Shape.Sanitized ? { id: string } : { id?: string }) & {
   /**
    *  The type of process that the object is describing.
@@ -35,9 +32,8 @@ export type Process<
    */
   inputs?: S extends Shape.Sanitized
     ? Record<string, Input<Shape.Sanitized>>
-    :
-        | Record<string, Input<Shape.Raw>>
-        | Array<ExtendedInput<Shape.Raw> & { id: string }>;
+    : | Record<string, Input<Shape.Raw>>
+      | Array<ExtendedInput<Shape.Raw> & { id: string }>;
 
   /**
    * The outputs of a tool is a list of output parameters that should be returned after running the tool.

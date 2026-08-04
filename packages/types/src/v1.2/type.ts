@@ -1,11 +1,5 @@
 type PrimitiveType =
-  | "string"
-  | "boolean"
-  | "int"
-  | "long"
-  | "float"
-  | "double"
-  | "null";
+  "string" | "boolean" | "int" | "long" | "float" | "double" | "null";
 
 type ComplexType = "array" | "record" | "enum";
 

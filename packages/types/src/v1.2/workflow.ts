@@ -23,16 +23,14 @@ export type Workflow<S extends Shape = Shape.Sanitized> = Process<S> & {
    */
   steps: S extends Shape.Sanitized
     ? Record<string, WorkflowStep<Shape.Sanitized>>
-    :
-        | Record<string, WorkflowStep<Shape.Raw>>
-        | Array<WorkflowStep<Shape.Raw> & { id: string }>;
+    : | Record<string, WorkflowStep<Shape.Raw>>
+      | Array<WorkflowStep<Shape.Raw> & { id: string }>;
 
   /**
    * The parameters representing the outputs that make up the workflow.
    */
   outputs: S extends Shape.Sanitized
     ? Record<string, WorkflowOutput<Shape.Sanitized>>
-    :
-        | Record<string, WorkflowOutput<Shape.Raw>>
-        | Array<WorkflowOutput<Shape.Raw> & { id: string }>;
+    : | Record<string, WorkflowOutput<Shape.Raw>>
+      | Array<WorkflowOutput<Shape.Raw> & { id: string }>;
 };

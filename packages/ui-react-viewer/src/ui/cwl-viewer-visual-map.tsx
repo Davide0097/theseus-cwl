@@ -58,7 +58,11 @@ export const CwlVisualMap = (props: CwlVisualMapProps) => {
       labels,
       subWorkflowScalingFactor,
     });
-  const highlight = useNodesAndEdgesHighlight({ nodes, edges, enabled: highlights });
+  const highlight = useNodesAndEdgesHighlight({
+    nodes,
+    edges,
+    enabled: highlights,
+  });
   const { fitView } = useReactFlow();
 
   const hasNodes = useMemo(() => {

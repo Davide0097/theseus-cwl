@@ -166,9 +166,7 @@ export class CWLSourceHolder {
    */
   private static sanitizeDocument_(
     document:
-      | Workflow<Shape.Raw>
-      | CWLPackedDocument<Shape.Raw>
-      | Process<Shape.Raw>,
+      Workflow<Shape.Raw> | CWLPackedDocument<Shape.Raw> | Process<Shape.Raw>,
   ): CwlSourceDocumentContent {
     if (isPackedDocument(document)) {
       const $graph = toRecordById(document.$graph, (process, id) => ({
