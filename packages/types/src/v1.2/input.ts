@@ -10,7 +10,7 @@ export type ExtendedInput<S extends Shape = Shape.Sanitized> =
      * A default value used if the parameter is not supplied. May be any value
      * (e.g. a string, number, boolean, or a File/Directory object).
      */
-    default?: any;
+    default?: unknown;
 
     /**
      * How to turn this input into a command-line argument. `position` defaults

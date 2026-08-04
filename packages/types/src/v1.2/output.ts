@@ -8,7 +8,12 @@ export type Output = {
   /**
    * Describes how to handle the outputs of a process.
    */
-  outputBinding?: {};
+  outputBinding?: {
+    glob?: string | Expression | Array<string>;
+    loadContents?: boolean;
+    loadListing?: "no_listing" | "shallow_listing" | "deep_listing";
+    outputEval?: string | Expression;
+  };
 
   type: Type | Type[];
 

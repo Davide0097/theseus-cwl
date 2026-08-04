@@ -1,6 +1,7 @@
 import { Output } from "./output";
 import { Process } from "./process";
 import { Shape } from "./workflow";
+import { Expression } from "./workflow-step";
 
 /**
  * # Expression tool
@@ -13,7 +14,11 @@ export type ExpressionTool<S extends Shape = Shape.Sanitized> = Process<
   S,
   "ExpressionTool"
 > & {
-  expression: any;
+  /**
+   * The expression to execute. The expression must return a JSON object which
+   * matches the output parameters of the expression tool.
+   */
+  expression: string | Expression;
 
   /**
    * The output parameters of the expression tool.

@@ -17,7 +17,7 @@ export type WorkflowStepInput = {
   /**
    * The default value for this parameter if there is no `source` field.
    */
-  default?: any;
+  default?: unknown;
 
   /**
    * To use valueFrom, [StepInputExpressionRequirement](#StepInputExpressionRequirement) must
@@ -113,13 +113,13 @@ export type WorkflowStep<S extends Shape = Shape.Sanitized> =
      * Declares requirements that apply to either the runtime environment or the
      * workflow engine that must be met in order to execute this workflow step.
      */
-    requirements?: Record<string, any>;
+    requirements?: Record<string, unknown>;
 
     /**
      * Declares hints applying to either the runtime environment or the
      * workflow engine that may be helpful in executing this workflow step.
      */
-    hints?: any[];
+    hints?: unknown[];
 
     /**
      * A short, human-readable label of this process object.

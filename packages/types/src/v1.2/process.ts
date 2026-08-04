@@ -47,7 +47,7 @@ export type Process<
    * Declares requirements that apply to either the runtime environment or the
    * workflow engine that must be met in order to execute this process.
    */
-  requirements?: Record<string, any>;
+  requirements?: Record<string, unknown>;
 
   arguments?: string[];
 
@@ -55,7 +55,7 @@ export type Process<
    * Declares hints applying to either the runtime environment or the
    * workflow engine that may be helpful in executing this process.
    */
-  hints?: any[];
+  hints?: unknown[];
 
   /**
    * A short, human-readable label of this process object.

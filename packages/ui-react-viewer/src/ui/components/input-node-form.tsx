@@ -46,7 +46,10 @@ export const InputNodeForm = (props: InputNodeFormProps) => {
       {Object.entries(formState).map(([key, value]) => (
         <div key={key} className="input-node-form-form-field">
           <label>{key}:</label>
-          {renderField(key as keyof Input, value)}
+          {renderField(
+            key as keyof Input,
+            value as string | number | boolean | object,
+          )}
         </div>
       ))}
       {hasChanged && !readOnly && (
