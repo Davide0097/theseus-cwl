@@ -2,7 +2,6 @@ import { Spin, Splitter } from "antd";
 import { observer } from "mobx-react";
 import { useState } from "react";
 
-import { CwlSource } from "@theseus-cwl/types";
 import { CwlViewer } from "@theseus-cwl/ui-react-viewer";
 import { CwlCodeEditor } from "@theseus-cwl/ui-react-editor";
 
@@ -57,9 +56,9 @@ export const CwlIdeComponent = observer((props: CwlIdeComponentProps) => {
                 >
                   <Splitter.Panel className="cwl-ide-code-editor">
                     <CwlCodeEditor
-                      activeFileId={ide.store.selectedFileId}
+                      {...ide.codeEditor.options}
                       input={ide.codeEditor.value}
-                      onChange={(value: CwlSource) => ide.updateState(value)}
+                      onChange={(value) => ide.updateState(value)}
                     />
                   </Splitter.Panel>
                   <Splitter.Panel>

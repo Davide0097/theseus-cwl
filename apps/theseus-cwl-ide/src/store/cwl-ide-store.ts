@@ -1,4 +1,4 @@
-import { CwlSource } from "@theseus-cwl/types";
+import { CwlSource, Shape } from "@theseus-cwl/types";
 import { action, computed, makeObservable, observable } from "mobx";
 
 export enum ValidationStatus {
@@ -18,21 +18,23 @@ export type Log = {
   component: string;
   timeStamp: string;
   text: string;
-  type: "error" | "info" | "success";
+  type: "error" | "warning" | "info" | "success";
 };
 
 export type CwlIdeStoreParams = {
   /**
    * The initial source
    */
-  source: CwlSource | undefined;
+  source: CwlSource<Shape.Raw | Shape.Sanitized> | undefined;
 };
 
 export class CwlIdeStore {
   /**
-   * The abstract syntax tree
+   * The abstract syntax tree. Holds either the initial sanitized source or, once
+   * the user edits the text, a raw source whose edited document content is a
+   * plain string — hence the `Shape.Raw | Shape.Sanitized` union.
    */
-  @observable ast: CwlSource | undefined;
+  @observable ast: CwlSource<Shape.Raw | Shape.Sanitized> | undefined;
 
   /**
    * The id of the selected file in the abstract syntax tree
@@ -73,7 +75,7 @@ export class CwlIdeStore {
   }
 
   @action
-  setAST(ast: CwlSource) {
+  setAST(ast: CwlSource<Shape.Raw | Shape.Sanitized>) {
     // do not call directly
     this.ast = ast;
   }

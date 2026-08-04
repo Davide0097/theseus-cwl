@@ -1,7 +1,8 @@
 import { action } from "mobx";
 
 import { CwlViewerProps } from "@theseus-cwl/ui-react-viewer";
-import { CwlSource } from "@theseus-cwl/types";
+import { CwlCodeEditorProps } from "@theseus-cwl/ui-react-editor";
+import { CwlSource, Shape } from "@theseus-cwl/types";
 
 import { CwlIdeCodeEditor } from "./cwl-ide-code-editor";
 import { CwlIdeStore } from "./cwl-ide-store";
@@ -17,8 +18,7 @@ export type CWLIdeParams = {
 
   options:
     | {
-        // ! todo: fix the editor typing
-        editor: Record<string, unknown> | undefined;
+        editor: Omit<CwlCodeEditorProps, "input" | "onChange"> | undefined;
         viewer: Omit<CwlViewerProps, "input"> | undefined;
       }
     | undefined;
@@ -71,7 +71,7 @@ export class CWLIde {
   }
 
   @action
-  updateState(ast: CwlSource) {
+  updateState(ast: CwlSource<Shape.Raw | Shape.Sanitized>) {
     this.store.setAST(ast);
     this.validator.validate();
   }

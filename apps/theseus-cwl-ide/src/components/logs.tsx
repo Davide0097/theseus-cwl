@@ -23,6 +23,11 @@ export const LogComponent = (props: LogComponentProps) => {
       className = "log-error";
       break;
 
+    case "warning":
+      icon = "⚠️";
+      className = "log-warning";
+      break;
+
     case "success":
       icon = "✅";
       className = "log-success";

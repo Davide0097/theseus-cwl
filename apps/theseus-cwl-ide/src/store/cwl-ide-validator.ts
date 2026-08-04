@@ -2,6 +2,24 @@ import { action } from "mobx";
 
 import { CwlIdeStore, ValidationStatus } from "./cwl-ide-store";
 
+/** Structured diagnostic returned by theseus-cwl-validator. */
+type CwlValidationMessage = {
+  severity: "error" | "warning" | "info";
+  file?: string;
+  line?: number;
+  column?: number;
+  text: string;
+};
+
+/** Compose a display line from a diagnostic, prefixing its source position. */
+function formatValidationMessage(message: CwlValidationMessage): string {
+  if (message.file && message.line != null && message.column != null) {
+    return `${message.file}:${message.line}:${message.column} ${message.text}`;
+  }
+
+  return message.text;
+}
+
 export type CwlIdeValidatorParams = {
   store: CwlIdeStore;
 };
@@ -49,21 +67,30 @@ export class CwlIdeValidator {
 
       const json: {
         success: boolean;
-        data: { lines: Array<string>; valid: boolean; warnings: Array<string> };
+        data: {
+          valid: boolean;
+          messages: Array<CwlValidationMessage>;
+          lines: Array<string>;
+        };
       } = await response.json();
+
+      // The validator now returns structured, path-cleaned diagnostics; the IDE
+      // only decides how to present them (severity -> log type + position text).
+      const messages = json.data?.messages ?? [];
+
+      messages.forEach((message) => {
+        this.store.addLogs([
+          {
+            component: "theseus-cwl-validator",
+            text: formatValidationMessage(message),
+            timeStamp: new Date().toISOString(),
+            type: message.severity,
+          },
+        ]);
+      });
 
       if (json.success && json.data.valid) {
         this.store.setValidationStatus(ValidationStatus.VALID);
-        json.data.lines.map((line) => {
-          this.store.addLogs([
-            {
-              component: "theseus-cwl-validator",
-              text: line,
-              timeStamp: new Date().toISOString(),
-              type: "info",
-            },
-          ]);
-        });
         this.store.addLogs({
           component: "theseus-cwl-ide",
           text: "Validation request succeded",
@@ -74,16 +101,6 @@ export class CwlIdeValidator {
         return true;
       } else {
         this.store.setValidationStatus(ValidationStatus.NOT_VALID);
-        json.data.lines.map((line) => {
-          this.store.addLogs([
-            {
-              component: "theseus-cwl-validator",
-              text: line,
-              timeStamp: new Date().toISOString(),
-              type: "info",
-            },
-          ]);
-        });
         this.store.addLogs([
           {
             component: "theseus-cwl-ide",

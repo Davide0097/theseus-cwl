@@ -1,28 +1,42 @@
 import { action, computed, makeObservable, observable } from "mobx";
 
+import { CwlCodeEditorProps } from "@theseus-cwl/ui-react-editor";
+
 import { CwlIdeStore } from "./cwl-ide-store";
 import { CwlSource, Shape } from "@theseus-cwl/types";
 
-export const DEFAULT_CWL_VIEWER_OPTIONS: Record<string, unknown> = {
-  wrap: false,
+export const DEFAULT_CWL_IDE_CODE_EDITOR_OPTIONS: Omit<
+  CwlCodeEditorProps,
+  "input" | "onChange"
+> = {
+  readOnly: false,
+  enableLineWrapping: false,
+  enableCwlAutoCompletion: true,
+  enableCwlHoverTooltip: true,
+  enableLineNumbers: true,
+  enableCodeFolding: true,
+  enableSearch: true,
+  enableBracketMatching: true,
+  enableHighlightActiveLine: true,
+  tabSize: 2,
   fontSize: 14,
-  autocomplete: true,
 };
 
 export type CwlIdeCodeEditorParams = {
   store: CwlIdeStore;
-  initialOptions: Record<string, unknown> | undefined;
+  initialOptions: Omit<CwlCodeEditorProps, "input" | "onChange"> | undefined;
 };
 
 export class CwlIdeCodeEditor {
   readonly store: CwlIdeStore;
 
-  @observable options: Record<string, unknown> | undefined;
+  @observable options:
+    Omit<CwlCodeEditorProps, "input" | "onChange"> | undefined;
 
   constructor(params: CwlIdeCodeEditorParams) {
     this.store = params.store;
     this.options = {
-      ...DEFAULT_CWL_VIEWER_OPTIONS,
+      ...DEFAULT_CWL_IDE_CODE_EDITOR_OPTIONS,
       ...params.initialOptions,
     };
 
@@ -30,7 +44,9 @@ export class CwlIdeCodeEditor {
   }
 
   @action
-  setOptions = (patch: Record<string, unknown>) => {
+  setOptions = (
+    patch: Partial<Omit<CwlCodeEditorProps, "input" | "onChange">>,
+  ) => {
     this.options = {
       ...this.options,
       ...patch,

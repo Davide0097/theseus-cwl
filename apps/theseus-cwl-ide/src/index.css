@@ -14,6 +14,7 @@
   --base-top-menu-height: 40px;
   --base-info-logs-text-color: var(--base-text-color);
   --base-error-logs-text-color: red;
+  --base-warning-logs-text-color: rgb(230, 170, 0);
   --base-details-log-text-color: rgb(121, 121, 253);
   --base-success-log-text-color: rgb(0, 226, 0);
 }
@@ -194,6 +195,10 @@
 
 .cwl-ide-logs .cwl-ide-log-line .log-error {
   color: var(--base-error-logs-text-color);
+}
+
+.cwl-ide-logs .cwl-ide-log-line .log-warning {
+  color: var(--base-warning-logs-text-color);
 }
 
 .cwl-ide-logs .cwl-ide-log-line .log-success {

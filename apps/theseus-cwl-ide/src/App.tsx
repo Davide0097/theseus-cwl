@@ -83,7 +83,6 @@ export const App = () => {
 
   useEffect(() => {
     const sourceSetter = async () => {
-      //@ts-expect-error source has just one document
       CWLSourceHolder.create(PLACEHOLDER_CWL_IDE_SOURCE).then(
         (sourceHolder) => {
           setSource(sourceHolder.source);

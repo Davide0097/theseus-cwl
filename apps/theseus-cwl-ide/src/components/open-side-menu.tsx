@@ -1,7 +1,7 @@
 import { observer } from "mobx-react";
 import { useMemo, useState } from "react";
 
-import { CwlSource } from "@theseus-cwl/types";
+import { CwlSource, Shape } from "@theseus-cwl/types";
 
 import { SidebarSection } from "./side-menu";
 import { CWLIde } from "../store";
@@ -65,7 +65,9 @@ export type ExplorerFile = {
   kind?: "workflow" | string;
 };
 
-const buildExplorerTree = (source: CwlSource | undefined): ExplorerFile[] => {
+const buildExplorerTree = (
+  source: CwlSource<Shape.Raw | Shape.Sanitized> | undefined,
+): ExplorerFile[] => {
   const documents = [];
   if (source) {
     documents.push(
@@ -96,7 +98,7 @@ const ExplorerItem = observer((props: ExplorerItemProps) => {
 });
 
 type CwlFileExplorerProps = {
-  source: CwlSource | undefined;
+  source: CwlSource<Shape.Raw | Shape.Sanitized> | undefined;
   onOpenFile: (id: string) => void;
   activeFileId: string | undefined;
 };
@@ -165,7 +167,7 @@ export const CwlRunsExplorer = observer((props: CwlRunsExplorerProps) => {
 
 export type CwlIdeContextualSidebarProps = {
   section: SidebarSection;
-  source: CwlSource | undefined;
+  source: CwlSource<Shape.Raw | Shape.Sanitized> | undefined;
   onOpenFile: (id: string) => void;
   activeFileId: string | undefined;
   ide: CWLIde;
