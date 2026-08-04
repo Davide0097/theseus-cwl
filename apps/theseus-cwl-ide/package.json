@@ -1,6 +1,7 @@
 {
   "name": "theseus-cwl-ide",
   "private": true,
+  "type": "module",
   "version": "0.1.2",
   "author": "davide giorgiutti",
   "license": "MIT",
@@ -8,7 +9,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
     "@theseus-cwl/configurations": "*",
