@@ -77,11 +77,11 @@ The CwlViewer component accepts CWL data in three forms:
 The viewer fills its parent element (`width`/`height: 100%`), so make sure to render it inside an explicitly sized container - an unsized parent results in an empty view.
 
 ```tsx
-import { CwlSource } from "@theseus-cwl/types";
+import { CwlSource, Shape } from "@theseus-cwl/types";
 import { CwlViewer } from "@theseus-cwl/ui-react-viewer";
 
 const Example = () => {
-  const source: CwlSource = {
+  const source: CwlSource<Shape.Raw> = {
     entrypoint: "main",
     documents: [
       {
@@ -131,12 +131,10 @@ const Example = () => {
         },
       },
     ],
-    inputs: [
+    parameters: [
       {
-        name: "input",
-        content: {
-          message: "Hello from Theseus CWL !",
-        },
+        name: "input.json",
+        content: `{ "message": "Hello from Theseus CWL !" }`,
       },
     ],
   };
