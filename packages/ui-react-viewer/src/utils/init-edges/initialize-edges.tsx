@@ -12,7 +12,7 @@ import { initializeMainStepToSubworkflowInputEdges } from "./initialize-main-ste
 import { initializeStepToOutputEdges } from "./initialize-steps-to-outputs-edges";
 import { initializeStepToStepEdges } from "./initialize-steps-to-steps-edges";
 
-export const intializeSingleWorkflowEdges = (
+export const initializeSingleWorkflowEdges = (
   cwlFile: Workflow | Process,
   labels: boolean,
 ) => {
@@ -50,7 +50,7 @@ export const initializeEdges = (props: InitializeEdgesProps): Edge[] => {
   const { cwlFile, labels } = props;
 
   if (!isPackedDocument(cwlFile)) {
-    return intializeSingleWorkflowEdges(cwlFile, labels);
+    return initializeSingleWorkflowEdges(cwlFile, labels);
   } else {
     const allEdges: Edge[] = [];
 

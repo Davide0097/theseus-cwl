@@ -75,13 +75,13 @@ const initializeSingleWorkflowNodes = (
 
   if (!isWorkflow(workflow)) {
     inputNodes = initializeProcessInputNodes({
-      nodesInfo: workflow.inputs!,
+      nodesInfo: workflow.inputs ?? {},
       color: colors.input,
       readOnly,
       cwlFile: workflow,
     });
     outputNodes = initializeProcessOutputNodes({
-      nodesInfo: workflow.outputs!,
+      nodesInfo: workflow.outputs ?? {},
       color: colors.output,
       readOnly,
       cwlFile: workflow,
@@ -92,7 +92,7 @@ const initializeSingleWorkflowNodes = (
     nodes = [...inputNodes, ...outputNodes];
   } else {
     stepNodes = initializeStepNodes({
-      nodesInfo: workflow.steps!,
+      nodesInfo: workflow.steps ?? {},
       color: colors.step,
       isSubWorkflow,
       readOnly,
@@ -100,7 +100,7 @@ const initializeSingleWorkflowNodes = (
     });
 
     inputNodes = initializeInputNodes({
-      nodesInfo: workflow.inputs!,
+      nodesInfo: workflow.inputs ?? {},
       color: colors.input,
       sortedStepNodes: stepNodes,
       isSubWorkflow,
@@ -109,7 +109,7 @@ const initializeSingleWorkflowNodes = (
     });
 
     outputNodes = initializeOutputNodes({
-      nodesInfo: workflow.outputs!,
+      nodesInfo: workflow.outputs ?? {},
       color: colors.output,
       sortedStepNodes: stepNodes,
       isSubWorkflow,
@@ -210,8 +210,10 @@ export const initializeNodes = (
 
     const workflows = [
       mainWorkflow,
-      ...Object.values(cwlFile.$graph).filter((w) => w !== mainWorkflow),
-    ] as Workflow[];
+      ...Object.values(cwlFile.$graph).filter(
+        (workflow) => workflow !== mainWorkflow,
+      ),
+    ];
 
     const mainWorkflowNodes = initializeSingleWorkflowNodes({
       ...props,
@@ -223,16 +225,16 @@ export const initializeNodes = (
 
     let currentOffsetX = getMaxRight(mainWorkflowNodes) + VIEWER_PADDING * 2;
 
-    // Initialize subworkflows and apply an x offset based on the previous worflow width
-    workflows?.slice(1)?.forEach((workflow) => {
-      const mainWorkflowNode = mainWorkflowNodes.find(
-        (n) =>
-          typeof n.data?.step?.run === "string" &&
-          stripFragment(n.data.step.run) === stripFragment(workflow.id ?? ""),
+    // Initialize subworkflows and apply an x offset based on the previous workflow width
+    workflows.slice(1).forEach((workflow) => {
+      const mainWorkflowNode = mainWorkflowNodes.find((node) =>
+        isRunReferenceTo(node.data.step?.run, workflow.id),
       );
 
       if (!mainWorkflowNode) {
-        console.warn("");
+        console.warn(
+          `CWLViewer: skipping $graph entry "${workflow.id}", it is not referenced by any step of the main workflow and will not be rendered.`,
+        );
         return;
       }
 
@@ -269,15 +271,14 @@ export const initializeNodes = (
       });
 
       let shiftedNodes = applyOffset(scaledNodes, currentOffsetX, 0);
-      shiftedNodes = applyoffsetBasedOnLinkedNode(
+      shiftedNodes = applyOffsetBasedOnLinkedNode(
         shiftedNodes,
         mainWorkflowNode,
       );
       allNodes.push(...shiftedNodes);
 
       currentOffsetX =
-        getMaxRight(shiftedNodes) +
-        VIEWER_PADDING * SUBWORKFLOW_NODE_SCALING_FACTOR;
+        getMaxRight(shiftedNodes) + VIEWER_PADDING * scalingFactor;
     });
 
     return allNodes;
