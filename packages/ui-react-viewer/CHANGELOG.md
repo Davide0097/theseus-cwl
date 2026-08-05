@@ -1,5 +1,14 @@
 # @theseus-cwl/ui-react-viewer
 
+## 2.0.1
+
+### Patch Changes
+
+- a7f5b7a: Fix process workflow wrapper node
+- 1037349: Add nodeInspector prop to toggle the inspector panel
+- 4b5fb80: Add jsdoc to CwlViewer
+- d9d5d90: Fix isSubWorkflow not being applied to CommandLineTool subworkflow nodes and shows node badge for subworkflow nodes
+
 ## 2.0.0
 
 ### Major Changes

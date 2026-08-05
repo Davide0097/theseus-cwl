@@ -1,5 +1,16 @@
 # test
 
+## 0.2.1
+
+### Patch Changes
+
+- 275d3a2: Add new examples in order to highlight subworkflow's borders bugs
+- Updated dependencies [a7f5b7a]
+- Updated dependencies [1037349]
+- Updated dependencies [4b5fb80]
+- Updated dependencies [d9d5d90]
+  - @theseus-cwl/ui-react-viewer@2.0.1
+
 ## 0.2.0
 
 ### Minor Changes
