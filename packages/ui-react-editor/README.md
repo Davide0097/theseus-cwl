@@ -15,7 +15,7 @@ A React toolkit for displaying [CWL (Common Workflow Language)](https://www.comm
 Every file of a `CwlSource` - documents and input parameters - is rendered as a switchable tab, with the active file's content shown in a CodeMirror editor with YAML syntax highlighting.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Davide0097/theseus-cwl/main/.github/code-editor-preview.png" alt="The CWL code editor showing a workflow document in a tab, with YAML syntax highlighting and line numbers" width="800" />
+  <img src="https://raw.githubusercontent.com/Davide0097/theseus-cwl/main/.github/code-editor-preview.png" alt="The CWL code editor showing a workflow document in a tab, with YAML syntax highlighting and line numbers" width="600" />
 </p>
 <p align="center">
   <em>A CWL document open in the editor: file tabs on top, One Dark syntax highlighting below.</em>
