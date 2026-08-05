@@ -60,6 +60,15 @@ export type CwlViewerProps = {
   nodeInspector?: boolean;
 };
 
+/**
+ * Renders a CWL workflow as an interactive, read-only DAG graph.
+ *
+ * Parses the given CWL source and displays its inputs, steps and outputs as connected nodes, with optional minimap,
+ * edge labels, wrapper boxes, color editor and node inspector panel.
+ *
+ * @example
+ * <CwlViewer input={source} minimap={true} labels={true} />
+ */
 export const CwlViewer = (props: CwlViewerProps) => {
   const {
     input = undefined,
