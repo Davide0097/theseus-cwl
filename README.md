@@ -172,10 +172,13 @@ All apps are leaves of the dependency graph - nothing imports them.
 
 ### How everything fits together
 
-Solid arrows are runtime dependencies ("is used by"), dotted arrows are type-only dependencies or HTTP calls:
-
 ```mermaid
 graph TD
+  subgraph Internal Packages
+    typescript-config["typescript-config"]
+    eslint-config["eslint-config"]
+  end
+
   subgraph Packages
     types["@theseus-cwl/types"]
     parser["@theseus-cwl/parser"]
@@ -191,29 +194,34 @@ graph TD
     runner["theseus-cwl-runner"]
   end
 
+  eslint-config --> Apps
+  typescript-config --> Apps
+  eslint-config --> Packages
+  typescript-config --> Packages
+  
+  configurations --> parser
+  configurations --> editor
+  configurations --> viewer
+  configurations --> test
+  configurations --> ide
+  configurations --> validator
+  configurations --> runner
+
   types --> parser
   types --> editor
-  types -.types only.-> viewer
-  parser --> viewer
-  configurations --> viewer
-  configurations --> editor
-
+  types --> viewer
+  types --> test
   types --> ide
-  parser --> ide
-  configurations --> ide
-  viewer --> ide
+  types --> validator
+  types --> runner
+
+  parser --> viewer
+
+  editor --> test
   editor --> ide
 
-  types --> test
-  configurations --> test
   viewer --> test
-  editor --> test
-
-  types -.types only.-> validator
-  types -.types only.-> runner
-
-  ide -."HTTP :3003".-> validator
-  ide -."HTTP :3004".-> runner
+  viewer --> ide
 ```
 
 Key facts:
