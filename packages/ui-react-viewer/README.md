@@ -35,7 +35,7 @@ Hovering or selecting a node emphasizes it and its connected edges while the res
 
 ### 🔍 Node inspector
 
-Clicking a node zooms to it and opens a side panel showing its CWL definition properties.
+Clicking a node zooms to it and opens a side panel showing its CWL definition properties (can be turned off via the `nodeInspector` prop).
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/Davide0097/theseus-cwl/main/.github/cwl-viewer-inspector-preview.png" alt="A selected step node with the inspector panel open on the right, showing the step's run, in, out, and id fields" width="800" />
@@ -161,6 +161,7 @@ const Example = () => {
 | `background`               | `Pick<BackgroundProps, "variant" \| "color" \| "bgColor" \| "style" \| "gap" \| "size">` | `{ color: "transparent", variant: BackgroundVariant.Dots }` | Configuration for the graph background.                                                               |
 | `subWorkflowScalingFactor` | `number`                                                                                 | `0.8`                                                       | Scaling factor applied when rendering subworkflows.                                                   |
 | `highlights`               | `boolean`                                                                                | `true`                                                      | Highlights the hovered/selected node and its connections while dimming the rest of the graph.         |
+| `nodeInspector`            | `boolean`                                                                                | `true`                                                      | Opens the node inspector panel when a node is selected.                                               |
 
 ## 🎨 Styling
 

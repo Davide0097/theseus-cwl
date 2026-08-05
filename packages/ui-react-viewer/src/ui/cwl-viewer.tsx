@@ -53,6 +53,11 @@ export type CwlViewerProps = {
    * edges while dimming the rest of the graph, default is true
    */
   highlights?: boolean;
+
+  /**
+   * If true, selecting a node opens the node inspector panel, default is true
+   */
+  nodeInspector?: boolean;
 };
 
 export const CwlViewer = (props: CwlViewerProps) => {
@@ -66,6 +71,7 @@ export const CwlViewer = (props: CwlViewerProps) => {
     background = { color: "transparent", variant: BackgroundVariant.Dots },
     subWorkflowScalingFactor = SUBWORKFLOW_NODE_SCALING_FACTOR,
     highlights = true,
+    nodeInspector = true,
   } = props;
 
   /**
@@ -151,7 +157,7 @@ export const CwlViewer = (props: CwlViewerProps) => {
             highlights={highlights}
           />
         </XyflowContextProvider>
-        {selectedNode && (
+        {nodeInspector && selectedNode && (
           <CwlViewerNodeInspector
             readOnly={readOnly}
             nodeProps={selectedNode.data}
