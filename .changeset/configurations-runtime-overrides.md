@@ -1,9 +1,0 @@
----
-"@theseus-cwl/configurations": major
----
-
-Runtime-overridable configuration, published as ESM-only.
-
-- **Breaking:** the package is now published as ESM-only; CommonJS `require()` is no longer supported.
-- New `configureTheseusCwl(...)` runtime overrides: node sizes, colors, timings, and other constants are live bindings that can be reconfigured at startup.
-- CWL keyword documentation is now structured with spec text and reference links.

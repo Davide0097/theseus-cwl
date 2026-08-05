@@ -1,5 +1,24 @@
 # theseus-cwl-ide
 
+## 0.2.0
+
+### Minor Changes
+
+- ead38f2: Typed editor options and structured validation logs in the validation panel.
+
+### Patch Changes
+
+- Updated dependencies [ead38f2]
+- Updated dependencies [ead38f2]
+- Updated dependencies [ead38f2]
+- Updated dependencies [ead38f2]
+- Updated dependencies [ead38f2]
+  - @theseus-cwl/configurations@2.0.0
+  - @theseus-cwl/ui-react-editor@0.1.0
+  - @theseus-cwl/parser@0.1.0
+  - @theseus-cwl/types@2.0.0
+  - @theseus-cwl/ui-react-viewer@2.0.0
+
 ## 0.1.2
 
 ### Patch Changes

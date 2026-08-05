@@ -1,5 +1,22 @@
 # test
 
+## 0.2.0
+
+### Minor Changes
+
+- ead38f2: Broader example CWL sources exercising the viewer and editor, and an aligned TypeScript config.
+
+### Patch Changes
+
+- Updated dependencies [ead38f2]
+- Updated dependencies [ead38f2]
+- Updated dependencies [ead38f2]
+- Updated dependencies [ead38f2]
+  - @theseus-cwl/configurations@2.0.0
+  - @theseus-cwl/ui-react-editor@0.1.0
+  - @theseus-cwl/types@2.0.0
+  - @theseus-cwl/ui-react-viewer@2.0.0
+
 ## 0.1.2
 
 ### Patch Changes
