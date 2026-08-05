@@ -111,22 +111,21 @@ const initializeSingleWorkflowNodes = (
   if (wrappers) {
     const maxRight = getMaxRight(nodes);
     const wrapperNodes: xyFlowNode<CwlNodeData>[] = [
-      getWrapperNode({
+      {
         nodes: inputNodes,
-        maxRight: maxRight,
         label: labels && workflow.id ? workflow.id : undefined,
-      }),
-      getWrapperNode({
-        nodes: stepNodes,
-        maxRight: maxRight,
-        label: undefined,
-      }),
-      getWrapperNode({
-        nodes: outputNodes,
-        maxRight: maxRight,
-        label: undefined,
-      }),
-    ];
+      },
+      { nodes: stepNodes, label: undefined },
+      { nodes: outputNodes, label: undefined },
+    ]
+      .filter((group) => group.nodes.length > 0)
+      .map((group) =>
+        getWrapperNode({
+          nodes: group.nodes,
+          maxRight: maxRight,
+          label: group.label,
+        }),
+      );
     nodes.push(...wrapperNodes);
   }
 

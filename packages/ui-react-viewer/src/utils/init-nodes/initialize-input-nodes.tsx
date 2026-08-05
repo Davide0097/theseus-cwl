@@ -154,8 +154,8 @@ export const initializeProcessInputNodes = (props: {
       sourcePosition: Position.Right,
       data: { input, isSubWorkflow: false },
       position: {
-        y: VIEWER_PADDING,
-        x: VIEWER_PADDING + index * (NODE_WIDTH + NODE_MARGIN),
+        x: NODE_MARGIN + index * (NODE_WIDTH + NODE_MARGIN) + VIEWER_PADDING,
+        y: NODE_MARGIN + VIEWER_PADDING,
       },
       draggable: !readOnly,
       style: getNodeStyle(color),

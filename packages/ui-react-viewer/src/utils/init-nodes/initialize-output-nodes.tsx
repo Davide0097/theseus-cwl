@@ -139,7 +139,7 @@ export const initializeProcessOutputNodes = (
   const baseY =
     sortedInputNodes.length > 0
       ? getMaxBottom(sortedInputNodes) + NODE_MARGIN * 2
-      : NODE_MARGIN;
+      : NODE_MARGIN + VIEWER_PADDING;
 
   const outputEntries = Object.entries(nodesInfo);
 
@@ -151,7 +151,7 @@ export const initializeProcessOutputNodes = (
       data: { output: { ...output, id: key }, isSubWorkflow },
       draggable: !readOnly,
       position: {
-        x: VIEWER_PADDING + index * (NODE_WIDTH + NODE_MARGIN),
+        x: NODE_MARGIN + index * (NODE_WIDTH + NODE_MARGIN) + VIEWER_PADDING,
         y: baseY,
       },
       style: getNodeStyle(color),
