@@ -34,14 +34,12 @@ export const InputNodeComponent = (props: InputNodeComponentProps) => {
           <InputIcon color={colors.input} />
           <h1>{input.id}</h1>
         </div>
-        {!isSubWorkflow && (
-          <div
-            className="input-node-card-badge"
-            style={{ backgroundColor: colors.input }}
-          >
-            {input.type}
-          </div>
-        )}
+        <div
+          className="input-node-card-badge"
+          style={{ backgroundColor: colors.input }}
+        >
+          {input.type}
+        </div>
         {!isSubWorkflow && (
           <div className="input-node-card-info">Input Parameter</div>
         )}

@@ -139,8 +139,9 @@ export const initializeProcessInputNodes = (props: {
   color: string;
   readOnly: boolean;
   cwlFile: Process;
+  isSubWorkflow: boolean;
 }): xyFlowNode<CwlNodeData>[] => {
-  const { nodesInfo, color, readOnly, cwlFile } = props;
+  const { nodesInfo, color, readOnly, cwlFile, isSubWorkflow } = props;
 
   const inputKeys = Object.keys(nodesInfo);
 
@@ -152,7 +153,7 @@ export const initializeProcessInputNodes = (props: {
       type: CwlNodeType.INPUT,
       targetPosition: Position.Left,
       sourcePosition: Position.Right,
-      data: { input, isSubWorkflow: false },
+      data: { input, isSubWorkflow },
       position: {
         x: NODE_MARGIN + index * (NODE_WIDTH + NODE_MARGIN) + VIEWER_PADDING,
         y: NODE_MARGIN + VIEWER_PADDING,
@@ -166,7 +167,7 @@ export const initializeProcessInputNodes = (props: {
     inputNodes.push({
       id: getId(cwlFile.id, "__new_input_placeholder__"),
       type: CwlNodeType.INPUT,
-      data: { isSubWorkflow: false },
+      data: { isSubWorkflow },
       position: {
         x: VIEWER_PADDING,
         y: VIEWER_PADDING + inputKeys.length * (NODE_HEIGHT + NODE_MARGIN),

@@ -67,13 +67,14 @@ const initializeSingleWorkflowNodes = (
       color: colors.input,
       readOnly,
       cwlFile: workflow,
+      isSubWorkflow,
     });
     outputNodes = initializeProcessOutputNodes({
       nodesInfo: workflow.outputs ?? {},
       color: colors.output,
       readOnly,
       cwlFile: workflow,
-      isSubWorkflow: false,
+      isSubWorkflow,
       sortedInputNodes: inputNodes,
     });
 

@@ -25,14 +25,12 @@ export const StepNodeComponent = (props: StepNodeComponentProps) => {
           <StepIcon color={colors.step} />
           <h1>{step.id}</h1>
         </div>
-        {!isSubWorkflow && (
-          <div
-            className="step-node-card-badge"
-            style={{ backgroundColor: colors.step }}
-          >
-            step
-          </div>
-        )}
+        <div
+          className="step-node-card-badge"
+          style={{ backgroundColor: colors.step }}
+        >
+          step
+        </div>
         {!isSubWorkflow && (
           <div className="step-node-card-info">Run: {runLabel}</div>
         )}
