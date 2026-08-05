@@ -7,6 +7,8 @@ import { source6 } from "./6/source";
 import { source7 } from "./7/source";
 import { source8 } from "./8/source";
 import { source9 } from "./9/source";
+import { source10 } from "./10/source";
+import { source11 } from "./11/source";
 
 export const SOURCES = [
   { object: source1.object, string: source1.string },
@@ -18,4 +20,6 @@ export const SOURCES = [
   { object: source7.object, string: source7.string },
   { object: source8.object, string: source8.string },
   { object: source9.object, string: source9.string },
+  { object: source10.object, string: source10.string },
+  { object: source11.object, string: source11.string },
 ];
