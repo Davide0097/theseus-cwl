@@ -37,6 +37,14 @@
   --cwl-viewer-edge-highlight-color: #4078f2;
   --cwl-viewer-dimmed-opacity: 0.25;
 
+  /* Minimap */
+  --cwl-viewer-minimap-bg: #ffffff;
+  --cwl-viewer-minimap-mask-color: rgba(240, 240, 240, 0.6);
+  --cwl-viewer-minimap-mask-stroke-color: transparent;
+  --cwl-viewer-minimap-border-color: rgba(0, 0, 0, 0.062);
+  --cwl-viewer-minimap-border-radius: 2px;
+  --cwl-viewer-minimap-shadow: 4px 4px 16px rgba(0, 0, 0, 0.171);
+
   /* Node inspector */
   --cwl-viewer-inspector-bg: #f0f0f1;
   --cwl-viewer-inspector-shadow: -3px 0 8px rgba(0, 0, 0, 0.08);
@@ -318,6 +326,19 @@
 
 .cwl-viewer .react-flow__edge.cwl-edge-dimmed {
   opacity: var(--cwl-viewer-dimmed-opacity);
+}
+
+.cwl-viewer .react-flow__minimap {
+  background-color: var(--cwl-viewer-minimap-bg);
+  border: 1px solid var(--cwl-viewer-minimap-border-color);
+  border-radius: var(--cwl-viewer-minimap-border-radius);
+  box-shadow: var(--cwl-viewer-minimap-shadow);
+  overflow: hidden;
+}
+
+.cwl-viewer .react-flow__minimap-mask {
+  fill: var(--cwl-viewer-minimap-mask-color);
+  stroke: var(--cwl-viewer-minimap-mask-stroke-color);
 }
 
 .cwl-viewer .react-flow__minimap-node.cwl-minimap-node-highlighted {

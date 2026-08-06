@@ -215,6 +215,21 @@ Active when the `highlights` prop is enabled (the default):
 | `--cwl-viewer-edge-highlight-color` | `#4078f2` | Stroke and arrowhead of highlighted edges (edges can be hovered too)    |
 | `--cwl-viewer-dimmed-opacity`       | `0.25`    | Opacity of nodes/edges unrelated to the active node                     |
 
+### Minimap
+
+Active when the `minimap` prop is enabled:
+
+| Variable                                 | Default                             | Purpose                                        |
+| ---------------------------------------- | ----------------------------------- | ---------------------------------------------- |
+| `--cwl-viewer-minimap-bg`                | `#ffffff`                           | Minimap panel background                       |
+| `--cwl-viewer-minimap-mask-color`        | `rgba(240, 240, 240, 0.6)`          | Overlay covering the area outside the viewport |
+| `--cwl-viewer-minimap-mask-stroke-color` | `transparent`                       | Outline of the viewport rectangle              |
+| `--cwl-viewer-minimap-border-color`      | `rgba(0, 0, 0, 0.062)`              | Minimap panel border                           |
+| `--cwl-viewer-minimap-border-radius`     | `2px`                               | Minimap panel corner radius                    |
+| `--cwl-viewer-minimap-shadow`            | `4px 4px 16px rgba(0, 0, 0, 0.171)` | Minimap panel shadow                           |
+
+Note: the node **fill colors** inside the minimap follow the graph's node colors (see the note below); highlighted nodes are tinted with `--cwl-viewer-node-highlight-color`.
+
 ### Node inspector
 
 | Variable                        | Default                          | Purpose                    |
@@ -253,6 +268,8 @@ Override them from your own CSS, on `.cwl-viewer` itself or any ancestor - for e
   --cwl-viewer-edge-color: #7d8799;
   --cwl-viewer-edge-label-bg: #21252b;
   --cwl-viewer-edge-label-text-color: #abb2bf;
+  --cwl-viewer-minimap-bg: #21252b;
+  --cwl-viewer-minimap-mask-color: rgba(40, 44, 52, 0.6);
   --cwl-viewer-inspector-bg: #21252b;
 }
 ```
