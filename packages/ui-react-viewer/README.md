@@ -171,14 +171,16 @@ The look can be customized through **CSS variables**, declared on the viewer's r
 
 ### Viewer
 
-| Variable          | Default   | Purpose           |
-| ----------------- | --------- | ----------------- |
-| `--cwl-viewer-bg` | `#fafafa` | Viewer background |
+| Variable                   | Default                               | Purpose                                                   |
+| -------------------------- | ------------------------------------- | --------------------------------------------------------- |
+| `--cwl-viewer-bg`          | `#fafafa`                             | Viewer background                                         |
+| `--cwl-viewer-font-family` | `Verdana, Geneva, Tahoma, sans-serif` | Base font of the viewer (inspector, color editor, labels) |
 
 ### Node cards
 
 | Variable                                     | Default                             | Purpose                                  |
 | -------------------------------------------- | ----------------------------------- | ---------------------------------------- |
+| `--cwl-viewer-node-font-family`              | `"Inter", sans-serif`               | Node card font                           |
 | `--cwl-viewer-node-border-color`             | `#181a1faf`                         | Node card border                         |
 | `--cwl-viewer-node-border-radius`            | `2px`                               | Node card corner radius                  |
 | `--cwl-viewer-node-shadow`                   | `4px 4px 16px rgba(0, 0, 0, 0.171)` | Node card shadow                         |

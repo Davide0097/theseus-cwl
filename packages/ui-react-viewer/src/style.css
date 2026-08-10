@@ -1,14 +1,16 @@
 .cwl-viewer * {
   margin: 0px;
   padding: 0px;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-family: var(--cwl-viewer-font-family);
 }
 
 .cwl-viewer {
   /* Viewer */
   --cwl-viewer-bg: #fafafa;
+  --cwl-viewer-font-family: Verdana, Geneva, Tahoma, sans-serif;
 
   /* Node cards */
+  --cwl-viewer-node-font-family: "Inter", sans-serif;
   --cwl-viewer-node-border-color: #181a1faf;
   --cwl-viewer-node-border-radius: 2px;
   --cwl-viewer-node-shadow: 4px 4px 16px rgba(0, 0, 0, 0.171);
@@ -141,7 +143,7 @@
 .input-node-card,
 .step-node-card,
 .output-node-card {
-  font-family: "Inter", sans-serif;
+  font-family: var(--cwl-viewer-node-font-family);
   display: flex;
   padding: 4px;
   flex-direction: column;
@@ -293,7 +295,6 @@
   border-radius: 4px;
   cursor: pointer;
 }
-
 
 .cwl-viewer .react-flow__node-input,
 .cwl-viewer .react-flow__node-step,
