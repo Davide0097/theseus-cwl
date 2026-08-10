@@ -95,7 +95,8 @@
 .cwl-viewer .cwl-viewer-node-inspector {
   width: 40%;
   height: 100%;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   background-color: var(--cwl-viewer-inspector-bg);
   box-shadow: var(--cwl-viewer-inspector-shadow);
 }
@@ -214,6 +215,27 @@
   text-overflow: ellipsis;
 }
 
+.input-node-card .input-node-card-file-badge {
+  width: 24px;
+  height: 24px;
+  top: -12px;
+  right: -12px;
+  position: absolute;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  color: var(--cwl-viewer-node-file-badge-icon-color);
+  border: 1px solid var(--cwl-viewer-node-file-badge-border-color);
+  padding: 3px;
+}
+
+.input-node-card .input-node-card-file-badge svg {
+  width: 17px;
+  height: 17px;
+}
+
 .node-component-placeholder {
   display: flex;
   justify-content: center;
@@ -231,7 +253,6 @@
   max-width: 400px;
   margin: 0 auto;
   padding: 20px 4px;
-  width: 100%;
 }
 
 .input-node-form .input-node-form-header,
@@ -243,6 +264,7 @@
   color: var(--cwl-viewer-form-header-text-color);
   font-weight: bolder;
   font-family: monospace;
+  overflow-wrap: anywhere;
   margin-bottom: 20px;
 }
 
@@ -254,6 +276,7 @@
   color: var(--cwl-viewer-form-icon-color);
   background: var(--cwl-viewer-form-icon-bg);
   border-radius: 4px;
+  flex-shrink: 0;
 }
 
 .input-node-form .input-node-form-form-field,
@@ -276,6 +299,15 @@
 .input-node-form .input-node-form-form-field input,
 .step-node-form .step-node-form-form-field input,
 .output-node-form .output-node-form-form-field input {
+  padding: 3px 6px;
+  font-size: 14px;
+  border-radius: 3px;
+  border: 1px solid var(--cwl-viewer-form-input-border-color);
+}
+
+.input-node-form .input-node-form-form-field textarea,
+.step-node-form .step-node-form-form-field textarea,
+.output-node-form .output-node-form-form-field textarea {
   padding: 3px 6px;
   font-size: 14px;
   border-radius: 3px;
@@ -357,25 +389,4 @@
 .wrapper-label {
   margin-top: -20px;
   font-size: 10px;
-}
-
-.input-node-card-file-badge {
-  width: 24px;
-  height: 24px;
-  top: -12px;
-  right: -12px;
-  position: absolute;
-  border-radius: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  color: var(--cwl-viewer-node-file-badge-icon-color);
-  border: 1px solid var(--cwl-viewer-node-file-badge-border-color);
-  padding: 3px;
-}
-
-.input-node-card-file-badge svg {
-  width: 17px;
-  height: 17px;
 }
