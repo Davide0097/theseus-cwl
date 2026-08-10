@@ -1,5 +1,14 @@
 # @theseus-cwl/ui-react-viewer
 
+## 2.0.2
+
+### Patch Changes
+
+- 4be4f81: Themeable fonts via CSS variables
+- de503e7: Add minimap style override support
+- feffe53: Themeable File/Directory badge via CSS variables
+- cb6c5cb: Inspector forms no longer overflow the panel width, the inspector scrolls only vertically and the header icon doesn't shrink
+
 ## 2.0.1
 
 ### Patch Changes
