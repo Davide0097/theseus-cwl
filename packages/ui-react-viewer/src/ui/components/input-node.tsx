@@ -46,7 +46,9 @@ export const InputNodeComponent = (props: InputNodeComponentProps) => {
         {refersToFile && (
           <div
             className="input-node-card-file-badge"
-            style={{ backgroundColor: colors.input }}
+            style={{
+              backgroundColor: `var(--cwl-viewer-node-file-badge-bg, ${colors.input})`,
+            }}
           >
             <svg
               viewBox="64 64 896 896"

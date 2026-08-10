@@ -194,6 +194,9 @@ The look can be customized through **CSS variables**, declared on the viewer's r
 | `--cwl-viewer-node-badge-text-color`         | `#383a42`                           | Node card badge text                     |
 | `--cwl-viewer-node-badge-border-color`       | `rgba(0, 0, 0, 0.062)`              | Node card badge border                   |
 | `--cwl-viewer-node-badge-shadow`             | `0 4px 6px rgba(0, 0, 0, 0.2)`      | Node card badge shadow                   |
+| `--cwl-viewer-node-file-badge-bg`            | input node fill color               | File/Directory badge background          |
+| `--cwl-viewer-node-file-badge-icon-color`    | `currentColor`                      | File/Directory badge icon                |
+| `--cwl-viewer-node-file-badge-border-color`  | `transparent`                       | File/Directory badge border              |
 | `--cwl-viewer-node-placeholder-text-color`   | `#383a42`                           | "+ New …" placeholder card text          |
 | `--cwl-viewer-node-placeholder-border-color` | `#696c77`                           | "+ New …" placeholder card dashed border |
 | `--cwl-viewer-wrapper-border-color`          | `#a0a1a7`                           | Dashed border of wrapper (group) nodes   |

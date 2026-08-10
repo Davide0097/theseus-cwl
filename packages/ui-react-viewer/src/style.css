@@ -24,6 +24,8 @@
   --cwl-viewer-node-badge-text-color: #383a42;
   --cwl-viewer-node-badge-border-color: rgba(0, 0, 0, 0.062);
   --cwl-viewer-node-badge-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  --cwl-viewer-node-file-badge-icon-color: currentColor;
+  --cwl-viewer-node-file-badge-border-color: transparent;
   --cwl-viewer-node-placeholder-text-color: #383a42;
   --cwl-viewer-node-placeholder-border-color: #696c77;
   --cwl-viewer-wrapper-border-color: #a0a1a7;
@@ -367,7 +369,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
+  box-sizing: border-box;
+  color: var(--cwl-viewer-node-file-badge-icon-color);
+  border: 1px solid var(--cwl-viewer-node-file-badge-border-color);
+  padding: 3px;
 }
 
 .input-node-card-file-badge svg {
