@@ -1,8 +1,4 @@
-import {
-  BackgroundProps,
-  BackgroundVariant,
-  Node as xyFlowNode,
-} from "@xyflow/react";
+import { BackgroundProps, Node as xyFlowNode } from "@xyflow/react";
 import { useEffect, useState } from "react";
 
 import { SUBWORKFLOW_NODE_SCALING_FACTOR } from "@theseus-cwl/configurations";
@@ -82,7 +78,7 @@ export const CwlViewer = (props: CwlViewerProps) => {
     labels = false,
     colorEditor = false,
     initialColorState = undefined,
-    background = undefined,
+    background = {},
     subWorkflowScalingFactor = SUBWORKFLOW_NODE_SCALING_FACTOR,
     highlights = true,
     nodeInspector = true,
