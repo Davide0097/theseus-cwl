@@ -18,7 +18,6 @@
     "@theseus-cwl/parser": "*",
     "@theseus-cwl/ui-react-viewer": "*",
     "@theseus-cwl/ui-react-editor": "*",
-    "@xyflow/react": "^12.4.4",
     "antd": "^6.1.1",
     "mobx": "^6.15.0",
     "mobx-react": "^9.2.1",

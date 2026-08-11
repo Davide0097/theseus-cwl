@@ -1,7 +1,9 @@
-import { BackgroundVariant } from "@xyflow/react";
 import { action, computed, makeObservable, observable } from "mobx";
 
-import { CwlViewerProps } from "@theseus-cwl/ui-react-viewer";
+import {
+  BackgroundVariant,
+  CwlViewerProps,
+} from "@theseus-cwl/ui-react-viewer";
 
 import { CwlIdeStore } from "./cwl-ide-store";
 
@@ -12,8 +14,7 @@ export const DEFAULT_CWL_IDE_VIEWER_OPTIONS: Omit<CwlViewerProps, "input"> = {
   labels: false,
   background: {
     color: "transparent",
-    // ! todo: re export from packages
-    variant: "dots" as BackgroundVariant,
+    variant: BackgroundVariant.Dots,
   },
 };
 
