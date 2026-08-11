@@ -377,10 +377,6 @@
   stroke: var(--cwl-viewer-minimap-mask-stroke-color);
 }
 
-.cwl-viewer .react-flow__minimap-node.cwl-minimap-node-highlighted {
-  fill: var(--cwl-viewer-node-highlight-color);
-}
-
 .react-flow__node-cwl-wrapper {
   padding: 10px;
   font-size: 12px;

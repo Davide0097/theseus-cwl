@@ -115,12 +115,10 @@ export const CwlVisualMap = (props: CwlVisualMapProps) => {
             <MiniMap
               zoomable={true}
               pannable={true}
-              nodeClassName={(node) =>
-                highlight.activeNodeIds.has(node.id)
-                  ? "cwl-minimap-node-highlighted"
-                  : ""
-              }
               nodeColor={(node) => {
+                if (highlight.activeNodeIds.has(node.id)) {
+                  return "var(--cwl-viewer-node-highlight-color)";
+                }
                 if (node.data?.input) {
                   return colors.input;
                 }
