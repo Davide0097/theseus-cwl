@@ -244,14 +244,18 @@ Note: the node **fill colors** inside the minimap follow the graph's node colors
 
 ### Inspector forms
 
-| Variable                                | Default                      | Purpose                     |
-| --------------------------------------- | ---------------------------- | --------------------------- |
-| `--cwl-viewer-form-header-text-color`   | `#383a42`                    | Form header text            |
-| `--cwl-viewer-form-icon-color`          | `#383a42`                    | Form header icon            |
-| `--cwl-viewer-form-icon-bg`             | `rgba(255, 255, 255, 0.356)` | Form header icon background |
-| `--cwl-viewer-form-label-text-color`    | `#696c77`                    | Form field labels           |
-| `--cwl-viewer-form-input-border-color`  | `#dbdbdc`                    | Form input borders          |
-| `--cwl-viewer-form-button-border-color` | `#383a42`                    | Form button borders         |
+| Variable                                 | Default                      | Purpose                              |
+| ---------------------------------------- | ---------------------------- | ------------------------------------ |
+| `--cwl-viewer-form-header-text-color`    | `#383a42`                    | Form header text                     |
+| `--cwl-viewer-form-icon-color`           | `#383a42`                    | Form header icon                     |
+| `--cwl-viewer-form-icon-bg`              | `rgba(255, 255, 255, 0.356)` | Form header icon background          |
+| `--cwl-viewer-form-label-text-color`     | `#696c77`                    | Form field labels                    |
+| `--cwl-viewer-form-input-bg`             | `#ffffff`                    | Form input/textarea background       |
+| `--cwl-viewer-form-input-text-color`     | `#000000`                    | Form input/textarea text             |
+| `--cwl-viewer-form-input-border-color`   | `#dbdbdc`                    | Form input/textarea borders          |
+| `--cwl-viewer-form-input-border-radius`  | `3px`                        | Form input/textarea corner radius    |
+| `--cwl-viewer-form-input-line-height`    | `normal`                     | Form input/textarea line height      |
+| `--cwl-viewer-form-button-border-color`  | `#383a42`                    | Form button borders                  |
 
 ### Color editor
 

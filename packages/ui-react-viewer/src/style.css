@@ -58,7 +58,11 @@
   --cwl-viewer-form-icon-color: #383a42;
   --cwl-viewer-form-icon-bg: rgba(255, 255, 255, 0.356);
   --cwl-viewer-form-label-text-color: #696c77;
+  --cwl-viewer-form-input-bg: #ffffff;
+  --cwl-viewer-form-input-text-color: #000000;
   --cwl-viewer-form-input-border-color: #dbdbdc;
+  --cwl-viewer-form-input-border-radius: 3px;
+  --cwl-viewer-form-input-line-height: normal;
   --cwl-viewer-form-button-border-color: #383a42;
 
   /* Color editor */
@@ -298,19 +302,16 @@
 
 .input-node-form .input-node-form-form-field input,
 .step-node-form .step-node-form-form-field input,
-.output-node-form .output-node-form-form-field input {
-  padding: 3px 6px;
-  font-size: 14px;
-  border-radius: 3px;
-  border: 1px solid var(--cwl-viewer-form-input-border-color);
-}
-
+.output-node-form .output-node-form-form-field input,
 .input-node-form .input-node-form-form-field textarea,
 .step-node-form .step-node-form-form-field textarea,
 .output-node-form .output-node-form-form-field textarea {
   padding: 3px 6px;
   font-size: 14px;
-  border-radius: 3px;
+  background-color: var(--cwl-viewer-form-input-bg);
+  color: var(--cwl-viewer-form-input-text-color);
+  line-height: var(--cwl-viewer-form-input-line-height);
+  border-radius: var(--cwl-viewer-form-input-border-radius);
   border: 1px solid var(--cwl-viewer-form-input-border-color);
 }
 
