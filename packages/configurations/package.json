@@ -1,7 +1,7 @@
 {
   "name": "@theseus-cwl/configurations",
   "description": "Collection of internal static configurations.",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": "davide giorgiutti",
   "license": "MIT",
   "keywords": [

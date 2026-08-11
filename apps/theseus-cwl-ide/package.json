@@ -2,7 +2,7 @@
   "name": "theseus-cwl-ide",
   "private": true,
   "type": "module",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "davide giorgiutti",
   "license": "MIT",
   "scripts": {

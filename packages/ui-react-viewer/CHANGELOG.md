@@ -1,5 +1,20 @@
 # @theseus-cwl/ui-react-viewer
 
+## 2.0.3
+
+### Patch Changes
+
+- 1060ed2: Make the node card background opacity configurable
+- b65b89c: Restore the node type badge for subworkflow output nodes
+- 3e65c25: Style the React Flow attribution badge with a high-contrast black background
+- 2b986ee: Themeable inspector form elements (input and text area) via CSS variables
+- 2f485e6: Fix the minimap not tinting the highlighted node
+- 85edc49: Remove unused import and add default background value
+- fea2b43: Themeable color editor panel (background, border, button text) via CSS variables, and gradient support for viewer, inspector, and minimap backgrounds
+- e26ddde: Make the graph background opt-in and expose its configuration type
+- Updated dependencies [0b041a4]
+  - @theseus-cwl/configurations@2.0.1
+
 ## 2.0.2
 
 ### Patch Changes

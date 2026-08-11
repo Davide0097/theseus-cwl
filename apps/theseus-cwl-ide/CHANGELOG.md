@@ -1,5 +1,22 @@
 # theseus-cwl-ide
 
+## 0.2.1
+
+### Patch Changes
+
+- 899abaf: Use new BackgroundVariant type from ui-react-viewer and remove @xyflow/react
+- Updated dependencies [1060ed2]
+- Updated dependencies [b65b89c]
+- Updated dependencies [3e65c25]
+- Updated dependencies [2b986ee]
+- Updated dependencies [2f485e6]
+- Updated dependencies [85edc49]
+- Updated dependencies [fea2b43]
+- Updated dependencies [0b041a4]
+- Updated dependencies [e26ddde]
+  - @theseus-cwl/ui-react-viewer@2.0.3
+  - @theseus-cwl/configurations@2.0.1
+
 ## 0.2.0
 
 ### Minor Changes

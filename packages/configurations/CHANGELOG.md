@@ -1,5 +1,11 @@
 # @theseus-cwl/configurations
 
+## 2.0.1
+
+### Patch Changes
+
+- 0b041a4: Add a NODE_BACKGROUND_OPACITY configuration value controlling the node card background opacity
+
 ## 2.0.0
 
 ### Major Changes
