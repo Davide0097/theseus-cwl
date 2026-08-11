@@ -12,7 +12,7 @@ export type OutputNodeComponentProps =
     };
 
 export const OutputNodeComponent = (props: OutputNodeComponentProps) => {
-  const { mode, isSubWorkflow } = props;
+  const { mode } = props;
 
   const { colors, addOutput } = useCwlFileState();
 
@@ -25,16 +25,14 @@ export const OutputNodeComponent = (props: OutputNodeComponentProps) => {
           <OutputIcon color={colors.output} />
           <h1>{output.id}</h1>
         </div>
-        {!isSubWorkflow && (
-          <div
-            className="output-node-card-badge"
-            style={{ backgroundColor: colors.output }}
-          >
-            {typeof output.type === "object"
-              ? JSON.stringify(output.type)
-              : output.type}
-          </div>
-        )}
+        <div
+          className="output-node-card-badge"
+          style={{ backgroundColor: colors.output }}
+        >
+          {typeof output.type === "object"
+            ? JSON.stringify(output.type)
+            : output.type}
+        </div>
       </div>
     );
   }
