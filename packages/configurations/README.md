@@ -69,6 +69,7 @@ Every constant is a live binding that can be overridden through `configureTheseu
 | `INPUT_NODE_COLOR`                | `#85FFC7`              | Default fill color of input nodes                                      |
 | `STEP_NODE_COLOR`                 | `#FF8552`              | Default fill color of step nodes                                       |
 | `OUTPUT_NODE_COLOR`               | `#297373`              | Default fill color of output nodes                                     |
+| `NODE_BACKGROUND_OPACITY`         | `0.3`                  | Opacity (0-1) of node card backgrounds; set to `1` for solid           |
 | `CWL_FILE_KEYWORDS`               | 9 CWL keywords         | Keyword list used by the editor's autocompletion                       |
 | `CWL_FILE_KEYWORDS_DOCUMENTATION` | docs for every keyword | Structured hover documentation (summary, spec description, references) |
 | `CWL_EDITOR_ONCHANGE_DEBOUNCE_MS` | `300`                  | Debounce interval of the editor's `onChange` callback (ms)             |

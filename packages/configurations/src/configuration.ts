@@ -178,6 +178,11 @@ export let STEP_NODE_COLOR = "#FF8552";
  */
 export let OUTPUT_NODE_COLOR = "#297373";
 
+/**
+ * The opacity (0-1) of the CWL node card background. Set to 1 for a solid background.
+ */
+export let NODE_BACKGROUND_OPACITY = 0.3;
+
 const GOLDEN_RATIO = 1.618;
 
 /**
@@ -220,6 +225,7 @@ export type TheseusCwlConfiguration = {
   INPUT_NODE_COLOR: string;
   STEP_NODE_COLOR: string;
   OUTPUT_NODE_COLOR: string;
+  NODE_BACKGROUND_OPACITY: number;
   NODE_HEIGHT: number;
   NODE_WIDTH: number;
   NODE_MARGIN: number;
@@ -241,6 +247,7 @@ const DEFAULTS: TheseusCwlConfiguration = {
   INPUT_NODE_COLOR,
   STEP_NODE_COLOR,
   OUTPUT_NODE_COLOR,
+  NODE_BACKGROUND_OPACITY,
   NODE_HEIGHT,
   NODE_WIDTH,
   NODE_MARGIN,
@@ -291,6 +298,10 @@ export const configureTheseusCwl = (
 
   if (overrides.OUTPUT_NODE_COLOR !== undefined) {
     OUTPUT_NODE_COLOR = overrides.OUTPUT_NODE_COLOR;
+  }
+
+  if (overrides.NODE_BACKGROUND_OPACITY !== undefined) {
+    NODE_BACKGROUND_OPACITY = overrides.NODE_BACKGROUND_OPACITY;
   }
 
   if (overrides.VIEWER_PADDING !== undefined) {
