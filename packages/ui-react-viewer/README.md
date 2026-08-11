@@ -261,8 +261,11 @@ Note: the node **fill colors** inside the minimap follow the graph's node colors
 
 | Variable                                              | Default       | Purpose                           |
 | ----------------------------------------------------- | ------------- | --------------------------------- |
+| `--cwl-viewer-color-editor-bg`                        | `transparent` | Panel background                  |
+| `--cwl-viewer-color-editor-border-color`              | `transparent` | Panel border                      |
 | `--cwl-viewer-color-editor-input-border-color`        | `transparent` | Color picker input borders        |
 | `--cwl-viewer-color-editor-button-bg`                 | `#f0f0f1`     | Button background                 |
+| `--cwl-viewer-color-editor-button-text-color`         | `#000000`     | Button text                       |
 | `--cwl-viewer-color-editor-button-border-color`       | `transparent` | Button borders                    |
 | `--cwl-viewer-color-editor-primary-button-bg`         | `#4078f2`     | Primary (Apply) button background |
 | `--cwl-viewer-color-editor-primary-button-text-color` | `white`       | Primary (Apply) button text       |
