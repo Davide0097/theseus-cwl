@@ -18,6 +18,14 @@ import { CwlVisualMap } from "./cwl-viewer-visual-map";
 import "../style.css";
 
 /**
+ * Background configuration accepted by the CwlViewer component.
+ */
+export type CwlViewerBackgroundProps = Pick<
+  BackgroundProps,
+  "variant" | "color" | "bgColor" | "style" | "gap" | "size"
+>;
+
+/**
  * Props for the CwlViewer component.
  */
 export type CwlViewerProps = {
@@ -40,10 +48,7 @@ export type CwlViewerProps = {
   initialColorState?: ColorState;
 
   /** The workflow background configuration */
-  background?: Pick<
-    BackgroundProps,
-    "variant" | "color" | "bgColor" | "style" | "gap" | "size"
-  >;
+  background?: CwlViewerBackgroundProps;
 
   /** Set the scaling factor for subworkflows, default is 0.8 */
   subWorkflowScalingFactor?: number;
@@ -77,7 +82,7 @@ export const CwlViewer = (props: CwlViewerProps) => {
     labels = false,
     colorEditor = false,
     initialColorState = undefined,
-    background = { color: "transparent", variant: BackgroundVariant.Dots },
+    background = undefined,
     subWorkflowScalingFactor = SUBWORKFLOW_NODE_SCALING_FACTOR,
     highlights = true,
     nodeInspector = true,
