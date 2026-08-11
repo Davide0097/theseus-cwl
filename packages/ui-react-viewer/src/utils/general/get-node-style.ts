@@ -1,6 +1,10 @@
 import { CSSProperties } from "react";
 
-import { NODE_HEIGHT, NODE_WIDTH } from "@theseus-cwl/configurations";
+import {
+  NODE_BACKGROUND_OPACITY,
+  NODE_HEIGHT,
+  NODE_WIDTH,
+} from "@theseus-cwl/configurations";
 
 import { hexToRgba } from "./colors";
 
@@ -16,7 +20,7 @@ export const getNodeStyle = (color: string): CSSProperties => ({
   borderRadius: "var(--cwl-viewer-node-border-radius)",
   border: "1px solid var(--cwl-viewer-node-border-color)",
   boxShadow: "var(--cwl-viewer-node-shadow)",
-  background: hexToRgba(color, 0.3),
+  background: hexToRgba(color, NODE_BACKGROUND_OPACITY),
 });
 
 /**
