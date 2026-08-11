@@ -387,3 +387,11 @@
   margin-top: -20px;
   font-size: 10px;
 }
+
+.react-flow__panel .react-flow__attribution {
+  background-color: #000000;
+}
+
+.react-flow__panel .react-flow__attribution a {
+  color: white;
+}
